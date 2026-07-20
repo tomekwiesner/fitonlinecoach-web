@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="pl" class="gate-locked">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bramka „wkrótce": stali testerzy (localStorage) i link ?podglad=KOD wchodzą bez migotania.
+     KOD PODGLĄDU zmienisz w jednym miejscu poniżej (window.FOC_PREVIEW_CODE). -->
+<script>
+  window.FOC_PREVIEW_CODE = 'hussars2026';
+  (function () {
+    try {
+      var KEY = 'foc_preview', url = new URL(location.href), q = url.searchParams.get('podglad'), ok = localStorage.getItem(KEY) === '1';
+      if (q !== null) {
+        if (q === window.FOC_PREVIEW_CODE) { localStorage.setItem(KEY, '1'); ok = true; }
+        url.searchParams.delete('podglad');
+        history.replaceState(null, '', url.pathname + url.search + url.hash);
+      }
+      if (ok) {
+        document.documentElement.classList.remove('gate-locked');
+        document.documentElement.setAttribute('data-preview', '1');
+      }
+    } catch (e) {}
+  })();
+</script>
+<title>FitOnlineCoach — trening, który rozumiesz</title>
+<meta name="description" content="Plany treningowe premium z poradnikiem wideo do każdego ćwiczenia. Po polsku. Trener personalny, fizjoterapeuta i dietetyk w jednym.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<style>
+  /* Firmowe fonty marki (pliki lokalne, zmienna grubość) */
+  @font-face{font-family:'Montserrat';src:url('assets/fonts/Montserrat-VF.ttf') format('truetype');
+    font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:'Inter';src:url('assets/fonts/Inter-VF.ttf') format('truetype');
+    font-weight:100 900;font-style:normal;font-display:swap}
+  :root{
+    /* paleta marki: #99E66D (limonka) + #121A16 (ciemna zieleń) + #F7F8F9 (jasny) */
+    --lime:#99E66D;
+    --black:#0B0F0D;
+    --graphite:#121A16;
+    --graphite-2:#1B2620;
+    --line:rgba(255,255,255,.08);
+    --text:#F7F8F9;
+    --muted:#8B968F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--black);color:var(--text);line-height:1.6;overflow-x:hidden}
+  ::selection{background:var(--lime);color:var(--black)}
+  ::-webkit-scrollbar{width:10px}
+  ::-webkit-scrollbar-track{background:var(--black)}
+  ::-webkit-scrollbar-thumb{background:var(--graphite-2);border-radius:99px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--lime)}
+  h1,h2,h3,.display{font-family:'Montserrat',sans-serif;font-weight:800;line-height:1.05;text-transform:uppercase;letter-spacing:-.01em}
+  img,video{max-width:100%;display:block}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+
+  /* ziarno filmowe */
+  .grain{position:fixed;inset:-50%;width:200%;height:200%;pointer-events:none;z-index:9;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:grain 8s steps(10) infinite}
+  @keyframes grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-5%,-10%)}30%{transform:translate(3%,-15%)}50%{transform:translate(12%,9%)}70%{transform:translate(9%,4%)}90%{transform:translate(-1%,7%)}}
+
+  /* ---------- ekran „wkrótce" (coming soon) ---------- */
+  html.gate-locked,html.gate-locked body{overflow:hidden!important;height:100%}
+  .gate{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;padding:32px;
+    background:radial-gradient(900px 520px at 50% 22%,rgba(153,230,109,.10),transparent 60%),var(--black);
+    transition:opacity .6s ease,visibility .6s}
+  html[data-preview] .gate{display:none}
+  .gate.hide{opacity:0;visibility:hidden;pointer-events:none}
+  .gate-logo{height:38px;width:auto;margin-bottom:44px;opacity:0;animation:fadeUp .8s .1s forwards}
+  .gate .geyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.78rem;font-weight:600;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:24px;
+    opacity:0;animation:fadeUp .8s .25s forwards}
+  .gate .geyebrow::before,.gate .geyebrow::after{content:"";width:30px;height:1px;background:var(--lime)}
+  .gate h1{font-size:clamp(2.6rem,9vw,5.6rem);font-weight:900;color:#fff;line-height:1;margin-bottom:22px;
+    opacity:0;animation:fadeUp .8s .4s forwards}
+  .gate h1 span{color:var(--lime)}
+  .gate .gsub{max-width:460px;color:#B9C4BD;font-size:1.05rem;margin-bottom:44px;
+    opacity:0;animation:fadeUp .8s .55s forwards}
+  .gate .socials{margin-bottom:52px;opacity:0;animation:fadeUp .8s .7s forwards}
+  .gpreview{opacity:0;animation:fadeUp .8s .85s forwards}
+  .gpreview-toggle{background:none;border:0;color:var(--muted);font-family:inherit;font-size:.82rem;
+    letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:.2s}
+  .gpreview-toggle:hover{color:var(--lime)}
+  .gpreview-form{display:flex;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center}
+  .gpreview-form input{background:transparent;border:1px solid var(--line);border-radius:2px;color:#fff;
+    font-family:inherit;font-size:.95rem;padding:13px 18px;outline:none;transition:.2s;min-width:200px}
+  .gpreview-form input:focus{border-color:var(--lime)}
+  .gpreview-form button{background:var(--lime);color:var(--black);border:0;border-radius:2px;
+    font-family:'Montserrat',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.1em;
+    text-transform:uppercase;padding:14px 24px;cursor:pointer;transition:.2s}
+  .gpreview-form button:hover{box-shadow:0 0 24px rgba(153,230,109,.4)}
+  .gperr{width:100%;color:#ff8a8a;font-size:.82rem;letter-spacing:.06em;margin-top:4px}
+
+  /* pasek postępu przewijania */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--lime);z-index:100;box-shadow:0 0 12px rgba(153,230,109,.6)}
+
+  /* ---------- nawigacja ---------- */
+  header{position:fixed;top:0;left:0;right:0;z-index:90;transition:.35s;border-bottom:1px solid transparent}
+  header.scrolled{background:rgba(7,9,8,.82);backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:76px}
+  .logo img{height:30px;width:auto}
+  .nav-links{display:flex;gap:36px;align-items:center;list-style:none}
+  .nav-links a{font-size:.82rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--lime)}
+  .nav-cta{border:1px solid var(--lime);color:var(--lime)!important;padding:11px 26px;border-radius:2px;transition:.25s!important}
+  .nav-cta:hover{background:var(--lime);color:var(--black)!important;box-shadow:0 0 24px rgba(153,230,109,.35)}
+  .burger{display:none;background:none;border:0;cursor:pointer;padding:8px;z-index:95}
+  .burger span{display:block;width:26px;height:2px;background:#fff;margin:6px 0;transition:.3s}
+  .burger.open span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;overflow:hidden}
+  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
+  .hero::before{content:"";position:absolute;inset:0;z-index:1;
+    background:linear-gradient(180deg,rgba(7,9,8,.55) 0%,rgba(7,9,8,.25) 45%,var(--black) 100%)}
+  .hero::after{content:"";position:absolute;inset:0;z-index:1;
+    background:radial-gradient(900px 500px at 20% 60%,rgba(153,230,109,.10),transparent 60%)}
+  .hero-content{position:relative;z-index:2;will-change:transform,opacity}
+  .hero .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.78rem;font-weight:600;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:28px;
+    opacity:0;animation:fadeUp .8s .2s forwards}
+  .hero .eyebrow::before{content:"";width:36px;height:1px;background:var(--lime)}
+  .hero h1{font-size:clamp(2.6rem,7.2vw,6rem);font-weight:900;color:#fff;margin-bottom:28px}
+  .hero h1 .w{display:inline-block;opacity:0;transform:translateY(40px);animation:wordUp .7s forwards}
+  .hero h1 .outline{color:var(--lime)}
+  .hero p.lead{max-width:480px;color:#B9C4BD;font-size:1.08rem;margin-bottom:40px;
+    opacity:0;animation:fadeUp .8s 1.15s forwards}
+  .hero-actions{display:flex;gap:18px;flex-wrap:wrap;opacity:0;animation:fadeUp .8s 1.35s forwards}
+  @keyframes wordUp{to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  .btn{display:inline-block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.85rem;
+    letter-spacing:.12em;text-transform:uppercase;padding:18px 40px;border-radius:2px;cursor:pointer;transition:.25s;border:0}
+  .btn-lime{background:var(--lime);color:var(--black)}
+  .btn-lime:hover{box-shadow:0 0 34px rgba(153,230,109,.5);transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.28)}
+  .btn-ghost:hover{border-color:var(--lime);color:var(--lime)}
+  .scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:2;display:flex;
+    flex-direction:column;align-items:center;gap:10px;font-size:.68rem;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--muted);opacity:0;animation:fadeUp 1s 1.8s forwards}
+  .scroll-cue i{width:1px;height:44px;background:linear-gradient(var(--lime),transparent);display:block;
+    animation:cue 1.6s ease-in-out infinite}
+  @keyframes cue{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+  /* ---------- marquee ---------- */
+  .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;
+    padding:22px 0;background:var(--black);position:relative;z-index:3}
+  .marquee-track{display:flex;gap:0;width:max-content;animation:marq 40s linear infinite}
+  .marquee span{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .marquee span b{color:var(--lime);font-weight:800}
+  @keyframes marq{to{transform:translateX(-50%)}}
+
+  /* ---------- sekcje wspólne ---------- */
+  section{padding:130px 0;position:relative}
+  .sec-label{display:flex;align-items:center;gap:16px;font-size:.75rem;font-weight:600;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--lime);margin-bottom:22px}
+  .sec-label::after{content:"";flex:0 0 48px;height:1px;background:var(--lime);opacity:.5}
+  h2.sec-title{font-size:clamp(1.9rem,4vw,3.2rem);color:#fff;margin-bottom:18px;max-width:720px}
+  .sec-sub{color:var(--muted);max-width:520px;font-size:1.02rem}
+
+  /* reveal on scroll */
+  .rv{opacity:0;transform:translateY(46px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+  .rv.in{opacity:1;transform:none}
+  .rv2{transition-delay:.12s}.rv3{transition-delay:.24s}.rv4{transition-delay:.36s}
+
+  /* ---------- manifest (scrub słów) ---------- */
+  .manifest{padding:150px 0;position:relative;overflow:hidden}
+  /* monogram FOC (FitOnlineCoach) — wyższa nieprzezroczystość, żeby białe F i C też były widoczne */
+  .manifest .wm{position:absolute;right:4%;top:50%;transform:translateY(-50%);
+    width:min(36vw,440px);opacity:.11;pointer-events:none}
+  .manifest p{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;
+    font-size:clamp(1.6rem,4.4vw,3.4rem);line-height:1.25;max-width:1000px}
+  .manifest .mw{opacity:.12;transition:opacity .35s linear;display:inline-block;margin-right:.32em}
+  .manifest .mw.lit{opacity:1}
+  .manifest .mw.accent{color:var(--lime)}
+
+  /* ---------- dlaczego ---------- */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);
+    border:1px solid var(--line);margin-top:70px;border-radius:16px;overflow:hidden}
+  .card{background:var(--graphite);padding:52px 40px;position:relative;overflow:hidden;transition:.35s}
+  .card::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 260px at var(--mx,50%) var(--my,0%),rgba(153,230,109,.09),transparent 65%);opacity:0;transition:.4s}
+  .card:hover{background:var(--graphite-2)}
+  .card:hover::before{opacity:1}
+  .card .num{font-family:'Montserrat',sans-serif;font-weight:900;font-size:.8rem;color:var(--lime);
+    letter-spacing:.2em;display:block;margin-bottom:34px}
+  .card h3{font-size:1.25rem;color:#fff;margin-bottom:14px;line-height:1.3}
+  .card p{color:var(--muted);font-size:.95rem}
+  .card .icon{width:54px;height:54px;border:1px solid rgba(153,230,109,.35);border-radius:2px;display:flex;
+    align-items:center;justify-content:center;margin-bottom:26px;transition:.35s}
+  .card:hover .icon{background:var(--lime);border-color:var(--lime)}
+  .card .icon svg{width:24px;height:24px;stroke:var(--lime);transition:.35s}
+  .card:hover .icon svg{stroke:var(--black)}
+
+  /* ---------- kurtyna: „dlaczego" rozjeżdża się i odsłania „jak to działa" ---------- */
+  .stack{position:relative;height:300vh}
+  .stack-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+  .stack-pin .layer{position:absolute;inset:0;display:flex;align-items:center;padding:76px 0 0}
+  .layer-under{z-index:1}
+  .layer-under .how-grid{align-items:center}
+  .layer-under .how-left{position:static}
+  .layer-under .stp{padding:30px 0}
+  .layer-over{z-index:2;background:transparent}
+  .door{position:absolute;top:0;bottom:0;width:51%;background:var(--black);will-change:transform}
+  .door-l{left:0}
+  .door-r{right:0}
+  /* druga kurtyna: o mnie nad przerywnikiem deszczu */
+  .stack-about{height:240vh}
+  .stack-pin .divider{height:100%;min-height:0}
+  .about-content{position:relative;z-index:2;width:100%}
+  #aboutPhoto,#aboutText{will-change:transform,opacity}
+
+  .why-content{position:relative;z-index:2;width:100%}
+  /* karty muszą swobodnie wylatywać poza kontener, każda z własną ramką i zaokrągleniem */
+  .why-content .cards{margin-top:56px;gap:24px;background:transparent;border:0;overflow:visible}
+  .why-content .card{border:1px solid var(--line);border-radius:16px;transition:background .35s}
+  .why-head,.why-content .card{will-change:transform,opacity}
+
+  /* ---------- sticky jak to działa ---------- */
+  .how{background:var(--graphite)}
+  .how-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start}
+  .how-left{position:sticky;top:140px}
+  .steps{display:flex;flex-direction:column}
+  .stp{padding:56px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:90px 1fr;gap:28px;
+    opacity:.25;transform:translateX(24px);transition:opacity .6s,transform .6s}
+  .stp:first-child{border-top:1px solid var(--line)}
+  .stp.active{opacity:1;transform:none}
+  .stp .n{font-family:'Montserrat',sans-serif;font-weight:900;font-size:2.4rem;color:var(--lime);line-height:1}
+  .stp h3{font-size:1.3rem;color:#fff;margin-bottom:10px}
+  .stp p{color:var(--muted);font-size:.97rem}
+
+  /* ---------- dust divider ---------- */
+  .divider{position:relative;height:70vh;min-height:420px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .divider .bg{position:absolute;inset:-18% 0;background:url('assets/dust_beam.jpg') center/cover no-repeat;will-change:transform}
+  .divider .bgv{position:absolute;top:-18%;left:0;width:100%;height:136%;object-fit:cover;will-change:transform}
+  .divider::before{content:"";position:absolute;inset:0;background:rgba(7,9,8,.45);z-index:1}
+  .divider h2{position:relative;z-index:2;font-size:clamp(2rem,6vw,4.6rem);font-weight:900;color:#fff;
+    text-align:center;text-shadow:0 6px 40px rgba(0,0,0,.6)}
+  .divider h2 span{color:var(--lime)}
+
+  /* ---------- plan ---------- */
+  .plan-grid{display:grid;grid-template-columns:.9fr 1.1fr;border:1px solid var(--line);background:var(--graphite);
+    border-radius:16px;overflow:hidden}
+  .plan-visual{position:relative;overflow:hidden;min-height:520px}
+  .plan-visual img,.plan-visual video{position:absolute;inset:-12% 0;width:100%;height:124%;object-fit:cover;will-change:transform}
+  .plan-body{padding:72px 64px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+  .plan-tag{font-size:.72rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--lime);
+    border:1px solid rgba(153,230,109,.4);padding:8px 16px;border-radius:2px;margin-bottom:26px}
+  .plan-body h3{font-size:clamp(2rem,3.4vw,3rem);color:#fff;margin-bottom:16px}
+  .plan-body>p{color:var(--muted);margin-bottom:30px;max-width:420px}
+  .plan-feats{list-style:none;margin-bottom:38px;width:100%}
+  .plan-feats li{display:flex;gap:14px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);
+    color:#CFD8D2;font-size:.96rem}
+  .plan-feats li::before{content:"—";color:var(--lime);font-weight:700}
+  .price-row{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+  .price{font-family:'Montserrat',sans-serif;font-weight:900;font-size:2.6rem;color:#fff}
+  .price small{font-size:.85rem;font-weight:600;color:var(--muted);letter-spacing:.08em}
+  .price .zl{color:var(--lime)}
+  /* odwracana karta planu (3D flip) */
+  .plan-flip{perspective:1800px}
+  .plan-flip-inner{position:relative;display:grid;transform-style:preserve-3d;
+    transition:transform .8s cubic-bezier(.45,.05,.2,1)}
+  .plan-flip.flipped .plan-flip-inner{transform:rotateY(180deg)}
+  .plan-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;min-width:0}
+  .plan-back{transform:rotateY(180deg);background:var(--graphite);border:1px solid var(--line);
+    border-radius:16px;overflow:hidden}
+  .plan-back-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;padding:56px 48px;
+    align-items:center;height:100%}
+  .plan-back h3{font-size:1.5rem;color:#fff;margin-bottom:16px}
+  .plan-back .pb-h{margin-top:30px}
+  .plan-back .pb-p{color:var(--muted);margin-bottom:30px;max-width:430px}
+  .plan-back .plan-feats{margin-bottom:0}
+  .plan-screens{display:flex;gap:14px;justify-content:center;align-items:center}
+  .plan-screens img{width:31%;border-radius:14px;border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 16px 44px rgba(0,0,0,.55)}
+  .plan-screens img:nth-child(2){transform:translateY(-16px) scale(1.06);position:relative;z-index:2}
+
+  /* płynna podmiana treści planu po kliknięciu kafelka */
+  .plan-grid .plan-body,.plan-grid .plan-visual img{transition:opacity .28s ease,transform .28s ease}
+  .plan-grid.swap .plan-body{opacity:0;transform:translateY(14px)}
+  .plan-grid.swap .plan-visual img{opacity:0}
+  #planCta.disabled{background:transparent;border:1px solid var(--line);color:var(--muted);
+    pointer-events:none;box-shadow:none;transform:none}
+  /* kafelki wyboru planu */
+  .plan-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+  .ptile{display:flex;align-items:center;gap:16px;background:var(--graphite);border:1px solid var(--line);
+    border-radius:16px;padding:14px 18px;cursor:pointer;text-align:left;transition:.25s;font-family:inherit}
+  .ptile:hover{border-color:rgba(153,230,109,.5);transform:translateY(-2px)}
+  .ptile.active{border-color:var(--lime);background:var(--graphite-2);box-shadow:0 0 24px rgba(153,230,109,.12)}
+  .ptile-thumb{flex:0 0 54px;height:54px;border-radius:10px;background-size:cover;background-position:center}
+  .ptile-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .ptile-info b{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.95rem;color:#fff;
+    text-transform:uppercase;letter-spacing:.04em}
+  .ptile.active .ptile-info b{color:var(--lime)}
+  .ptile-info i{font-style:normal;font-size:.78rem;color:var(--muted);letter-spacing:.06em}
+
+  /* ---------- statystyki ---------- */
+  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+  .stat{padding:64px 20px;text-align:center;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:0}
+  .stat .val{display:flex;justify-content:center;align-items:baseline;
+    font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(2.4rem,4vw,3.6rem);
+    color:var(--lime);line-height:1;margin-bottom:14px;font-variant-numeric:tabular-nums}
+  .stat .lbl{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  /* odometr — cyfry przewijają się w pionie jak na liczniku */
+  .odo-col{display:inline-block;height:1em;overflow:hidden}
+  .odo-strip{display:flex;flex-direction:column;transition:transform 2.2s cubic-bezier(.16,1,.3,1)}
+  .odo-strip i{font-style:normal;height:1em;line-height:1}
+
+  /* ---------- o mnie ---------- */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center}
+  .about-visual{position:relative}
+  .about-visual .frame{position:relative;background:linear-gradient(165deg,var(--graphite-2),var(--black));
+    border:1px solid var(--line);padding:0;overflow:hidden;border-radius:16px}
+  .about-visual .frame img{width:100%;display:block}
+  .about-visual .frame::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(500px 300px at 70% 20%,rgba(153,230,109,.08),transparent 60%)}
+  .about-visual img{position:relative;z-index:1;filter:drop-shadow(0 20px 40px rgba(0,0,0,.5))}
+  .about p{color:var(--muted);margin-bottom:18px;max-width:480px}
+  .roles{display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 38px}
+  .role{border:1px solid var(--line);padding:10px 20px;font-size:.8rem;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;color:#CFD8D2;border-radius:2px;transition:.25s}
+  .role:hover{border-color:var(--lime);color:var(--lime)}
+
+  /* ---------- YT banner ---------- */
+  .yt{position:relative;overflow:hidden;padding:170px 0;text-align:center}
+  .yt .bg{position:absolute;inset:-15% 0;background:url('assets/banner_gym.jpg') center/cover no-repeat;will-change:transform}
+  .yt::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--black) 0%,rgba(7,9,8,.55) 30%,rgba(7,9,8,.55) 70%,var(--black) 100%);z-index:1}
+  .yt .wrap{position:relative;z-index:2}
+  .yt h2{font-size:clamp(2rem,4.6vw,3.6rem);color:#fff;margin-bottom:18px}
+  .yt h2 span{color:var(--lime)}
+  .yt p{color:#B9C4BD;max-width:520px;margin:0 auto 42px}
+  /* karuzela z poradnikami — wolno płynie, pauza po najechaniu */
+  .vcar{overflow:hidden;margin:0 auto 20px;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+  .vcar-track{display:flex;width:max-content;animation:vmarq 60s linear infinite}
+  .vcar:hover .vcar-track{animation-play-state:paused}
+  .vcar-group{display:flex;gap:22px;padding-right:22px;align-items:center}
+  .vcar-group video{height:232px;width:auto;display:block;border-radius:16px;
+    border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 44px rgba(0,0,0,.5)}
+  @keyframes vmarq{to{transform:translateX(-50%)}}
+  .clips-note{font-size:.8rem!important;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted)!important;margin:0 auto 46px!important}
+
+  /* ---------- newsletter ---------- */
+  .nl{border-top:1px solid var(--line)}
+  .nl-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+  .nl h2{font-size:clamp(1.7rem,3vw,2.5rem);color:#fff;margin-bottom:14px}
+  .nl p{color:var(--muted);max-width:420px}
+  .nl-form{display:flex;border-bottom:2px solid rgba(255,255,255,.25);transition:.3s}
+  .nl-form:focus-within{border-bottom-color:var(--lime)}
+  .nl-form input{flex:1;background:transparent;border:0;outline:none;color:#fff;font-size:1.05rem;
+    font-family:inherit;padding:18px 0}
+  .nl-form input::placeholder{color:var(--muted)}
+  .nl-form button{background:transparent;border:0;color:var(--lime);font-family:'Montserrat',sans-serif;
+    font-weight:800;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;padding:0 8px;transition:.2s}
+  .nl-form button:hover{text-shadow:0 0 18px rgba(153,230,109,.8)}
+  /* TODO: podmienić na osadzony formularz MailerLite (Embedded form) */
+
+  /* ---------- stopka ---------- */
+  footer{border-top:1px solid var(--line);padding:80px 0 40px}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;margin-bottom:60px}
+  .foot-grid img{height:34px}
+  .socials{display:flex;gap:12px}
+  .socials a{width:46px;height:46px;border:1px solid var(--line);display:flex;align-items:center;
+    justify-content:center;transition:.25s;border-radius:2px}
+  .socials a:hover{border-color:var(--lime);background:var(--lime)}
+  .socials svg{width:19px;height:19px;fill:#CFD8D2;transition:.25s}
+  .socials a:hover svg{fill:var(--black)}
+  .foot-links{display:flex;gap:28px;list-style:none;flex-wrap:wrap}
+  .foot-links a{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .foot-links a:hover{color:var(--lime)}
+  .copy{border-top:1px solid var(--line);padding-top:28px;font-size:.8rem;color:var(--muted);
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  /* ---------- mobile ---------- */
+  @media(max-width:980px){
+    section{padding:90px 0}
+    .cards{grid-template-columns:1fr}
+    .how-grid{grid-template-columns:1fr;gap:40px}
+    .how-left{position:static}
+    /* na telefonie kurtyna off — zwykłe sekcje jedna pod drugą (dlaczego przed jak-to-działa) */
+    .stack{height:auto}
+    .stack-pin{position:static;height:auto;overflow:visible;display:flex;flex-direction:column-reverse}
+    .stack-pin .layer{position:static;padding:90px 0}
+    .door{display:none}
+    .layer-over{background:var(--black)}
+    .plan-grid{grid-template-columns:1fr}
+    .plan-visual{min-height:340px}
+    .plan-body{padding:48px 32px}
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .stat:nth-child(2){border-right:0}
+    .stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line)}
+    .about-grid{grid-template-columns:1fr;gap:60px}
+    .nl-grid{grid-template-columns:1fr;gap:40px}
+    .vcar-group video{height:170px}
+    .plan-tiles{grid-template-columns:1fr}
+    .plan-back-grid{grid-template-columns:1fr;gap:32px;padding:36px 24px}
+    .nav-links{position:fixed;inset:0;background:rgba(7,9,8,.97);flex-direction:column;
+      justify-content:center;gap:34px;display:none}
+    .nav-links.open{display:flex}
+    .nav-links a{font-size:1.05rem}
+    .burger{display:block}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    html{scroll-behavior:auto}
+    .rv,.stp{opacity:1;transform:none}
+    .manifest .mw{opacity:1}
+    .stack{height:auto}
+    .stack-pin{position:static;height:auto;overflow:visible;display:flex;flex-direction:column-reverse}
+    .stack-pin .layer{position:static;padding:90px 0}
+    .door{display:none}
+    .layer-over{background:var(--black)}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== EKRAN „WKRÓTCE" ===== -->
+<div class="gate" id="gate">
+  <img class="gate-logo" src="assets/logo.png" alt="FitOnlineCoach">
+  <span class="geyebrow">FitOnlineCoach</span>
+  <h1>Już <span>wkrótce</span></h1>
+  <p class="gsub">Budujemy dla Ciebie nową stronę — plany treningowe z pełnym wsparciem wideo.
+    Zaglądaj, startujemy niebawem.</p>
+  <div class="socials">
+    <a href="https://instagram.com/tomek.wiesner" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2-.1-1.2-.1-1.6-.1-4.8s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4 1.2-.1 1.6-.1 4.8-.1zm0 2c-3.1 0-3.5 0-4.7.1-1.1.1-1.4.2-1.7.3-.4.2-.7.3-1 .6-.3.3-.5.6-.6 1-.1.3-.3.6-.3 1.7-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.4.3 1.7.2.4.3.7.6 1 .3.3.6.5 1 .6.3.1.6.3 1.7.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.4-.2 1.7-.3.4-.2.7-.3 1-.6.3-.3.5-.6.6-1 .1-.3.3-.6.3-1.7.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.4-.3-1.7-.2-.4-.3-.7-.6-1-.3-.3-.6-.5-1-.6-.3-.1-.6-.3-1.7-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.3a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.8-2.9a1.3 1.3 0 1 1-2.6 0 1.3 1.3 0 0 1 2.6 0z"/></svg>
+    </a>
+    <a href="https://www.youtube.com/@FitOnlineCoach" target="_blank" rel="noopener" aria-label="YouTube">
+      <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.5 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>
+    </a>
+    <a href="https://www.linkedin.com/in/tomek-wiesner-70537333a/" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24"><path d="M20.4 20.4h-3.5v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.2 2.4 4.2 5.4v6.3zM5.3 7.4a2 2 0 1 1 0-4.1 2 2 0 0 1 0 4.1zm1.8 13H3.6V9h3.5v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 1 .8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7c0-1-.8-1.7-1.8-1.7z"/></svg>
+    </a>
+  </div>
+  <div class="gpreview">
+    <button class="gpreview-toggle" id="gpToggle" type="button">Masz kod podglądu?</button>
+    <form class="gpreview-form" id="gpForm" hidden>
+      <input id="gpInput" type="password" placeholder="Kod podglądu" autocomplete="off" aria-label="Kod podglądu">
+      <button type="submit">Wejdź →</button>
+      <span class="gperr" id="gpErr" hidden>Nieprawidłowy kod — spróbuj ponownie.</span>
+    </form>
+  </div>
+</div>
+<script>
+  (function () {
+    var gate = document.getElementById('gate');
+    if (!gate) return;
+    var toggle = document.getElementById('gpToggle'), form = document.getElementById('gpForm'),
+        input = document.getElementById('gpInput'), err = document.getElementById('gpErr');
+    toggle.addEventListener('click', function () {
+      form.hidden = !form.hidden;
+      if (!form.hidden) input.focus();
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (input.value.trim() === (window.FOC_PREVIEW_CODE || '')) {
+        try { localStorage.setItem('foc_preview', '1'); } catch (_) {}
+        document.documentElement.classList.remove('gate-locked');
+        gate.classList.add('hide');
+        setTimeout(function () { gate.remove(); }, 650);
+      } else {
+        err.hidden = false; input.value = ''; input.focus();
+      }
+    });
+  })();
+</script>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header id="header">
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="#top"><img src="assets/logo.png" alt="FitOnlineCoach"></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#dlaczego">Dlaczego</a></li>
+        <li><a href="#plan">Plan</a></li>
+        <li><a href="#o-mnie">O mnie</a></li>
+        <li><a href="#wideo">Wideo</a></li>
+        <li><a class="nav-cta" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Aplikacja</a></li>
+      </ul>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<div class="hero" id="top">
+  <video autoplay muted loop playsinline poster="assets/hero_poster.jpg" id="heroVideo">
+    <source src="assets/hero_loop.mp4" type="video/mp4">
+  </video>
+  <div class="wrap hero-content" id="heroContent">
+    <span class="eyebrow">Trening — Dieta — Fizjoterapia</span>
+    <h1>
+      <span class="w" style="animation-delay:.35s">Trening,</span><br>
+      <span class="w" style="animation-delay:.55s">który</span>
+      <span class="w outline" style="animation-delay:.75s">rozumiesz.</span>
+    </h1>
+    <p class="lead">Plany treningowe premium z poradnikiem wideo do każdego ćwiczenia.
+      Po polsku, konkretnie, bez ściemy — zawsze w Twoim telefonie.</p>
+    <div class="hero-actions">
+      <a class="btn btn-lime" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Aplikacja</a>
+      <a class="btn btn-ghost" href="#wideo">Darmowe wideo</a>
+    </div>
+  </div>
+  <div class="scroll-cue">Przewiń<i></i></div>
+</div>
+
+<!-- ===== MARQUEE ===== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack"></div>
+</div>
+
+<!-- ===== MANIFEST ===== -->
+<section class="manifest">
+  <img class="wm" src="assets/icon_big.png" alt="Monogram FOC — FitOnlineCoach" aria-hidden="true">
+  <div class="wrap">
+    <p id="manifest">Nie potrzebujesz kolejnej rozpiski, potrzebujesz planu, który <em>zrozumiesz.</em> I który <em>zrealizujesz.</em></p>
+  </div>
+</section>
+
+<!-- ===== DLACZEGO nad JAK TO DZIAŁA (efekt kurtyny przy scrollu) ===== -->
+<div class="stack" id="dlaczego">
+  <div class="stack-pin">
+
+    <!-- warstwa pod spodem: jak to działa -->
+    <section class="layer layer-under how">
+      <div class="wrap">
+        <div class="how-grid">
+          <div class="how-left">
+            <div class="sec-label">02 — Jak to działa</div>
+            <h2 class="sec-title">Trzy kroki<br>do pierwszego<br>treningu.</h2>
+            <p class="sec-sub">Bez skomplikowanych ustawień. Kupujesz, otwierasz, trenujesz.</p>
+          </div>
+          <div class="steps">
+            <div class="stp" data-step>
+              <span class="n">01</span>
+              <div><h3>Wybierz plan</h3><p>Wybierasz plan dopasowany do swojego poziomu i celu. Płacisz raz — plan zostaje z Tobą.</p></div>
+            </div>
+            <div class="stp" data-step>
+              <span class="n">02</span>
+              <div><h3>Otwórz w telefonie</h3><p>Plan działa w aplikacji na Twoim telefonie. W domu, na siłowni, w podróży — zawsze pod ręką.</p></div>
+            </div>
+            <div class="stp" data-step>
+              <span class="n">03</span>
+              <div><h3>Trenuj z wideo</h3><p>Przy każdym ćwiczeniu masz poradnik wideo po polsku. Oglądasz, powtarzasz, robisz progres.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- warstwa wierzchnia: dlaczego (rozjeżdża się na boki) -->
+    <section class="layer layer-over" id="whyLayer">
+      <span class="door door-l" id="doorL" aria-hidden="true"></span>
+      <span class="door door-r" id="doorR" aria-hidden="true"></span>
+      <div class="wrap why-content">
+        <div class="why-head" id="whyHead">
+          <div class="sec-label rv">01 — Dlaczego FitOnlineCoach</div>
+          <h2 class="sec-title rv rv2">Wiedza różnych specjalistów.<br>Jeden spójny plan.</h2>
+        </div>
+        <div class="cards">
+      <div class="card">
+        <span class="num">/01</span>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>
+        <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
+        <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania i bez ryzyka kontuzji.</p>
+      </div>
+      <div class="card">
+        <span class="num">/02</span>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></div>
+        <h3>Masz dość anglojęzycznych tutoriali?</h3>
+        <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
+      </div>
+      <div class="card">
+        <span class="num">/03</span>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
+        <h3>Nie masz czasu na regularny trening?</h3>
+        <p>Twój trening jest zawsze przy Tobie — 24/7 w Twojej kieszeni. Ćwiczysz kiedy chcesz i gdzie chcesz.</p>
+      </div>
+    </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ===== DIVIDER ===== -->
+<div class="divider">
+  <div class="bg" data-parallax="0.18"></div>
+  <h2>Zero ściemy.<br><span>Sam konkret.</span></h2>
+</div>
+
+<!-- ===== PLAN ===== -->
+<section id="plan">
+  <div class="wrap">
+    <div class="sec-label rv">03 — Plany treningowe</div>
+    <h2 class="sec-title rv rv2">Zacznij od planu<br>dla siebie.</h2>
+    <div class="plan-flip rv rv3" id="planFlip" style="margin-top:70px">
+      <div class="plan-flip-inner">
+
+        <!-- przód karty -->
+        <div class="plan-face plan-front">
+          <div class="plan-grid" id="planGrid">
+            <div class="plan-visual"><img id="planImg" src="assets/plan_sandbag.jpg" alt="Tomek w wykroku z sandbagiem w limonkowym świetle" data-parallax="0.1"></div>
+            <div class="plan-body">
+              <span class="plan-tag" id="planTag">Dla początkujących</span>
+              <h3 id="planTitle">Początek</h3>
+              <p id="planDesc">Plan dla osób, które chcą wystartować z treningiem — spokojnie, bezpiecznie
+                i ze zrozumieniem tego, co robią.</p>
+              <ul class="plan-feats" id="planFeats">
+                <li>Poradnik wideo do każdego ćwiczenia</li>
+                <li>Wszystko po polsku, krok po kroku</li>
+                <li>Dostęp 24/7 w Twoim telefonie</li>
+              </ul>
+              <div class="price-row">
+                <span class="price" id="planPrice">79 <span class="zl">zł</span> <small>/ jednorazowo</small></span>
+                <a class="btn btn-lime" id="planCta" href="https://fitonlinecoach.mvt.so/programs/pocz%C4%85tek" target="_blank" rel="noopener">Zobacz plan</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- tył karty: szczegóły planu + prawdziwe ekrany z aplikacji -->
+        <div class="plan-face plan-back">
+          <div class="plan-back-grid">
+            <div>
+              <span class="plan-tag">Plan „Początek" od środka</span>
+              <h3>Co dostajesz?</h3>
+              <ul class="plan-feats">
+                <li>4 tygodnie treningu — 3 dni w tygodniu (pełne ciało)</li>
+                <li>Poradnik wideo do każdego z 49 ćwiczeń</li>
+                <li>Kalendarz treningów dopasowany do Twojego tygodnia</li>
+                <li>Zapis wyników i sugerowane obciążenia</li>
+              </ul>
+              <h3 class="pb-h">Dla kogo?</h3>
+              <p class="pb-p">Dla osób, które zaczynają przygodę z treningiem siłowym albo wracają po dłuższej
+                przerwie i chcą wystartować bezpiecznie, ze zrozumieniem każdego ruchu.</p>
+              <div class="price-row">
+                <a class="btn btn-lime" href="https://fitonlinecoach.mvt.so/programs/pocz%C4%85tek" target="_blank" rel="noopener">Kup plan — 79 zł</a>
+                <button class="btn btn-ghost" id="flipBack" type="button">← Wróć</button>
+              </div>
+            </div>
+            <div class="plan-screens" aria-label="Prawdziwe ekrany z aplikacji">
+              <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami">
+              <img src="assets/screen_trening.jpg" alt="Ekran aplikacji: dzisiejszy trening">
+              <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- kafelki wyboru planu -->
+    <div class="plan-tiles rv rv4" id="planTiles">
+      <button class="ptile active" data-plan="0">
+        <span class="ptile-thumb" style="background-image:url('assets/plan_sandbag.jpg')"></span>
+        <span class="ptile-info"><b>Początek</b><i>dla początkujących · 79 zł</i></span>
+      </button>
+      <button class="ptile" data-plan="1">
+        <span class="ptile-thumb" style="background-image:url('assets/kettlebell.jpg')"></span>
+        <span class="ptile-info"><b>Plan 2</b><i>wkrótce</i></span>
+      </button>
+      <button class="ptile" data-plan="2">
+        <span class="ptile-thumb" style="background-image:url('assets/dust_beam.jpg')"></span>
+        <span class="ptile-info"><b>Plan 3</b><i>wkrótce</i></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATYSTYKI ===== -->
+<div class="stats">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat rv"><span class="val" data-odo="70" data-suffix="+"></span><span class="lbl">poradników wideo</span></div>
+      <div class="stat rv rv2"><span class="val">3 w 1</span><span class="lbl">trening · dieta · fizjoterapia</span></div>
+      <div class="stat rv rv3"><span class="val" data-odo="100" data-suffix="%"></span><span class="lbl">po polsku</span></div>
+      <div class="stat rv rv4"><span class="val">24/7</span><span class="lbl">dostęp w telefonie</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== O MNIE nad DIVIDEREM deszczu (druga kurtyna) ===== -->
+<div class="stack stack-about" id="o-mnie">
+  <div class="stack-pin">
+
+    <!-- warstwa pod spodem: przerywnik z deszczem -->
+    <section class="layer layer-under divider">
+      <video class="bgv" autoplay muted loop playsinline preload="metadata" poster="assets/rain_divider_poster.jpg" src="assets/rain_divider.mp4" aria-hidden="true"></video>
+      <h2>Nie musi być idealnie.<br><span>Ma być regularnie.</span></h2>
+    </section>
+
+    <!-- warstwa wierzchnia: o mnie (rozjeżdża się na boki) -->
+    <section class="layer layer-over about" id="aboutLayer">
+      <span class="door door-l" id="door2L" aria-hidden="true"></span>
+      <span class="door door-r" id="door2R" aria-hidden="true"></span>
+      <div class="wrap about-content">
+        <div class="about-grid">
+          <div class="about-visual" id="aboutPhoto">
+            <div class="frame"><img src="assets/tomek_hoodie.jpg" alt="Tomek Wiesner w bluzie FitOnlineCoach z szeroko rozłożonymi ramionami"></div>
+          </div>
+          <div id="aboutText">
+            <div class="sec-label rv">04 — O mnie</div>
+            <h2 class="sec-title rv rv2">Cześć,<br>jestem Tomek.</h2>
+            <p class="rv rv3">Na co dzień prowadzę treningi indywidualne i współprowadzę klub Hussars Academy.
+              Jako trener personalny, fizjoterapeuta i dietetyk patrzę na Twój trening z trzech stron naraz —
+              dzięki temu plan jest skuteczny, bezpieczny dla stawów i możliwy do pogodzenia z normalnym życiem.</p>
+            <p class="rv rv3">Nie wierzę w ekstrema i katowanie się na siłowni. Wierzę w złoty środek:
+              mądry ruch, proste zasady i systematyczność, którą utrzymasz latami.</p>
+            <div class="roles rv rv4">
+              <span class="role">Trener personalny</span>
+              <span class="role">Fizjoterapeuta</span>
+              <span class="role">Dietetyk</span>
+            </div>
+            <a class="btn btn-lime rv rv4" href="https://fitonlinecoach.mvt.so/" target="_blank" rel="noopener">Trenuj ze mną</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ===== YT ===== -->
+<section class="yt" id="wideo">
+  <div class="bg" data-parallax="0.16"></div>
+  <div class="wrap">
+    <div class="sec-label rv" style="justify-content:center">05 — Darmowa wiedza</div>
+    <h2 class="rv rv2"><span>70+</span> darmowych poradników wideo</h2>
+    <p class="rv rv3">Zanim kupisz plan, sprawdź jak tłumaczę. Na moim kanale YouTube znajdziesz
+      ponad 70 poradników do ćwiczeń — dla każdego poziomu.</p>
+    <div class="vcar rv rv3" aria-label="Karuzela z fragmentami poradników wideo">
+      <div class="vcar-track">
+        <div class="vcar-group">
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_plecy.mp4" aria-label="Pompki w oparciu — checklista techniki"></video>
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_przysiad.mp4" aria-label="Przysiad ze sztangą — wersja pionowa"></video>
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_licznik.mp4" aria-label="Pompki — licznik powtórzeń"></video>
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_hollow.mp4" aria-label="Hollow body na macie"></video>
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_counter.mp4" aria-label="Pompki na podwyższeniu — licznik serii"></video>
+        </div>
+        <div class="vcar-group" aria-hidden="true">
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_plecy.mp4"></video>
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_przysiad.mp4"></video>
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_licznik.mp4"></video>
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_hollow.mp4"></video>
+          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_counter.mp4"></video>
+        </div>
+      </div>
+    </div>
+    <p class="clips-note rv rv3">Fragmenty prawdziwych poradników z moich planów · najedź, aby zatrzymać</p>
+    <a class="btn btn-lime rv rv4" href="https://youtube.com/playlist?list=PLEgy8VO2gIhkaWkcrwXJrCfdo338oPv4v" target="_blank" rel="noopener">Oglądaj na YouTube</a>
+  </div>
+</section>
+
+<!-- ===== NEWSLETTER ===== -->
+<section class="nl">
+  <div class="wrap">
+    <div class="nl-grid">
+      <div>
+        <div class="sec-label rv">06 — Newsletter</div>
+        <h2 class="rv rv2">Darmowa dawka wiedzy na start.</h2>
+        <p class="rv rv3">Proste wskazówki treningowe i informacje o nowych planach. Zero spamu.</p>
+      </div>
+      <!-- TODO: tu wkleimy osadzony formularz z MailerLite (Forms → Embedded form) -->
+      <form class="nl-form rv rv3" onsubmit="event.preventDefault();alert('Formularz podepniemy do MailerLite — na razie to podgląd.');">
+        <input type="email" placeholder="Twój adres e-mail" required>
+        <button type="submit">Zapisz się →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STOPKA ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <img src="assets/logo_stacked.png" alt="FitOnlineCoach" style="height:72px;width:auto">
+      <ul class="foot-links">
+        <li><a href="#dlaczego">Dlaczego</a></li>
+        <li><a href="#plan">Plan</a></li>
+        <li><a href="#o-mnie">O mnie</a></li>
+        <li><a href="#wideo">Wideo</a></li>
+      </ul>
+      <div class="socials">
+        <a href="https://instagram.com/tomek.wiesner" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2-.1-1.2-.1-1.6-.1-4.8s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4 1.2-.1 1.6-.1 4.8-.1zm0 2c-3.1 0-3.5 0-4.7.1-1.1.1-1.4.2-1.7.3-.4.2-.7.3-1 .6-.3.3-.5.6-.6 1-.1.3-.3.6-.3 1.7-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.4.3 1.7.2.4.3.7.6 1 .3.3.6.5 1 .6.3.1.6.3 1.7.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.4-.2 1.7-.3.4-.2.7-.3 1-.6.3-.3.5-.6.6-1 .1-.3.3-.6.3-1.7.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.4-.3-1.7-.2-.4-.3-.7-.6-1-.3-.3-.6-.5-1-.6-.3-.1-.6-.3-1.7-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.3a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.8-2.9a1.3 1.3 0 1 1-2.6 0 1.3 1.3 0 0 1 2.6 0z"/></svg>
+        </a>
+        <a href="https://www.youtube.com/@FitOnlineCoach" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.5 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/tomek-wiesner-70537333a/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M20.4 20.4h-3.5v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.2 2.4 4.2 5.4v6.3zM5.3 7.4a2 2 0 1 1 0-4.1 2 2 0 0 1 0 4.1zm1.8 13H3.6V9h3.5v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 1 .8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7c0-1-.8-1.7-1.8-1.7z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="copy">
+      <span>© 2026 FitOnlineCoach — Tomasz Wiesner. Wszystkie prawa zastrzeżone.</span>
+      <span>Trening · Dieta · Fizjoterapia</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* pasek postępu + stan nagłówka */
+  const progress = document.getElementById('progress');
+  const header = document.getElementById('header');
+
+  /* reveal on scroll */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold: .15});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  /* tryb kurtyny: tylko desktop i bez ograniczenia animacji
+     (sprawdzane na bieżąco, bo szerokość okna może się zmienić) */
+  const stackMode = () => window.innerWidth > 980 && !reduced;
+
+  /* kroki — aktywacja przez obserwator tylko poza trybem kurtyny
+     (w trybie kurtyny steruje nimi pętla przewijania, która nadpisuje stan co klatkę) */
+  const so = new IntersectionObserver(entries => {
+    entries.forEach(e => e.target.classList.toggle('active', e.isIntersecting));
+  }, {threshold: .55});
+  if (!stackMode()) document.querySelectorAll('[data-step]').forEach(el => so.observe(el));
+
+  /* odometr — buduje kolumny cyfr i przewija je do docelowej wartości */
+  document.querySelectorAll('[data-odo]').forEach(el => {
+    const digits = String(el.dataset.odo).split('');
+    el.innerHTML = digits.map((d, idx) => {
+      /* każda kolumna: 2 pełne obroty 0-9 + cyfra docelowa; pierwsza kolumna kręci się krócej */
+      const spins = idx === 0 ? 1 : 2;
+      let strip = '';
+      for (let s = 0; s < spins; s++) for (let n = 0; n <= 9; n++) strip += `<i>${n}</i>`;
+      strip += `<i>${d}</i>`;
+      /* cyfra docelowa stoi na końcu taśmy, czyli na pozycji spins*10 */
+      return `<span class="odo-col"><span class="odo-strip" data-target="${spins * 10}">${strip}</span></span>`;
+    }).join('') + (el.dataset.suffix || '');
+  });
+  const co = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const strips = e.target.querySelectorAll('.odo-strip');
+      if (e.isIntersecting) {
+        strips.forEach((s, i) => {
+          s.style.transitionDelay = (i * .12) + 's';
+          s.style.transform = `translateY(-${s.dataset.target}em)`;
+        });
+      } else {
+        /* poza ekranem: powrót na 0 bez animacji, żeby licznik ruszał przy każdym wejściu */
+        strips.forEach(s => {
+          s.style.transition = 'none';
+          s.style.transform = 'translateY(0)';
+          void s.offsetHeight;
+          s.style.transition = '';
+        });
+      }
+    });
+  }, {threshold: .6});
+  document.querySelectorAll('[data-odo]').forEach(el => co.observe(el));
+
+  /* manifest — podświetlanie słów w rytmie przewijania */
+  const manifest = document.getElementById('manifest');
+  const words = manifest.textContent.trim().split(/\s+/);
+  const emText = [...manifest.querySelectorAll('em')].map(e => e.textContent.trim());
+  manifest.innerHTML = words.map(w => {
+    const accent = emText.some(t => t.split(/\s+/).includes(w));
+    return `<span class="mw${accent ? ' accent' : ''}">${w}</span>`;
+  }).join(' ');
+  const mws = [...manifest.querySelectorAll('.mw')];
+
+  /* pętla przewijania: parallax + hero + manifest + progress + kurtyna */
+  const pxEls = [...document.querySelectorAll('[data-parallax]')];
+  const heroContent = document.getElementById('heroContent');
+  const heroVideo = document.getElementById('heroVideo');
+  const stackEl = document.querySelector('.stack:not(.stack-about)');
+  const doorL = document.getElementById('doorL');
+  const doorR = document.getElementById('doorR');
+  const whyHead = document.getElementById('whyHead');
+  const whyLayer = document.getElementById('whyLayer');
+  const whyCards = [...document.querySelectorAll('.why-content .card')];
+  const stepEls = [...document.querySelectorAll('[data-step]')];
+  const stack2El = document.querySelector('.stack-about');
+  const door2L = document.getElementById('door2L');
+  const door2R = document.getElementById('door2R');
+  const aboutLayer = document.getElementById('aboutLayer');
+  const aboutPhoto = document.getElementById('aboutPhoto');
+  const aboutText = document.getElementById('aboutText');
+  let ticking = false;
+
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const y = window.scrollY;
+      const vh = window.innerHeight;
+      const doc = document.documentElement.scrollHeight - vh;
+      progress.style.width = (doc > 0 ? (y / doc) * 100 : 0) + '%';
+      header.classList.toggle('scrolled', y > 40);
+      if (reduced) return;
+
+      /* hero: treść ucieka szybciej, wideo delikatnie się przybliża */
+      if (y < vh) {
+        heroContent.style.transform = `translateY(${y * .35}px)`;
+        heroContent.style.opacity = Math.max(1 - y / (vh * .72), 0);
+        heroVideo.style.transform = `scale(${1 + y / vh * .12})`;
+      }
+
+      /* parallax względem środka ekranu */
+      pxEls.forEach(el => {
+        const r = el.parentElement.getBoundingClientRect();
+        const mid = r.top + r.height / 2 - vh / 2;
+        el.style.transform = `translateY(${mid * -el.dataset.parallax}px)`;
+      });
+
+      /* manifest scrub */
+      const mr = manifest.getBoundingClientRect();
+      const prog = Math.min(Math.max((vh * .82 - mr.top) / (mr.height + vh * .35), 0), 1);
+      const lit = Math.floor(prog * mws.length);
+      mws.forEach((w, i) => w.classList.toggle('lit', i < lit));
+
+      /* kurtyna: „dlaczego" rozjeżdża się i odsłania „jak to działa" */
+      if (stackEl && stackMode()) {
+        const p = Math.min(Math.max((y - stackEl.offsetTop) / (stackEl.offsetHeight - vh), 0), 1);
+        const s = Math.min(Math.max((p - .38) / .52, 0), 1);
+        /* wygładzenie (ease-in-out), żeby start i koniec były miękkie */
+        const e = s < .5 ? 2 * s * s : 1 - Math.pow(-2 * s + 2, 2) / 2;
+        doorL.style.transform = `translateX(${-e * 102}%)`;
+        doorR.style.transform = `translateX(${e * 102}%)`;
+        whyHead.style.transform = `translateY(${-e * 170}%)`;
+        whyHead.style.opacity = Math.max(1 - e * 1.4, 0);
+        if (whyCards[0]) whyCards[0].style.transform = `translateX(${-e * 160}%) rotate(${-e * 6}deg)`;
+        if (whyCards[1]) { whyCards[1].style.transform = `translateY(${e * 90}%) scale(${1 - e * .2})`; whyCards[1].style.opacity = Math.max(1 - e * 1.5, 0); }
+        if (whyCards[2]) whyCards[2].style.transform = `translateX(${e * 160}%) rotate(${e * 6}deg)`;
+        whyLayer.style.pointerEvents = e > .4 ? 'none' : '';
+        /* kroki 1-2-3 zapalają się w rytmie rozsuwania kurtyny */
+        stepEls[0] && stepEls[0].classList.toggle('active', e > .3);
+        stepEls[1] && stepEls[1].classList.toggle('active', e > .55);
+        stepEls[2] && stepEls[2].classList.toggle('active', e > .8);
+      }
+
+      /* druga kurtyna: „o mnie" rozjeżdża się, spod spodu wjeżdża przerywnik z deszczem */
+      if (stack2El && stackMode()) {
+        const p2 = Math.min(Math.max((y - stack2El.offsetTop) / (stack2El.offsetHeight - vh), 0), 1);
+        const s2 = Math.min(Math.max((p2 - .35) / .55, 0), 1);
+        const e2 = s2 < .5 ? 2 * s2 * s2 : 1 - Math.pow(-2 * s2 + 2, 2) / 2;
+        door2L.style.transform = `translateX(${-e2 * 102}%)`;
+        door2R.style.transform = `translateX(${e2 * 102}%)`;
+        aboutPhoto.style.transform = `translateX(${-e2 * 140}%) rotate(${-e2 * 5}deg)`;
+        aboutPhoto.style.opacity = Math.max(1 - e2 * 1.2, 0);
+        aboutText.style.transform = `translateX(${e2 * 140}%) rotate(${e2 * 3}deg)`;
+        aboutText.style.opacity = Math.max(1 - e2 * 1.2, 0);
+        aboutLayer.style.pointerEvents = e2 > .4 ? 'none' : '';
+      }
+    });
+  };
+  document.addEventListener('scroll', onScroll, {passive: true});
+  onScroll();
+
+  /* karty — poświata podąża za kursorem */
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+
+  /* przełącznik planów — kafelki podmieniają treść głównej karty */
+  const plans = [
+    {
+      tag: 'Dla początkujących', title: 'Początek',
+      desc: 'Plan dla osób, które chcą wystartować z treningiem — spokojnie, bezpiecznie i ze zrozumieniem tego, co robią.',
+      feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
+      price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
+      img: 'assets/plan_sandbag.jpg', alt: 'Tomek w wykroku z sandbagiem w limonkowym świetle',
+      url: 'https://fitonlinecoach.mvt.so/programs/pocz%C4%85tek', cta: 'Zobacz plan'
+    },
+    {
+      tag: 'Wkrótce', title: 'Plan 2',
+      desc: 'Pracuję nad kolejnym planem. Szczegóły już wkrótce — zapisz się na newsletter, a dam Ci znać pierwszemu.',
+      feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
+      price: '<small>cena wkrótce</small>',
+      img: 'assets/kettlebell.jpg', alt: 'Kettlebell w limonkowym świetle',
+      url: null, cta: 'Wkrótce dostępny'
+    },
+    {
+      tag: 'Wkrótce', title: 'Plan 3',
+      desc: 'Trzeci plan w przygotowaniu. Szczegóły już wkrótce — zapisz się na newsletter, a dam Ci znać pierwszemu.',
+      feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
+      price: '<small>cena wkrótce</small>',
+      img: 'assets/dust_beam.jpg', alt: 'Limonkowy pył magnezji na czarnym tle',
+      url: null, cta: 'Wkrótce dostępny'
+    }
+  ];
+  const planGrid = document.getElementById('planGrid');
+  const setPlan = i => {
+    const p = plans[i];
+    planGrid.classList.add('swap');
+    setTimeout(() => {
+      document.getElementById('planTag').textContent = p.tag;
+      document.getElementById('planTitle').textContent = p.title;
+      document.getElementById('planDesc').textContent = p.desc;
+      document.getElementById('planFeats').innerHTML = p.feats.map(f => `<li>${f}</li>`).join('');
+      document.getElementById('planPrice').innerHTML = p.price;
+      const cta = document.getElementById('planCta');
+      cta.textContent = p.cta;
+      if (p.url) { cta.href = p.url; cta.classList.remove('disabled'); }
+      else { cta.removeAttribute('href'); cta.classList.add('disabled'); }
+      const img = document.getElementById('planImg');
+      img.src = p.img; img.alt = p.alt;
+      planGrid.classList.remove('swap');
+    }, 290);
+  };
+  document.querySelectorAll('.ptile').forEach(t => t.addEventListener('click', () => {
+    if (t.classList.contains('active')) return;
+    document.querySelectorAll('.ptile').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    planFlip.classList.remove('flipped');
+    setPlan(+t.dataset.plan);
+  }));
+
+  /* odwracanie karty planu: „Zobacz plan" pokazuje tył ze szczegółami i ekranami z aplikacji */
+  const planFlip = document.getElementById('planFlip');
+  document.getElementById('planCta').addEventListener('click', e => {
+    e.preventDefault();
+    planFlip.classList.add('flipped');
+  });
+  document.getElementById('flipBack').addEventListener('click', () => planFlip.classList.remove('flipped'));
+
+  /* pasek marquee — buduje tyle powtórzeń, żeby wypełnić każdą szerokość ekranu bez dziury */
+  const track = document.getElementById('marqueeTrack');
+  const marqueeUnit = '<b>FitOnlineCoach</b> · Trening · Dieta · Fizjoterapia · Po polsku · 24/7 · ';
+  const buildMarquee = () => {
+    track.innerHTML = `<span>${marqueeUnit}</span>`;
+    const unitW = track.firstElementChild.getBoundingClientRect().width || 600;
+    const reps = Math.ceil(Math.max(window.innerWidth, 320) / unitW) + 1;
+    const half = `<span>${marqueeUnit.repeat(reps)}</span>`;
+    /* dwie identyczne połowy — animacja przesuwa o dokładnie 50%, więc pętla jest niewidoczna */
+    track.innerHTML = half + half;
+  };
+  buildMarquee();
+  let mqTimer;
+  window.addEventListener('resize', () => { clearTimeout(mqTimer); mqTimer = setTimeout(buildMarquee, 200); });
+
+  /* menu mobilne */
+  const burger = document.getElementById('burger');
+  const nav = document.getElementById('navLinks');
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    nav.classList.toggle('open');
+  });
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    burger.classList.remove('open'); nav.classList.remove('open');
+  }));
+})();
+</script>
+
+</body>
+</html>
