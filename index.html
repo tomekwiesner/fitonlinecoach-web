@@ -337,9 +337,11 @@
   .ptile-info i{font-style:normal;font-size:.78rem;color:var(--muted);letter-spacing:.06em}
 
   /* ---------- statystyki ---------- */
+  /* liczniki mają czytelnie należeć do sekcji planów — trzymamy je tuż pod sliderem */
+  #plan{padding-bottom:24px}
   .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}
-  .stat{padding:64px 20px;text-align:center;border-right:1px solid var(--line)}
+  .stat{padding:40px 20px 46px;text-align:center;border-right:1px solid var(--line)}
   .stat:last-child{border-right:0}
   .stat .val{display:flex;justify-content:center;align-items:baseline;
     font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(2.4rem,4vw,3.6rem);
@@ -467,7 +469,8 @@
     .plan-body{padding:48px 32px}
     /* cztery liczniki układają się 2×2, żeby liczby zostały czytelne */
     .stats-grid{grid-template-columns:repeat(2,1fr)}
-    .stat{padding:34px 10px}
+    #plan{padding-bottom:18px}
+    .stat{padding:28px 10px 30px}
     .stat .val{font-size:1.9rem;margin-bottom:10px}
     .stat .lbl{font-size:.66rem;letter-spacing:.1em;line-height:1.4}
     .stat:nth-child(2n){border-right:0}
