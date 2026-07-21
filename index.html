@@ -358,7 +358,7 @@
   .yt::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--black) 0%,rgba(7,9,8,.55) 30%,rgba(7,9,8,.55) 70%,var(--black) 100%);z-index:1}
   .yt .wrap{position:relative;z-index:2}
   .yt h2{font-size:clamp(2rem,4.6vw,3.6rem);color:#fff;margin-bottom:18px}
-  .yt h2 span{color:var(--lime)}
+  .yt h2 .yt-count{color:var(--lime)}
   .yt p{color:#B9C4BD;max-width:520px;margin:0 auto 42px}
   /* karuzela z poradnikami — wolno płynie, pauza po najechaniu */
   .vcar{overflow:hidden;margin:0 auto 20px;
@@ -372,6 +372,17 @@
   @keyframes vmarq{to{transform:translateX(-50%)}}
   .yt p .yt-count{color:var(--lime);font-weight:600}
   .vcar{margin-bottom:46px}
+
+  /* ---------- opinie klientów ---------- */
+  .reviews{border-top:1px solid var(--line)}
+  .rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:56px}
+  .rev{background:var(--graphite);border:1px solid var(--line);border-radius:16px;padding:32px 28px;
+    display:flex;flex-direction:column;gap:14px}
+  .rev-stars{letter-spacing:.18em;font-size:1.05rem;color:var(--lime);line-height:1}
+  .rev-stars i{font-style:normal;color:rgba(255,255,255,.16)}
+  .rev-body{color:#DFE7E2;font-size:.97rem;line-height:1.65;flex:1}
+  .rev-author{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted)}
 
   /* ---------- newsletter ---------- */
   .nl{border-top:1px solid var(--line)}
@@ -814,9 +825,9 @@
   <div class="bg" data-parallax="0.16"></div>
   <div class="wrap">
     <div class="sec-label rv" style="justify-content:center">05 — Darmowa wiedza</div>
-    <h2 class="rv rv2"><span class="yt-count">80</span> darmowych poradników wideo</h2>
+    <h2 class="rv rv2"><span class="yt-count">80</span> <span class="yt-adj">darmowych</span> <span class="yt-noun">poradników</span> wideo</h2>
     <p class="rv rv3">Zanim kupisz plan, sprawdź jak tłumaczę. Na moim kanale YouTube znajdziesz
-      <span class="yt-count">80</span> poradników do ćwiczeń — dla każdego poziomu.</p>
+      <span class="yt-count">80</span> <span class="yt-noun">poradników</span> do ćwiczeń — dla każdego poziomu.</p>
     <div class="vcar rv rv3" aria-label="Karuzela z fragmentami poradników wideo">
       <div class="vcar-track">
         <div class="vcar-group">
@@ -839,12 +850,21 @@
   </div>
 </section>
 
+<!-- ===== OPINIE (pokazuje się dopiero, gdy są zatwierdzone opinie) ===== -->
+<section class="reviews" id="opinie" hidden>
+  <div class="wrap">
+    <div class="sec-label rv">06 — Opinie</div>
+    <h2 class="sec-title rv rv2">Co mówią osoby,<br>które już trenują.</h2>
+    <div class="rev-grid" id="revGrid"></div>
+  </div>
+</section>
+
 <!-- ===== NEWSLETTER ===== -->
 <section class="nl">
   <div class="wrap">
     <div class="nl-grid">
       <div>
-        <div class="sec-label rv">06 — Newsletter</div>
+        <div class="sec-label rv">07 — Newsletter</div>
         <h2 class="rv rv2">Darmowa dawka wiedzy na start.</h2>
         <p class="rv rv3">Proste wskazówki treningowe i informacje o nowych planach. Zero spamu.</p>
       </div>
@@ -1144,13 +1164,56 @@
   });
   document.getElementById('flipBack').addEventListener('click', () => planFlip.classList.remove('flipped'));
 
-  /* liczba filmów z playlisty YouTube — plik odświeżany automatycznie raz w tygodniu */
+  /* liczba filmów z playlisty YouTube — plik odświeżany automatycznie raz w tygodniu.
+     Odmieniamy po polsku, bo liczba się zmienia: 1 poradnik / 3 poradniki / 5 poradników */
+  const odmienPoradniki = n => {
+    const koncowka = n % 10, setka = n % 100;
+    if (n === 1) return {adj: 'darmowy', noun: 'poradnik'};
+    if (koncowka >= 2 && koncowka <= 4 && (setka < 12 || setka > 14)) return {adj: 'darmowe', noun: 'poradniki'};
+    return {adj: 'darmowych', noun: 'poradników'};
+  };
   fetch('assets/yt.json', {cache: 'no-cache'})
     .then(r => (r.ok ? r.json() : null))
     .then(d => {
-      if (d && d.count) document.querySelectorAll('.yt-count').forEach(el => { el.textContent = d.count; });
+      if (!d || !d.count) return;
+      const f = odmienPoradniki(d.count);
+      document.querySelectorAll('.yt-count').forEach(el => { el.textContent = d.count; });
+      document.querySelectorAll('.yt-adj').forEach(el => { el.textContent = f.adj; });
+      document.querySelectorAll('.yt-noun').forEach(el => { el.textContent = f.noun; });
     })
     .catch(() => {});   /* gdyby pliku brakło — zostaje liczba wpisana w HTML */
+
+  /* opinie klientów — czytane wprost z bazy aplikacji (tylko zatwierdzone przez Tomka).
+     Brak opinii albo problem z bazą = sekcja w ogóle się nie pokazuje. */
+  (() => {
+    const SUPA_URL = 'https://gebzkgormoezykxhgsgk.supabase.co';
+    const SUPA_KEY = 'sb_publishable_F7q5svKGxjRRpF0GAowd4A_sNnsPqby';
+    const sec = document.getElementById('opinie');
+    const grid = document.getElementById('revGrid');
+    if (!sec || !grid) return;
+    const esc = s => String(s == null ? '' : s)
+      .replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+    window.renderOpinie = rows => {
+      const list = (Array.isArray(rows) ? rows : []).filter(r => r && r.body);
+      if (!list.length) return false;
+      grid.innerHTML = list.map(r => {
+        const n = Math.max(0, Math.min(5, Math.round(r.rating || 0)));
+        return `<article class="rev">
+            <div class="rev-stars" aria-label="Ocena ${n} na 5">${'★'.repeat(n)}<i>${'★'.repeat(5 - n)}</i></div>
+            <p class="rev-body">${esc(r.body)}</p>
+            ${r.author_name ? `<span class="rev-author">— ${esc(r.author_name)}</span>` : ''}
+          </article>`;
+      }).join('');
+      sec.hidden = false;
+      return true;
+    };
+    fetch(`${SUPA_URL}/rest/v1/reviews?select=rating,body,author_name&published=eq.true`, {
+      headers: {apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}`}
+    })
+      .then(r => (r.ok ? r.json() : []))
+      .then(window.renderOpinie)
+      .catch(() => {});
+  })();
 
   /* pasek marquee — buduje tyle powtórzeń, żeby wypełnić każdą szerokość ekranu bez dziury */
   const track = document.getElementById('marqueeTrack');
