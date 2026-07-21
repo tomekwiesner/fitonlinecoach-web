@@ -427,6 +427,10 @@
     .stack-pin .layer{position:static;padding:90px 0}
     .door{display:none}
     .layer-over{background:var(--black)}
+    /* przerywnik musi być własną kotwicą pozycjonowania — bez tego jego wideo
+       wyrywa się poza sekcję i zasłania liczniki nad nim */
+    .stack-pin .divider{position:relative;height:auto;min-height:58vh;overflow:hidden}
+    .stack-pin .divider .bgv{top:0;height:100%}
     .plan-grid{grid-template-columns:1fr}
     .plan-visual{min-height:340px}
     .plan-body{padding:48px 32px}
@@ -455,6 +459,8 @@
     .stack-pin .layer{position:static;padding:90px 0}
     .door{display:none}
     .layer-over{background:var(--black)}
+    .stack-pin .divider{position:relative;height:auto;min-height:58vh;overflow:hidden}
+    .stack-pin .divider .bgv{top:0;height:100%}
   }
 </style>
 </head>
@@ -693,7 +699,7 @@
               </ul>
               <div class="price-row">
                 <span class="price" id="planPrice">79 <span class="zl">zł</span> <small>/ jednorazowo</small></span>
-                <a class="btn btn-lime" id="planCta" href="https://fitonlinecoach.mvt.so/programs/pocz%C4%85tek" target="_blank" rel="noopener">Zobacz plan</a>
+                <a class="btn btn-lime" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek" target="_blank" rel="noopener">Zobacz plan</a>
               </div>
             </div>
           </div>
@@ -715,7 +721,7 @@
               <p class="pb-p">Dla osób, które zaczynają przygodę z treningiem siłowym albo wracają po dłuższej
                 przerwie i chcą wystartować bezpiecznie, ze zrozumieniem każdego ruchu.</p>
               <div class="price-row">
-                <a class="btn btn-lime" href="https://fitonlinecoach.mvt.so/programs/pocz%C4%85tek" target="_blank" rel="noopener">Kup plan — 79 zł</a>
+                <a class="btn btn-lime" href="https://app.fitonlinecoach.com/plany/poczatek" target="_blank" rel="noopener">Kup plan — 79 zł</a>
                 <button class="btn btn-ghost" id="flipBack" type="button">← Wróć</button>
               </div>
             </div>
@@ -794,7 +800,7 @@
               <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice">Dietetyk</button>
             </div>
             <div class="role-detail" id="roleDetail" hidden></div>
-            <a class="btn btn-lime rv rv4" href="https://fitonlinecoach.mvt.so/" target="_blank" rel="noopener">Trenuj ze mną</a>
+            <a class="btn btn-lime rv rv4" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Trenuj ze mną</a>
           </div>
         </div>
       </div>
@@ -1081,7 +1087,7 @@
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
       img: 'assets/plan_sandbag.jpg', alt: 'Tomek w wykroku z sandbagiem w limonkowym świetle',
-      url: 'https://fitonlinecoach.mvt.so/programs/pocz%C4%85tek', cta: 'Zobacz plan'
+      url: 'https://app.fitonlinecoach.com/plany/poczatek', cta: 'Zobacz plan'
     },
     {
       tag: 'Wkrótce', title: 'Plan 2', exercises: null,
