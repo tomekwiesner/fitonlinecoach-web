@@ -179,21 +179,36 @@
   .manifest .mw.accent{color:var(--lime)}
 
   /* ---------- dlaczego ---------- */
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);
-    border:1px solid var(--line);margin-top:70px;border-radius:16px;overflow:hidden}
-  .card{background:var(--graphite);padding:52px 40px;position:relative;overflow:hidden;transition:.35s}
-  .card::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 260px at var(--mx,50%) var(--my,0%),rgba(153,230,109,.09),transparent 65%);opacity:0;transition:.4s}
-  .card:hover{background:var(--graphite-2)}
-  .card:hover::before{opacity:1}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:70px}
+  /* kafelek = kontener obrotu (tło i ramka siedzą na ściankach, żeby obrót nie gryzł się z kurtyną) */
+  .card{position:relative;perspective:1400px;cursor:pointer;min-height:400px;background:transparent;
+    border:0;padding:0;overflow:visible}
+  .card-inner{position:absolute;inset:0;transform-style:preserve-3d;
+    transition:transform .8s cubic-bezier(.45,.05,.2,1)}
+  .card.flipped .card-inner{transform:rotateY(180deg)}
+  .card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    background:var(--graphite);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:background .35s}
+  .card-front{padding:44px 34px;display:flex;flex-direction:column}
+  .card-front::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 260px at var(--mx,50%) var(--my,0%),rgba(153,230,109,.09),transparent 65%);opacity:0;transition:.4s}
+  .card:hover .card-front{background:var(--graphite-2)}
+  .card:hover .card-front::before{opacity:1}
   .card .num{font-family:'Montserrat',sans-serif;font-weight:900;font-size:.8rem;color:var(--lime);
-    letter-spacing:.2em;display:block;margin-bottom:34px}
-  .card h3{font-size:1.25rem;color:#fff;margin-bottom:14px;line-height:1.3}
-  .card p{color:var(--muted);font-size:.95rem}
-  .card .icon{width:54px;height:54px;border:1px solid rgba(153,230,109,.35);border-radius:2px;display:flex;
-    align-items:center;justify-content:center;margin-bottom:26px;transition:.35s}
+    letter-spacing:.2em;display:block;margin-bottom:28px;position:relative}
+  .card h3{font-size:1.2rem;color:#fff;margin-bottom:14px;line-height:1.3;position:relative}
+  .card p{color:var(--muted);font-size:.94rem;position:relative}
+  .card .icon{width:50px;height:50px;border:1px solid rgba(153,230,109,.35);border-radius:2px;display:flex;
+    align-items:center;justify-content:center;margin-bottom:24px;transition:.35s;position:relative}
   .card:hover .icon{background:var(--lime);border-color:var(--lime)}
-  .card .icon svg{width:24px;height:24px;stroke:var(--lime);transition:.35s}
+  .card .icon svg{width:23px;height:23px;stroke:var(--lime);transition:.35s}
   .card:hover .icon svg{stroke:var(--black)}
+  .card-hint{margin-top:auto;padding-top:20px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--lime);opacity:.75;position:relative}
+  .card-back{transform:rotateY(180deg);background:var(--graphite-2);display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:16px;padding:26px}
+  .card-back img{max-height:74%;width:auto;max-width:100%;border-radius:12px;
+    border:1px solid rgba(255,255,255,.14);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+  .card-back b{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.75rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--lime)}
 
   /* ---------- kurtyna: „dlaczego" rozjeżdża się i odsłania „jak to działa" ---------- */
   .stack{position:relative;height:300vh}
@@ -216,7 +231,7 @@
   .why-content{position:relative;z-index:2;width:100%}
   /* karty muszą swobodnie wylatywać poza kontener, każda z własną ramką i zaokrągleniem */
   .why-content .cards{margin-top:56px;gap:24px;background:transparent;border:0;overflow:visible}
-  .why-content .card{border:1px solid var(--line);border-radius:16px;transition:background .35s}
+  .why-content .card{border:0} /* ramka jest na ściankach kafelka */
   .why-head,.why-content .card{will-change:transform,opacity}
 
   /* ---------- sticky jak to działa ---------- */
@@ -299,7 +314,7 @@
 
   /* ---------- statystyki ---------- */
   .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr)}
   .stat{padding:64px 20px;text-align:center;border-right:1px solid var(--line)}
   .stat:last-child{border-right:0}
   .stat .val{display:flex;justify-content:center;align-items:baseline;
@@ -321,10 +336,17 @@
     background:radial-gradient(500px 300px at 70% 20%,rgba(153,230,109,.08),transparent 60%)}
   .about-visual img{position:relative;z-index:1;filter:drop-shadow(0 20px 40px rgba(0,0,0,.5))}
   .about p{color:var(--muted);margin-bottom:18px;max-width:480px}
-  .roles{display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 38px}
+  .roles{display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px}
   .role{border:1px solid var(--line);padding:10px 20px;font-size:.8rem;font-weight:600;
-    letter-spacing:.12em;text-transform:uppercase;color:#CFD8D2;border-radius:2px;transition:.25s}
+    letter-spacing:.12em;text-transform:uppercase;color:#CFD8D2;border-radius:2px;transition:.25s;
+    background:transparent;font-family:inherit;cursor:pointer}
   .role:hover{border-color:var(--lime);color:var(--lime)}
+  .role.active{border-color:var(--lime);background:var(--lime);color:var(--black)}
+  /* rozwijane kwalifikacje pod rolami */
+  .role-detail{margin:0 0 28px;padding:16px 20px;border-left:2px solid var(--lime);
+    background:rgba(153,230,109,.06);border-radius:0 8px 8px 0;color:#DFE7E2;font-size:.94rem;
+    opacity:0;transform:translateY(-6px);transition:opacity .3s,transform .3s}
+  .role-detail.show{opacity:1;transform:none}
 
   /* ---------- YT banner ---------- */
   .yt{position:relative;overflow:hidden;padding:170px 0;text-align:center}
@@ -344,8 +366,8 @@
   .vcar-group video{height:232px;width:auto;display:block;border-radius:16px;
     border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 44px rgba(0,0,0,.5)}
   @keyframes vmarq{to{transform:translateX(-50%)}}
-  .clips-note{font-size:.8rem!important;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--muted)!important;margin:0 auto 46px!important}
+  .yt p .yt-count{color:var(--lime);font-weight:600}
+  .vcar{margin-bottom:46px}
 
   /* ---------- newsletter ---------- */
   .nl{border-top:1px solid var(--line)}
@@ -381,7 +403,18 @@
   /* ---------- mobile ---------- */
   @media(max-width:980px){
     section{padding:90px 0}
-    .cards{grid-template-columns:1fr}
+    .cards{grid-template-columns:1fr;gap:16px}
+    /* kafelki „dlaczego" — mniejsze na telefonie */
+    .card{min-height:320px}
+    .card-front{padding:28px 22px}
+    .card .num{margin-bottom:16px}
+    .card .icon{width:42px;height:42px;margin-bottom:16px}
+    .card .icon svg{width:19px;height:19px}
+    .card h3{font-size:1.05rem;margin-bottom:10px}
+    .card p{font-size:.88rem}
+    .card-hint{padding-top:14px;font-size:.64rem}
+    .card-back{padding:18px}
+    .card-back img{max-height:78%}
     .how-grid{grid-template-columns:1fr;gap:40px}
     .how-left{position:static}
     /* na telefonie kurtyna off — zwykłe sekcje jedna pod drugą (dlaczego przed jak-to-działa) */
@@ -393,9 +426,10 @@
     .plan-grid{grid-template-columns:1fr}
     .plan-visual{min-height:340px}
     .plan-body{padding:48px 32px}
-    .stats-grid{grid-template-columns:repeat(2,1fr)}
-    .stat:nth-child(2){border-right:0}
-    .stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--line)}
+    .stats-grid{grid-template-columns:repeat(3,1fr)}
+    .stat{padding:38px 8px}
+    .stat .val{font-size:1.7rem;margin-bottom:10px}
+    .stat .lbl{font-size:.62rem;letter-spacing:.08em;line-height:1.4}
     .about-grid{grid-template-columns:1fr;gap:60px}
     .nl-grid{grid-template-columns:1fr;gap:40px}
     .vcar-group video{height:170px}
@@ -547,7 +581,7 @@
             </div>
             <div class="stp" data-step>
               <span class="n">02</span>
-              <div><h3>Otwórz w telefonie</h3><p>Plan działa w aplikacji na Twoim telefonie. W domu, na siłowni, w podróży — zawsze pod ręką.</p></div>
+              <div><h3>Otwórz w telefonie</h3><p>Plan działa w aplikacji, którą otworzysz na telefonie, tablecie i komputerze. W domu, na siłowni, w podróży — zawsze pod ręką.</p></div>
             </div>
             <div class="stp" data-step>
               <span class="n">03</span>
@@ -568,23 +602,50 @@
           <h2 class="sec-title rv rv2">Wiedza różnych specjalistów.<br>Jeden spójny plan.</h2>
         </div>
         <div class="cards">
-      <div class="card">
-        <span class="num">/01</span>
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>
-        <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
-        <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania i bez ryzyka kontuzji.</p>
+      <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: biblioteka ćwiczeń z filmami">
+        <div class="card-inner">
+          <div class="card-face card-front">
+            <span class="num">/01</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>
+            <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
+            <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania i bez ryzyka kontuzji.</p>
+            <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
+          </div>
+          <div class="card-face card-back">
+            <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami">
+            <b>Biblioteka ćwiczeń</b>
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <span class="num">/02</span>
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></div>
-        <h3>Masz dość anglojęzycznych tutoriali?</h3>
-        <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
+      <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: opis ćwiczenia po polsku">
+        <div class="card-inner">
+          <div class="card-face card-front">
+            <span class="num">/02</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></div>
+            <h3>Masz dość anglojęzycznych tutoriali?</h3>
+            <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
+            <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
+          </div>
+          <div class="card-face card-back">
+            <img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera">
+            <b>Wszystko po polsku</b>
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <span class="num">/03</span>
-        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
-        <h3>Nie masz czasu na regularny trening?</h3>
-        <p>Twój trening jest zawsze przy Tobie — 24/7 w Twojej kieszeni. Ćwiczysz kiedy chcesz i gdzie chcesz.</p>
+      <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: kalendarz treningów">
+        <div class="card-inner">
+          <div class="card-face card-front">
+            <span class="num">/03</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
+            <h3>Nie masz czasu na regularny trening?</h3>
+            <p>Twój trening jest zawsze przy Tobie — 24/7 w Twojej kieszeni. Ćwiczysz kiedy chcesz i gdzie chcesz.</p>
+            <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
+          </div>
+          <div class="card-face card-back">
+            <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów">
+            <b>Kalendarz treningów</b>
+          </div>
+        </div>
       </div>
     </div>
       </div>
@@ -682,10 +743,9 @@
 <div class="stats">
   <div class="wrap">
     <div class="stats-grid">
-      <div class="stat rv"><span class="val" data-odo="70" data-suffix="+"></span><span class="lbl">poradników wideo</span></div>
-      <div class="stat rv rv2"><span class="val">3 w 1</span><span class="lbl">trening · dieta · fizjoterapia</span></div>
-      <div class="stat rv rv3"><span class="val" data-odo="100" data-suffix="%"></span><span class="lbl">po polsku</span></div>
-      <div class="stat rv rv4"><span class="val">24/7</span><span class="lbl">dostęp w telefonie</span></div>
+      <div class="stat rv"><span class="val" id="statPlanExercises" data-odo="49"></span><span class="lbl">poradników wideo</span></div>
+      <div class="stat rv rv2"><span class="val" data-odo="100" data-suffix="%"></span><span class="lbl">po polsku</span></div>
+      <div class="stat rv rv3"><span class="val">24/7</span><span class="lbl">dostęp do treningu</span></div>
     </div>
   </div>
 </div>
@@ -712,16 +772,19 @@
           <div id="aboutText">
             <div class="sec-label rv">04 — O mnie</div>
             <h2 class="sec-title rv rv2">Cześć,<br>jestem Tomek.</h2>
-            <p class="rv rv3">Na co dzień prowadzę treningi indywidualne i współprowadzę klub Hussars Academy.
-              Jako trener personalny, fizjoterapeuta i dietetyk patrzę na Twój trening z trzech stron naraz —
-              dzięki temu plan jest skuteczny, bezpieczny dla stawów i możliwy do pogodzenia z normalnym życiem.</p>
-            <p class="rv rv3">Nie wierzę w ekstrema i katowanie się na siłowni. Wierzę w złoty środek:
-              mądry ruch, proste zasady i systematyczność, którą utrzymasz latami.</p>
-            <div class="roles rv rv4">
-              <span class="role">Trener personalny</span>
-              <span class="role">Fizjoterapeuta</span>
-              <span class="role">Dietetyk</span>
+            <p class="rv rv3">Jako trener personalny, fizjoterapeuta i dietetyk patrzę na Twój trening
+              z trzech stron naraz — dzięki temu plan jest skuteczny, bezpieczny i możliwy do pogodzenia
+              z normalnym życiem.</p>
+            <p class="rv rv3">Od 2010 roku codziennie planuję i prowadzę treningi dla swoich klientów,
+              dlatego możesz być pewien, że moje plany treningowe to coś więcej niż Ctrl+C / Ctrl+V.</p>
+            <p class="rv rv3">Wierzę w złoty środek — mądry ruch, proste zasady odżywiania
+              i systematyczność, którą utrzymasz latami.</p>
+            <div class="roles rv rv4" id="roles">
+              <button class="role" type="button" data-detail="Szkolenia EXOS, EPI – NCSC, IFBB i inne">Trener personalny</button>
+              <button class="role" type="button" data-detail="mgr fizjoterapii — AWF Katowice">Fizjoterapeuta</button>
+              <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice">Dietetyk</button>
             </div>
+            <div class="role-detail" id="roleDetail" hidden></div>
             <a class="btn btn-lime rv rv4" href="https://fitonlinecoach.mvt.so/" target="_blank" rel="noopener">Trenuj ze mną</a>
           </div>
         </div>
@@ -736,9 +799,9 @@
   <div class="bg" data-parallax="0.16"></div>
   <div class="wrap">
     <div class="sec-label rv" style="justify-content:center">05 — Darmowa wiedza</div>
-    <h2 class="rv rv2"><span>70+</span> darmowych poradników wideo</h2>
+    <h2 class="rv rv2"><span class="yt-count">80</span> darmowych poradników wideo</h2>
     <p class="rv rv3">Zanim kupisz plan, sprawdź jak tłumaczę. Na moim kanale YouTube znajdziesz
-      ponad 70 poradników do ćwiczeń — dla każdego poziomu.</p>
+      <span class="yt-count">80</span> poradników do ćwiczeń — dla każdego poziomu.</p>
     <div class="vcar rv rv3" aria-label="Karuzela z fragmentami poradników wideo">
       <div class="vcar-track">
         <div class="vcar-group">
@@ -757,7 +820,6 @@
         </div>
       </div>
     </div>
-    <p class="clips-note rv rv3">Fragmenty prawdziwych poradników z moich planów · najedź, aby zatrzymać</p>
     <a class="btn btn-lime rv rv4" href="https://youtube.com/playlist?list=PLEgy8VO2gIhkaWkcrwXJrCfdo338oPv4v" target="_blank" rel="noopener">Oglądaj na YouTube</a>
   </div>
 </section>
@@ -835,37 +897,38 @@
   }, {threshold: .55});
   if (!stackMode()) document.querySelectorAll('[data-step]').forEach(el => so.observe(el));
 
-  /* odometr — buduje kolumny cyfr i przewija je do docelowej wartości */
-  document.querySelectorAll('[data-odo]').forEach(el => {
-    const digits = String(el.dataset.odo).split('');
-    el.innerHTML = digits.map((d, idx) => {
-      /* każda kolumna: 2 pełne obroty 0-9 + cyfra docelowa; pierwsza kolumna kręci się krócej */
+  /* odometr — cyfry przewijają się jak w liczniku; wartość można podmienić w locie */
+  const buildOdo = (el, value) => {
+    if (value === null || value === undefined || value === '') {
+      el.innerHTML = '<span class="odo-dash">—</span>';   /* plan bez ćwiczeń (wkrótce) */
+      return;
+    }
+    el.dataset.odo = String(value);
+    el.innerHTML = String(value).split('').map((d, idx) => {
+      /* każda kolumna: pełne obroty 0-9 + cyfra docelowa na końcu taśmy */
       const spins = idx === 0 ? 1 : 2;
       let strip = '';
       for (let s = 0; s < spins; s++) for (let n = 0; n <= 9; n++) strip += `<i>${n}</i>`;
       strip += `<i>${d}</i>`;
-      /* cyfra docelowa stoi na końcu taśmy, czyli na pozycji spins*10 */
       return `<span class="odo-col"><span class="odo-strip" data-target="${spins * 10}">${strip}</span></span>`;
     }).join('') + (el.dataset.suffix || '');
+  };
+  const resetOdo = el => el.querySelectorAll('.odo-strip').forEach(s => {
+    s.style.transition = 'none';
+    s.style.transform = 'translateY(0)';
+    void s.offsetHeight;
+    s.style.transition = '';
   });
-  const co = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      const strips = e.target.querySelectorAll('.odo-strip');
-      if (e.isIntersecting) {
-        strips.forEach((s, i) => {
-          s.style.transitionDelay = (i * .12) + 's';
-          s.style.transform = `translateY(-${s.dataset.target}em)`;
-        });
-      } else {
-        /* poza ekranem: powrót na 0 bez animacji, żeby licznik ruszał przy każdym wejściu */
-        strips.forEach(s => {
-          s.style.transition = 'none';
-          s.style.transform = 'translateY(0)';
-          void s.offsetHeight;
-          s.style.transition = '';
-        });
-      }
+  const runOdo = el => {
+    resetOdo(el);                       /* zawsze od zera — licznik rusza za każdym razem */
+    el.querySelectorAll('.odo-strip').forEach((s, i) => {
+      s.style.transitionDelay = (i * .12) + 's';
+      s.style.transform = `translateY(-${s.dataset.target}em)`;
     });
+  };
+  document.querySelectorAll('[data-odo]').forEach(el => buildOdo(el, el.dataset.odo));
+  const co = new IntersectionObserver(entries => {
+    entries.forEach(e => e.isIntersecting ? runOdo(e.target) : resetOdo(e.target));
   }, {threshold: .6});
   document.querySelectorAll('[data-odo]').forEach(el => co.observe(el));
 
@@ -968,19 +1031,41 @@
   document.addEventListener('scroll', onScroll, {passive: true});
   onScroll();
 
-  /* karty — poświata podąża za kursorem */
+  /* karty — poświata podąża za kursorem + klik obraca kafelek na ekran z aplikacji */
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
       card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
       card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
     });
+    const flip = () => card.classList.toggle('flipped');
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
+    });
   });
+
+  /* role w „o mnie" — klik pokazuje kwalifikacje */
+  const roleDetail = document.getElementById('roleDetail');
+  document.querySelectorAll('.role').forEach(btn => btn.addEventListener('click', () => {
+    const wasActive = btn.classList.contains('active');
+    document.querySelectorAll('.role').forEach(b => b.classList.remove('active'));
+    if (wasActive) {                       /* ponowny klik zwija szczegóły */
+      roleDetail.classList.remove('show');
+      setTimeout(() => { roleDetail.hidden = true; }, 300);
+      return;
+    }
+    btn.classList.add('active');
+    roleDetail.textContent = btn.dataset.detail;
+    roleDetail.hidden = false;
+    void roleDetail.offsetHeight;
+    roleDetail.classList.add('show');
+  }));
 
   /* przełącznik planów — kafelki podmieniają treść głównej karty */
   const plans = [
     {
-      tag: 'Dla początkujących', title: 'Początek',
+      tag: 'Dla początkujących', title: 'Początek', exercises: 49,
       desc: 'Plan dla osób, które chcą wystartować z treningiem — spokojnie, bezpiecznie i ze zrozumieniem tego, co robią.',
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
@@ -988,7 +1073,7 @@
       url: 'https://fitonlinecoach.mvt.so/programs/pocz%C4%85tek', cta: 'Zobacz plan'
     },
     {
-      tag: 'Wkrótce', title: 'Plan 2',
+      tag: 'Wkrótce', title: 'Plan 2', exercises: null,
       desc: 'Pracuję nad kolejnym planem. Szczegóły już wkrótce — zapisz się na newsletter, a dam Ci znać pierwszemu.',
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '<small>cena wkrótce</small>',
@@ -996,7 +1081,7 @@
       url: null, cta: 'Wkrótce dostępny'
     },
     {
-      tag: 'Wkrótce', title: 'Plan 3',
+      tag: 'Wkrótce', title: 'Plan 3', exercises: null,
       desc: 'Trzeci plan w przygotowaniu. Szczegóły już wkrótce — zapisz się na newsletter, a dam Ci znać pierwszemu.',
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '<small>cena wkrótce</small>',
@@ -1021,6 +1106,9 @@
       const img = document.getElementById('planImg');
       img.src = p.img; img.alt = p.alt;
       planGrid.classList.remove('swap');
+      /* licznik ćwiczeń przelicza się od zera przy każdej zmianie planu */
+      const stat = document.getElementById('statPlanExercises');
+      if (stat) { buildOdo(stat, p.exercises); runOdo(stat); }
     }, 290);
   };
   document.querySelectorAll('.ptile').forEach(t => t.addEventListener('click', () => {
@@ -1038,6 +1126,14 @@
     planFlip.classList.add('flipped');
   });
   document.getElementById('flipBack').addEventListener('click', () => planFlip.classList.remove('flipped'));
+
+  /* liczba filmów z playlisty YouTube — plik odświeżany automatycznie raz w tygodniu */
+  fetch('assets/yt.json', {cache: 'no-cache'})
+    .then(r => (r.ok ? r.json() : null))
+    .then(d => {
+      if (d && d.count) document.querySelectorAll('.yt-count').forEach(el => { el.textContent = d.count; });
+    })
+    .catch(() => {});   /* gdyby pliku brakło — zostaje liczba wpisana w HTML */
 
   /* pasek marquee — buduje tyle powtórzeń, żeby wypełnić każdą szerokość ekranu bez dziury */
   const track = document.getElementById('marqueeTrack');
