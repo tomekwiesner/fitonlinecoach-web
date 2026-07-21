@@ -191,7 +191,11 @@
     transition:transform .8s cubic-bezier(.45,.05,.2,1)}
   .card.flipped .card-inner{transform:rotateY(180deg)}
   .card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-    background:var(--graphite);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:background .35s}
+    background:var(--graphite);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    transition:background .35s,opacity .01s linear .4s}
+  .card.flipped .card-front{opacity:0}
+  .card-back{opacity:0}
+  .card.flipped .card-back{opacity:1}
   .card-front{padding:44px 34px;display:flex;flex-direction:column}
   .card-front::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 260px at var(--mx,50%) var(--my,0%),rgba(153,230,109,.09),transparent 65%);opacity:0;transition:.4s}
   .card:hover .card-front{background:var(--graphite-2)}
@@ -284,6 +288,12 @@
     transition:transform .8s cubic-bezier(.45,.05,.2,1)}
   .plan-flip.flipped .plan-flip-inner{transform:rotateY(180deg)}
   .plan-face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;min-width:0}
+  /* Część przeglądarek mobilnych ignoruje ukrywanie tylnej ścianki i przez moment
+     prześwituje odwrócony przycisk — dlatego dodatkowo gasimy ściankę w połowie obrotu. */
+  .plan-front,.plan-back{transition:opacity .01s linear .4s}
+  .plan-flip.flipped .plan-front{opacity:0;pointer-events:none}
+  .plan-back{opacity:0;pointer-events:none}
+  .plan-flip.flipped .plan-back{opacity:1;pointer-events:auto}
   .plan-back{transform:rotateY(180deg);background:var(--graphite);border:1px solid var(--line);
     border-radius:16px;overflow:hidden}
   .plan-back-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;padding:56px 48px;
@@ -304,9 +314,19 @@
   #planCta.disabled{background:transparent;border:1px solid var(--line);color:var(--muted);
     pointer-events:none;box-shadow:none;transform:none}
   /* kafelki wyboru planu */
-  .plan-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
-  .ptile{display:flex;align-items:center;gap:16px;background:var(--graphite);border:1px solid var(--line);
-    border-radius:16px;padding:14px 18px;cursor:pointer;text-align:left;transition:.25s;font-family:inherit}
+  /* poziomy slider planów — nie rozjedzie się, gdy planów przybędzie */
+  .plan-tiles{display:flex;gap:16px;margin-top:20px;overflow-x:auto;scroll-snap-type:x mandatory;
+    padding:2px 2px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;
+    scrollbar-color:var(--graphite-2) transparent}
+  .plan-tiles::-webkit-scrollbar{height:6px}
+  .plan-tiles::-webkit-scrollbar-track{background:transparent}
+  .plan-tiles::-webkit-scrollbar-thumb{background:var(--graphite-2);border-radius:99px}
+  .plan-tiles:hover::-webkit-scrollbar-thumb{background:rgba(153,230,109,.45)}
+  .ptile{flex:0 0 clamp(250px,31%,330px);scroll-snap-align:start;
+    display:flex;align-items:center;gap:16px;background:var(--graphite);border:1px solid var(--line);
+    border-radius:16px;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit;
+    /* tylko wygląd, bez szerokości — inaczej kafelki „pełzną" przy zmianie rozmiaru okna */
+    transition:border-color .25s,background .25s,transform .25s,box-shadow .25s}
   .ptile:hover{border-color:rgba(153,230,109,.5);transform:translateY(-2px)}
   .ptile.active{border-color:var(--lime);background:var(--graphite-2);box-shadow:0 0 24px rgba(153,230,109,.12)}
   .ptile-thumb{flex:0 0 54px;height:54px;border-radius:10px;background-size:cover;background-position:center}
@@ -318,7 +338,7 @@
 
   /* ---------- statystyki ---------- */
   .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}
   .stat{padding:64px 20px;text-align:center;border-right:1px solid var(--line)}
   .stat:last-child{border-right:0}
   .stat .val{display:flex;justify-content:center;align-items:baseline;
@@ -445,14 +465,18 @@
     .plan-grid{grid-template-columns:1fr}
     .plan-visual{min-height:340px}
     .plan-body{padding:48px 32px}
-    .stats-grid{grid-template-columns:repeat(3,1fr)}
-    .stat{padding:38px 8px}
-    .stat .val{font-size:1.7rem;margin-bottom:10px}
-    .stat .lbl{font-size:.62rem;letter-spacing:.08em;line-height:1.4}
+    /* cztery liczniki układają się 2×2, żeby liczby zostały czytelne */
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .stat{padding:34px 10px}
+    .stat .val{font-size:1.9rem;margin-bottom:10px}
+    .stat .lbl{font-size:.66rem;letter-spacing:.1em;line-height:1.4}
+    .stat:nth-child(2n){border-right:0}
+    .stat:nth-child(-n+2){border-bottom:1px solid var(--line)}
     .about-grid{grid-template-columns:1fr;gap:60px}
     .nl-grid{grid-template-columns:1fr;gap:40px}
     .vcar-group video{height:170px}
-    .plan-tiles{grid-template-columns:1fr}
+    /* na telefonie kolejny kafelek wystaje zza krawędzi — sygnał, że można przesuwać */
+    .ptile{flex:0 0 82%}
     .plan-back-grid{grid-template-columns:1fr;gap:32px;padding:36px 24px}
     .nav-links{position:fixed;inset:0;background:rgba(7,9,8,.97);flex-direction:column;
       justify-content:center;gap:34px;display:none}
@@ -769,9 +793,10 @@
 <div class="stats">
   <div class="wrap">
     <div class="stats-grid">
-      <div class="stat rv"><span class="val" id="statPlanExercises" data-odo="49"></span><span class="lbl">poradników wideo</span></div>
-      <div class="stat rv rv2"><span class="val" data-odo="100" data-suffix="%"></span><span class="lbl">po polsku</span></div>
-      <div class="stat rv rv3"><span class="val">24/7</span><span class="lbl">dostęp do treningu</span></div>
+      <div class="stat rv"><span class="val" id="statWeeks" data-odo="4"></span><span class="lbl" id="lblWeeks">tygodnie</span></div>
+      <div class="stat rv rv2"><span class="val" id="statWorkouts" data-odo="12"></span><span class="lbl" id="lblWorkouts">treningów</span></div>
+      <div class="stat rv rv3"><span class="val" id="statExercises" data-odo="49"></span><span class="lbl">video</span></div>
+      <div class="stat rv rv4"><span class="val" id="statMinutes" data-odo="620"></span><span class="lbl" id="lblMinutes">minut</span></div>
     </div>
   </div>
 </div>
@@ -969,6 +994,32 @@
   }, {threshold: .6});
   document.querySelectorAll('[data-odo]').forEach(el => co.observe(el));
 
+  /* polska odmiana: 1 tydzień / 2 tygodnie / 5 tygodni */
+  const odmien = (n, formy) => {
+    const koncowka = n % 10, setka = n % 100;
+    if (n === 1) return formy[0];
+    if (koncowka >= 2 && koncowka <= 4 && (setka < 12 || setka > 14)) return formy[1];
+    return formy[2];
+  };
+  /* liczniki pod planem — każdy plan liczony osobno, wszystkie animują się od zera */
+  const STATY = [
+    ['statWeeks', 'weeks', 'lblWeeks', ['tydzień', 'tygodnie', 'tygodni']],
+    ['statWorkouts', 'workouts', 'lblWorkouts', ['trening', 'treningi', 'treningów']],
+    ['statExercises', 'exercises', null, null],
+    ['statMinutes', 'minutes', 'lblMinutes', ['minuta', 'minuty', 'minut']]
+  ];
+  const setPlanStats = p => STATY.forEach(([valId, pole, lblId, formy]) => {
+    const el = document.getElementById(valId);
+    if (!el) return;
+    const wartosc = p[pole];
+    buildOdo(el, wartosc);
+    runOdo(el);
+    if (lblId && formy) {
+      const lbl = document.getElementById(lblId);
+      if (lbl) lbl.textContent = (wartosc === null || wartosc === undefined) ? formy[2] : odmien(wartosc, formy);
+    }
+  });
+
   /* manifest — podświetlanie słów w rytmie przewijania */
   const manifest = document.getElementById('manifest');
   const words = manifest.textContent.trim().split(/\s+/);
@@ -1102,7 +1153,8 @@
   /* przełącznik planów — kafelki podmieniają treść głównej karty */
   const plans = [
     {
-      tag: 'Dla początkujących', title: 'Początek', exercises: 49,
+      tag: 'Dla początkujących', title: 'Początek',
+      weeks: 4, workouts: 12, exercises: 49, minutes: 620,   /* dane wprost z planu w aplikacji */
       desc: 'Plan dla osób, które chcą wystartować z treningiem — spokojnie, bezpiecznie i ze zrozumieniem tego, co robią.',
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
@@ -1110,7 +1162,8 @@
       url: 'https://app.fitonlinecoach.com/plany/poczatek', cta: 'Zobacz plan'
     },
     {
-      tag: 'Wkrótce', title: 'Plan 2', exercises: null,
+      tag: 'Wkrótce', title: 'Plan 2',
+      weeks: null, workouts: null, exercises: null, minutes: null,
       desc: 'Pracuję nad kolejnym planem. Szczegóły już wkrótce — zapisz się na newsletter, a dam Ci znać pierwszemu.',
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '<small>cena wkrótce</small>',
@@ -1118,7 +1171,8 @@
       url: null, cta: 'Wkrótce dostępny'
     },
     {
-      tag: 'Wkrótce', title: 'Plan 3', exercises: null,
+      tag: 'Wkrótce', title: 'Plan 3',
+      weeks: null, workouts: null, exercises: null, minutes: null,
       desc: 'Trzeci plan w przygotowaniu. Szczegóły już wkrótce — zapisz się na newsletter, a dam Ci znać pierwszemu.',
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '<small>cena wkrótce</small>',
@@ -1143,9 +1197,7 @@
       const img = document.getElementById('planImg');
       img.src = p.img; img.alt = p.alt;
       planGrid.classList.remove('swap');
-      /* licznik ćwiczeń przelicza się od zera przy każdej zmianie planu */
-      const stat = document.getElementById('statPlanExercises');
-      if (stat) { buildOdo(stat, p.exercises); runOdo(stat); }
+      setPlanStats(p);   /* wszystkie cztery liczniki przeliczają się od zera */
     }, 290);
   };
   document.querySelectorAll('.ptile').forEach(t => t.addEventListener('click', () => {
