@@ -1115,10 +1115,17 @@
   };
   el('ccReopen').addEventListener('click', pokaz);
 
-  /* start: jeśli klient już zdecydował — uszanuj wybór po cichu; jeśli nie — pokaż baner */
+  /* Baner pojawia się TYLKO wtedy, gdy jest o co pytać — czyli gdy skonfigurowano
+     choć jeden identyfikator marketingowy. Dopóki gniazda są puste, strona nie zapisuje
+     niczego poza tym, co niezbędne, więc pytanie o zgodę byłoby pytaniem bez treści.
+     Po wpisaniu identyfikatorów baner włącza się sam, bez zmian w kodzie. */
+  const czySledzimy = !!(cfg.metaPixelId || cfg.googleAdsId || cfg.ga4Id);
+  window.FOC_SLEDZENIE_AKTYWNE = czySledzimy;
+  el('ccReopen').hidden = !czySledzimy;   /* nie pokazuj też linku w stopce */
+
   const zapisana = odczytaj();
   if (zapisana) zastosuj(zapisana, false);
-  else setTimeout(pokaz, 900);
+  else if (czySledzimy) setTimeout(pokaz, 900);
 })();
 </script>
 
