@@ -3,6 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ===== MARKETING: identyfikatory. Puste = nic się nie ładuje i nic nie śledzi. =====
+     Wpisz tu identyfikatory dopiero, gdy założysz konta reklamowe (instrukcja u Tomka).
+     Te same wartości musi znać aplikacja — patrz app.fitonlinecoach.com. -->
+<script>
+  window.FOC_MARKETING = {
+    metaPixelId: '',   /* Meta (Instagram/Facebook), np. '123456789012345' */
+    googleAdsId: '',   /* Google Ads, np. 'AW-123456789'                    */
+    ga4Id: ''          /* Google Analytics 4, np. 'G-XXXXXXXXXX'            */
+  };
+  /* Tryb zgody Google (Consent Mode v2) — MUSI być ustawiony ZANIM cokolwiek się wczyta.
+     Domyślnie wszystko zabronione; zmieniamy dopiero po kliknięciu klienta. */
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('consent', 'default', {
+    ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+    analytics_storage: 'denied', functionality_storage: 'granted', security_storage: 'granted',
+    wait_for_update: 500
+  });
+</script>
+
 <!-- Bramka „wkrótce": stali testerzy (localStorage) i link ?podglad=KOD wchodzą bez migotania.
      KOD PODGLĄDU zmienisz w jednym miejscu poniżej (window.FOC_PREVIEW_CODE). -->
 <script>
@@ -101,6 +121,43 @@
     text-transform:uppercase;padding:14px 24px;cursor:pointer;transition:.2s}
   .gpreview-form button:hover{box-shadow:0 0 24px rgba(153,230,109,.4)}
   .gperr{width:100%;color:#ff8a8a;font-size:.82rem;letter-spacing:.06em;margin-top:4px}
+
+  /* ---------- baner zgód na ciasteczka ---------- */
+  .cc{position:fixed;left:0;right:0;bottom:0;z-index:1100;background:var(--graphite);
+    border-top:1px solid var(--line);padding:22px 24px;display:none;
+    box-shadow:0 -18px 50px rgba(0,0,0,.5)}
+  .cc.show{display:block;animation:fadeUp .45s forwards}
+  .cc-in{max-width:1240px;margin:0 auto;display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+  .cc-txt{flex:1 1 420px;min-width:0}
+  .cc-txt b{display:block;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1rem;
+    text-transform:uppercase;letter-spacing:.04em;color:#fff;margin-bottom:6px}
+  .cc-txt p{color:var(--muted);font-size:.9rem;line-height:1.6;margin:0}
+  .cc-txt a{color:var(--lime);border-bottom:1px solid rgba(153,230,109,.4)}
+  .cc-btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  /* „Odrzuć" musi być tak samo widoczne jak „Akceptuję" — wymóg prawny */
+  .cc-btn{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.1em;
+    text-transform:uppercase;padding:14px 22px;border-radius:2px;cursor:pointer;border:1px solid var(--lime);
+    background:transparent;color:var(--lime);transition:.2s;white-space:nowrap}
+  .cc-btn:hover{background:rgba(153,230,109,.12)}
+  .cc-btn.primary{background:var(--lime);color:var(--black)}
+  .cc-btn.primary:hover{box-shadow:0 0 24px rgba(153,230,109,.4)}
+  .cc-link{background:none;border:0;color:var(--muted);font-family:inherit;font-size:.78rem;
+    letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-decoration:underline}
+  .cc-link:hover{color:var(--lime)}
+  .cc-opts{display:none;width:100%;border-top:1px solid var(--line);margin-top:18px;padding-top:18px;gap:14px;
+    flex-direction:column}
+  .cc-opts.show{display:flex}
+  .cc-opt{display:flex;gap:14px;align-items:flex-start}
+  .cc-opt input{margin-top:4px;width:18px;height:18px;accent-color:var(--lime);cursor:pointer}
+  .cc-opt label{cursor:pointer}
+  .cc-opt b{display:block;font-size:.85rem;color:#fff;font-weight:600;margin-bottom:2px}
+  .cc-opt span{font-size:.82rem;color:var(--muted);line-height:1.5}
+  .cc-opt.locked input{opacity:.5;cursor:not-allowed}
+  @media(max-width:700px){
+    .cc{padding:18px 16px}
+    .cc-btns{width:100%}
+    .cc-btn{flex:1 1 100%;text-align:center}
+  }
 
   /* pasek postępu przewijania */
   .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--lime);z-index:100;box-shadow:0 0 12px rgba(153,230,109,.6)}
@@ -937,10 +994,133 @@
     </div>
     <div class="copy">
       <span>© 2026 FitOnlineCoach — Tomasz Wiesner. Wszystkie prawa zastrzeżone.</span>
+      <span><button class="cc-link" id="ccReopen" type="button">Ustawienia cookies</button></span>
       <span>Trening · Dieta · Fizjoterapia</span>
     </div>
   </div>
 </footer>
+
+<!-- ===== BANER ZGÓD NA CIASTECZKA =====
+     Nic nie śledzi, dopóki klient nie kliknie. Zgoda zapisywana na domenie nadrzędnej
+     (.fitonlinecoach.com), więc aplikacja czyta tę samą decyzję — klient odpowiada RAZ. -->
+<div class="cc" id="cc" role="dialog" aria-live="polite" aria-label="Zgoda na pliki cookies">
+  <div class="cc-in">
+    <div class="cc-txt">
+      <b>Ciasteczka i prywatność</b>
+      <p>Używamy plików niezbędnych, żeby strona działała. Za Twoją zgodą chcemy też mierzyć
+        ruch i skuteczność reklam na Instagramie i w Google. Bez zgody nic takiego się nie uruchamia.
+        Szczegóły w <a href="https://app.fitonlinecoach.com/polityka-prywatnosci" target="_blank" rel="noopener">polityce prywatności</a>.</p>
+    </div>
+    <div class="cc-btns">
+      <button class="cc-btn primary" id="ccAll" type="button">Akceptuję wszystkie</button>
+      <button class="cc-btn" id="ccNec" type="button">Tylko niezbędne</button>
+      <button class="cc-link" id="ccSettings" type="button">Ustawienia</button>
+    </div>
+    <div class="cc-opts" id="ccOpts">
+      <div class="cc-opt locked">
+        <input type="checkbox" id="ccNecCb" checked disabled>
+        <label for="ccNecCb"><b>Niezbędne (zawsze aktywne)</b>
+          <span>Potrzebne, żeby strona i logowanie działały. Nie służą do śledzenia.</span></label>
+      </div>
+      <div class="cc-opt">
+        <input type="checkbox" id="ccAnaCb">
+        <label for="ccAnaCb"><b>Statystyki</b>
+          <span>Anonimowe dane o tym, które sekcje oglądasz — żeby wiedzieć, co poprawić.</span></label>
+      </div>
+      <div class="cc-opt">
+        <input type="checkbox" id="ccMktCb">
+        <label for="ccMktCb"><b>Marketing</b>
+          <span>Pozwala dopasować reklamy na Instagramie i w Google oraz nie pokazywać ich osobom,
+            które już kupiły plan.</span></label>
+      </div>
+      <div class="cc-btns">
+        <button class="cc-btn primary" id="ccSave" type="button">Zapisz wybór</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const NAZWA = 'foc_consent', WERSJA = 1, DNI = 365;
+  const cfg = window.FOC_MARKETING || {};
+  const el = id => document.getElementById(id);
+  const baner = el('cc');
+
+  /* zgoda zapisywana na domenie nadrzędnej — dzięki temu obowiązuje też w app.fitonlinecoach.com */
+  const domena = () => location.hostname.endsWith('fitonlinecoach.com') ? '; domain=.fitonlinecoach.com' : '';
+  const zapisz = z => {
+    document.cookie = `${NAZWA}=${encodeURIComponent(JSON.stringify(z))}; path=/${domena()}; max-age=${DNI * 86400}; SameSite=Lax`;
+  };
+  const odczytaj = () => {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + NAZWA + '=([^;]*)'));
+    if (!m) return null;
+    try { const z = JSON.parse(decodeURIComponent(m[1])); return z && z.v === WERSJA ? z : null; } catch (_) { return null; }
+  };
+
+  let zaladowane = false;
+  const wczytajNarzedzia = z => {
+    if (zaladowane) return;
+    /* Google: jedna biblioteka obsługuje i Ads, i Analytics */
+    const idGoogle = (z.a && cfg.ga4Id) || (z.m && cfg.googleAdsId) || '';
+    if (idGoogle) {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + idGoogle;
+      document.head.appendChild(s);
+      gtag('js', new Date());
+      if (z.a && cfg.ga4Id) gtag('config', cfg.ga4Id, {anonymize_ip: true});
+      if (z.m && cfg.googleAdsId) gtag('config', cfg.googleAdsId);
+    }
+    /* Meta Pixel — tylko przy zgodzie marketingowej */
+    if (z.m && cfg.metaPixelId) {
+      !function (f, b, e, v, n, t, s) {
+        if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
+        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+        t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s)
+      }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', cfg.metaPixelId);
+      fbq('track', 'PageView');
+    }
+    zaladowane = true;
+  };
+
+  const zastosuj = (z, zapisac) => {
+    if (zapisac) zapisz(z);
+    gtag('consent', 'update', {
+      ad_storage: z.m ? 'granted' : 'denied',
+      ad_user_data: z.m ? 'granted' : 'denied',
+      ad_personalization: z.m ? 'granted' : 'denied',
+      analytics_storage: z.a ? 'granted' : 'denied'
+    });
+    if (z.a || z.m) wczytajNarzedzia(z);
+    window.FOC_ZGODA = z;
+    document.dispatchEvent(new CustomEvent('foc:zgoda', {detail: z}));
+    baner.classList.remove('show');
+    el('ccOpts').classList.remove('show');
+  };
+
+  const nowa = (a, m) => ({v: WERSJA, a: !!a, m: !!m, t: new Date().toISOString()});
+
+  el('ccAll').addEventListener('click', () => zastosuj(nowa(true, true), true));
+  el('ccNec').addEventListener('click', () => zastosuj(nowa(false, false), true));
+  el('ccSettings').addEventListener('click', () => el('ccOpts').classList.toggle('show'));
+  el('ccSave').addEventListener('click', () => zastosuj(nowa(el('ccAnaCb').checked, el('ccMktCb').checked), true));
+
+  const pokaz = () => {
+    const z = odczytaj();
+    if (z) { el('ccAnaCb').checked = z.a; el('ccMktCb').checked = z.m; el('ccOpts').classList.add('show'); }
+    baner.classList.add('show');
+  };
+  el('ccReopen').addEventListener('click', pokaz);
+
+  /* start: jeśli klient już zdecydował — uszanuj wybór po cichu; jeśli nie — pokaż baner */
+  const zapisana = odczytaj();
+  if (zapisana) zastosuj(zapisana, false);
+  else setTimeout(pokaz, 900);
+})();
+</script>
 
 <script>
 (() => {
