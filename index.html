@@ -235,11 +235,17 @@
 
   /* ---------- manifest (scrub słów) ---------- */
   .manifest{padding:150px 0;position:relative;overflow:hidden}
-  /* monogram FOC (FitOnlineCoach) — wyższa nieprzezroczystość, żeby białe F i C też były widoczne */
-  .manifest .wm{position:absolute;right:4%;top:50%;transform:translateY(-50%);
-    width:min(36vw,440px);opacity:.11;pointer-events:none}
+  /* Pepitka z pełnych monogramów FOC w prawej części sekcji, pod skosem.
+     Kafelek `foc_kafel.png` powstał z oryginału z księgi znaku — poprzedni `icon_big.png`
+     był kwadratowym wycinkiem z UCIĘTYMI literami F i C. */
+  .manifest .wm{position:absolute;top:-40%;right:-10%;width:42%;height:180%;
+    background-image:url('assets/foc_kafel.png');background-size:96px 60px;background-repeat:repeat;
+    transform:rotate(-14deg);opacity:.16;pointer-events:none;z-index:1;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 45%);
+    mask-image:linear-gradient(90deg,transparent,#000 45%)}
   .manifest p{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;
-    font-size:clamp(1.6rem,4.4vw,3.4rem);line-height:1.25;max-width:1000px}
+    font-size:clamp(1.6rem,4.4vw,3.4rem);line-height:1.25;max-width:1000px;
+    position:relative;z-index:2}   /* nad pepitką */
   .manifest .mw{opacity:.12;transition:opacity .35s linear;display:inline-block;margin-right:.32em}
   .manifest .mw.lit{opacity:1}
   .manifest .mw.accent{color:var(--lime)}
@@ -670,7 +676,7 @@
 
 <!-- ===== MANIFEST ===== -->
 <section class="manifest">
-  <img class="wm" src="assets/icon_big.png" alt="Monogram FOC — FitOnlineCoach" aria-hidden="true">
+  <span class="wm" aria-hidden="true"></span>
   <div class="wrap">
     <p id="manifest">Nie potrzebujesz kolejnej rozpiski, potrzebujesz planu, który <em>zrozumiesz.</em> I który <em>zrealizujesz.</em></p>
   </div>
