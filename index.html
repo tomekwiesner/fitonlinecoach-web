@@ -43,7 +43,32 @@
   })();
 </script>
 <title>FitOnlineCoach — trening, który rozumiesz</title>
-<meta name="description" content="Plany treningowe premium z poradnikiem wideo do każdego ćwiczenia. Po polsku. Trener personalny, fizjoterapeuta i dietetyk w jednym.">
+<meta name="description" content="Plany treningowe z poradnikiem wideo do każdego ćwiczenia. Po polsku. Trener personalny, fizjoterapeuta i dietetyk w jednym.">
+
+<!-- ===== SEO / social (pakiet z wątku Social media FOC, zatwierdzony przez Tomka) ===== -->
+<link rel="canonical" href="https://fitonlinecoach.com/">
+<meta name="robots" content="noindex, follow"><!-- PRZED STARTEM: nie indeksuj. W DNIU STARTU zmień na: index, follow -->
+<meta name="theme-color" content="#121A16">
+<meta name="author" content="Tomasz Wiesner">
+
+<!-- Open Graph (Facebook, Instagram, LinkedIn, WhatsApp) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FitOnlineCoach">
+<meta property="og:locale" content="pl_PL">
+<meta property="og:url" content="https://fitonlinecoach.com/">
+<meta property="og:title" content="FitOnlineCoach — trening, który rozumiesz">
+<meta property="og:description" content="Plany treningowe z poradnikiem wideo do każdego ćwiczenia. Po polsku, konkretnie, bez ściemy — zawsze w Twoim telefonie.">
+<meta property="og:image" content="https://fitonlinecoach.com/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FitOnlineCoach — plany treningowe z poradnikiem wideo">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FitOnlineCoach — trening, który rozumiesz">
+<meta name="twitter:description" content="Plany treningowe z poradnikiem wideo do każdego ćwiczenia. Po polsku, konkretnie, bez ściemy.">
+<meta name="twitter:image" content="https://fitonlinecoach.com/assets/og-image.jpg">
+
 <!-- Ikony z assets/brand (wątek grafiki) — ciemny kafel #121A16, bo na białym
      białe litery F i C monogramu znikają i zostaje samo zielone „O". -->
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -79,11 +104,6 @@
   a{color:inherit;text-decoration:none}
   .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
 
-  /* ziarno filmowe */
-  .grain{position:fixed;inset:-50%;width:200%;height:200%;pointer-events:none;z-index:9;opacity:.05;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    animation:grain 8s steps(10) infinite}
-  @keyframes grain{0%,100%{transform:translate(0,0)}10%{transform:translate(-5%,-10%)}30%{transform:translate(3%,-15%)}50%{transform:translate(12%,9%)}70%{transform:translate(9%,4%)}90%{transform:translate(-1%,7%)}}
 
   /* ---------- ekran „wkrótce" (coming soon) ---------- */
   html.gate-locked,html.gate-locked body{overflow:hidden!important;height:100%}
@@ -235,14 +255,33 @@
 
   /* ---------- manifest (scrub słów) ---------- */
   .manifest{padding:150px 0;position:relative;overflow:hidden}
-  /* Pepitka z pełnych monogramów FOC w prawej części sekcji, pod skosem.
-     Kafelek `foc_kafel.png` powstał z oryginału z księgi znaku — poprzedni `icon_big.png`
-     był kwadratowym wycinkiem z UCIĘTYMI literami F i C. */
-  .manifest .wm{position:absolute;top:-40%;right:-10%;width:42%;height:180%;
+  /* ---------- BLOK GÓRNY: hero + pasek + manifest dzielą JEDNO tło ----------
+     Dzięki temu pepitka jest jedną, ciągłą płaszczyzną — przechodzi z hero
+     przez pasek do manifestu bez żadnego szwu.
+     Kafelek `foc_kafel.png` powstał z oryginału z księgi znaku (pełne F, O, C). */
+  /* Talerze wyjeżdżają transformem poniżej bloku — bez przycięcia rozpychały stronę
+     i pod stopką robiła się pusta przestrzeń. `clip` nie tworzy kontenera przewijania. */
+  .topblok{position:relative;background:var(--black);isolation:isolate;overflow:hidden;overflow:clip}
+  .tb-wzor{position:absolute;top:-8%;right:-12%;width:54%;height:120%;
     background-image:url('assets/foc_kafel.png');background-size:96px 60px;background-repeat:repeat;
-    transform:rotate(-14deg);opacity:.16;pointer-events:none;z-index:1;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 45%);
-    mask-image:linear-gradient(90deg,transparent,#000 45%)}
+    transform:rotate(-14deg);opacity:.16;pointer-events:none;z-index:0;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 42%);
+    mask-image:linear-gradient(90deg,transparent,#000 42%)}
+  /* przyciemnienie hero było potrzebne tylko pod wideo — teraz zasłaniałoby wzór */
+  .topblok .hero::before{display:none}
+  .topblok .marquee{background:transparent}
+  .topblok .manifest{overflow:visible}   /* talerze muszą móc wytoczyć się poza sekcję */
+
+  /* ---------- talerze olimpijskie toczące się przy przewijaniu ---------- */
+  .talerze{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .talerz{position:absolute;height:auto;will-change:transform;
+    filter:drop-shadow(0 24px 30px rgba(0,0,0,.6))}
+  /* Szerokości; pozycję startową (rząd tuż pod nagłówkiem, na wspólnej „podłodze")
+     wylicza JS z realnego układu — dzięki temu trafia pod „rozumiesz." na każdym ekranie. */
+  .talerz:nth-child(1){width:118px;z-index:2}
+  .talerz:nth-child(2){width:134px;z-index:2}
+  .talerz:nth-child(3){width:108px;z-index:1}   /* trzeci stoi za dwoma pierwszymi */
+
   .manifest p{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;
     font-size:clamp(1.6rem,4.4vw,3.4rem);line-height:1.25;max-width:1000px;
     position:relative;z-index:2}   /* nad pepitką */
@@ -268,15 +307,8 @@
   .card-front::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 260px at var(--mx,50%) var(--my,0%),rgba(153,230,109,.09),transparent 65%);opacity:0;transition:.4s}
   .card:hover .card-front{background:var(--graphite-2)}
   .card:hover .card-front::before{opacity:1}
-  .card .num{font-family:'Montserrat',sans-serif;font-weight:900;font-size:.8rem;color:var(--lime);
-    letter-spacing:.2em;display:block;margin-bottom:28px;position:relative}
   .card h3{font-size:1.2rem;color:#fff;margin-bottom:14px;line-height:1.3;position:relative}
   .card p{color:var(--muted);font-size:.94rem;position:relative}
-  .card .icon{width:50px;height:50px;border:1px solid rgba(153,230,109,.35);border-radius:2px;display:flex;
-    align-items:center;justify-content:center;margin-bottom:24px;transition:.35s;position:relative}
-  .card:hover .icon{background:var(--lime);border-color:var(--lime)}
-  .card .icon svg{width:23px;height:23px;stroke:var(--lime);transition:.35s}
-  .card:hover .icon svg{stroke:var(--black)}
   .card-hint{margin-top:auto;padding-top:20px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
     color:var(--lime);opacity:.75;position:relative}
   .card-back{transform:rotateY(180deg);background:var(--graphite-2);display:flex;flex-direction:column;
@@ -323,6 +355,24 @@
   .stp h3{font-size:1.3rem;color:#fff;margin-bottom:10px}
   .stp p{color:var(--muted);font-size:.97rem}
 
+  /* ---------- toczący się talerz odsłaniający hasło „nie musi być idealnie" ---------- */
+  .divider-czarny{background:var(--black)}
+  .divider-czarny::before{display:none}          /* przyciemnienie było potrzebne pod wideo */
+  /* z-index 3 = NAD hasłem (h2 ma 2), więc talerz i jego cień rysują się na tekście
+     — inaczej cień był pod napisem i w ogóle go nie przyciemniał. */
+  .sztangownia{position:absolute;inset:0;overflow:hidden;z-index:3;pointer-events:none}
+  /* Talerz (widok z frontu) wytacza się z lewej na prawą; pozycję i obrót liczy JS. */
+  .talerz-roll{position:absolute;left:0;top:50%;z-index:4;pointer-events:none;
+    will-change:transform;filter:drop-shadow(0 16px 28px rgba(0,0,0,.7))}
+  .talerz-roll img{display:block;width:100%;height:auto;max-width:none}
+  /* Ruchomy cień pod talerzem — sunie razem z nim i przyciemnia hasło (talerz „rzuca cień").
+     Jest nad tekstem (z-index 3), ale pod talerzem (z-index 4). */
+  .talerz-cien{position:absolute;left:0;top:50%;z-index:3;pointer-events:none;border-radius:50%;
+    background:radial-gradient(circle, rgba(0,0,0,.55) 0%, rgba(0,0,0,.34) 40%, rgba(0,0,0,0) 72%);
+    opacity:0;will-change:transform,opacity}
+  /* Hasło odsłania się w śladzie talerza — maskę (clip-path) steruje JS. */
+  #hasloTekst{will-change:clip-path}
+
   /* ---------- dust divider ---------- */
   .divider{position:relative;height:70vh;min-height:420px;overflow:hidden;display:flex;align-items:center;justify-content:center}
   .divider .bg{position:absolute;inset:-18% 0;background:url('assets/dust_beam.jpg') center/cover no-repeat;will-change:transform}
@@ -352,6 +402,9 @@
   .price .zl{color:var(--lime)}
   /* odwracana karta planu (3D flip) */
   .plan-flip{perspective:1800px}
+  .plan-front{cursor:pointer}
+  .plan-hint{display:block;margin-top:18px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--lime);opacity:.7}
   .plan-flip-inner{position:relative;display:grid;transform-style:preserve-3d;
     transition:transform .8s cubic-bezier(.45,.05,.2,1)}
   .plan-flip.flipped .plan-flip-inner{transform:rotateY(180deg)}
@@ -508,12 +561,25 @@
   /* ---------- mobile ---------- */
   @media(max-width:980px){
     section{padding:90px 0}
+    /* Pepitka na telefonie: pod kątem (jak na desktopie), ale z punktem obrotu w GÓRNYM
+       PRAWYM rogu — dzięki temu obrócony wysoki pasek nie odchyla się w hero w lewo.
+       Lewa strona ekranu czysta, prawa (z górnym prawym narożnikiem) zakryta; maska
+       wygasza lewą krawędź wzoru. */
+    .tb-wzor{top:-6%;right:-8%;left:auto;width:62%;height:130%;
+      transform:rotate(-14deg);transform-origin:100% 0;
+      -webkit-mask-image:linear-gradient(102deg,transparent,#000 54%);
+      mask-image:linear-gradient(102deg,transparent,#000 54%)}
+    /* Na telefonie talerze stoją na dole hero po prawej, więc wskaźnik „Przewiń"
+       przesuwamy ze środka na lewą krawędź — inaczej leżałby na talerzach. */
+    .scroll-cue{left:24px;transform:none}
+    /* talerze mniejsze, żeby trzy zmieściły się w rzędzie na telefonie */
+    .talerz:nth-child(1){width:84px}
+    .talerz:nth-child(2){width:96px}
+    .talerz:nth-child(3){width:78px}
     .cards{grid-template-columns:1fr;gap:16px}
     /* kafelki „dlaczego" — mniejsze na telefonie */
     .card{min-height:320px}
     .card-front{padding:28px 22px}
-    .card .num{margin-bottom:16px}
-    .card .icon{width:42px;height:42px;margin-bottom:16px}
     .card .icon svg{width:19px;height:19px}
     .card h3{font-size:1.05rem;margin-bottom:10px}
     .card p{font-size:.88rem}
@@ -569,6 +635,22 @@
     .stack-pin .divider .bgv{top:0;height:100%}
   }
 </style>
+
+<!-- ===== Dane strukturalne (JSON-LD) — pakiet SEO z wątku Social media FOC =====
+     Świadomie BEZ adresu pocztowego (marka sprzedaje online w całej PL, adres jest w
+     regulaminie na app.fitonlinecoach.com). sameAs na razie tylko YouTube — konta marki
+     IG/FB/TikTok dopisać, gdy powstaną. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebSite", "@id": "https://fitonlinecoach.com/#website", "url": "https://fitonlinecoach.com/", "name": "FitOnlineCoach", "inLanguage": "pl-PL", "publisher": { "@id": "https://fitonlinecoach.com/#org" } },
+    { "@type": "Organization", "@id": "https://fitonlinecoach.com/#org", "name": "FitOnlineCoach", "legalName": "4Spine – Tomasz Wiesner", "url": "https://fitonlinecoach.com/", "logo": "https://fitonlinecoach.com/assets/icon_512.png", "image": "https://fitonlinecoach.com/assets/og-image.jpg", "vatID": "PL9542704914", "founder": { "@id": "https://fitonlinecoach.com/#tomek" }, "sameAs": ["https://www.youtube.com/@FitOnlineCoach"] },
+    { "@type": "Person", "@id": "https://fitonlinecoach.com/#tomek", "name": "Tomasz Wiesner", "jobTitle": "Trener personalny, fizjoterapeuta i dietetyk", "worksFor": { "@id": "https://fitonlinecoach.com/#org" } },
+    { "@type": "Product", "name": "Plan treningowy „Początek”", "description": "4 tygodnie treningu, 3 dni w tygodniu, 12 treningów, 49 ćwiczeń z poradnikiem wideo. Dla osób zaczynających lub wracających do treningu.", "brand": { "@id": "https://fitonlinecoach.com/#org" }, "image": "https://fitonlinecoach.com/assets/plan_poczatek.png", "offers": { "@type": "Offer", "price": "79.00", "priceCurrency": "PLN", "availability": "https://schema.org/InStock", "url": "https://fitonlinecoach.com/" } }
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -628,7 +710,6 @@
   })();
 </script>
 
-<div class="grain" aria-hidden="true"></div>
 <div class="progress" id="progress" aria-hidden="true"></div>
 
 <header id="header">
@@ -648,10 +729,26 @@
 </header>
 
 <!-- ===== HERO ===== -->
+<!-- ===== BLOK GÓRNY: hero + pasek + manifest na jednym, ciągłym tle ===== -->
+<div class="topblok" id="topblok">
+  <span class="tb-wzor" aria-hidden="true"></span>
+
+  <!-- Trzy talerze — po jednym na każdy kafelek w sekcji „dlaczego".
+       Start: w rzędzie po prawej stronie hero, na jednym poziomie, każdy pod innym kątem
+       (jakby stały na podłodze zwrócone w różne strony).
+       Ruch: najpierw mocno w prawo (żeby minąć manifest prawą stroną ekranu), przez
+       cały czas tocząc się w dół razem z przewijaniem, aż na kafelki sekcji „dlaczego".
+       data-x = droga w bok jako ułamek szerokości ekranu, data-y = opadanie w kadrze (px). -->
+  <div class="talerze" aria-hidden="true">
+    <img class="talerz" src="assets/talerz_green10.webp" alt=""
+         data-kat="-24" data-x="0.30" data-y="190">
+    <img class="talerz" src="assets/talerz_blue20.webp" alt=""
+         data-kat="17" data-x="0.34" data-y="215">
+    <img class="talerz" src="assets/talerz_red25.webp" alt=""
+         data-kat="52" data-x="0.26" data-y="160">
+  </div>
+
 <div class="hero" id="top">
-  <video autoplay muted loop playsinline poster="assets/hero_poster.jpg" id="heroVideo">
-    <source src="assets/hero_loop.mp4" type="video/mp4">
-  </video>
   <div class="wrap hero-content" id="heroContent">
     <span class="eyebrow">Trening — Dieta — Fizjoterapia</span>
     <h1>
@@ -659,7 +756,7 @@
       <span class="w" style="animation-delay:.55s">który</span>
       <span class="w outline" style="animation-delay:.75s">rozumiesz.</span>
     </h1>
-    <p class="lead">Plany treningowe premium z poradnikiem wideo do każdego ćwiczenia.
+    <p class="lead">Plany treningowe z poradnikiem wideo do każdego ćwiczenia.
       Po polsku, konkretnie, bez ściemy — zawsze w Twoim telefonie.</p>
     <div class="hero-actions">
       <a class="btn btn-lime" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Aplikacja</a>
@@ -674,13 +771,13 @@
   <div class="marquee-track" id="marqueeTrack"></div>
 </div>
 
-<!-- ===== MANIFEST ===== -->
+<!-- ===== MANIFEST (wzór dziedziczy z bloku górnego) ===== -->
 <section class="manifest">
-  <span class="wm" aria-hidden="true"></span>
   <div class="wrap">
     <p id="manifest">Nie potrzebujesz kolejnej rozpiski, potrzebujesz planu, który <em>zrozumiesz.</em> I który <em>zrealizujesz.</em></p>
   </div>
 </section>
+</div><!-- /topblok -->
 
 <!-- ===== DLACZEGO nad JAK TO DZIAŁA (efekt kurtyny przy scrollu) ===== -->
 <div class="stack" id="dlaczego">
@@ -718,7 +815,7 @@
       <span class="door door-l" id="doorL" aria-hidden="true"></span>
       <span class="door door-r" id="doorR" aria-hidden="true"></span>
       <div class="wrap why-content">
-        <div class="why-head" id="whyHead">
+      <div class="why-head" id="whyHead">
           <div class="sec-label rv">01 — Dlaczego FitOnlineCoach</div>
           <h2 class="sec-title rv rv2">Wiedza różnych specjalistów.<br>Jeden spójny plan.</h2>
         </div>
@@ -726,8 +823,6 @@
       <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: biblioteka ćwiczeń z filmami">
         <div class="card-inner">
           <div class="card-face card-front">
-            <span class="num">/01</span>
-            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>
             <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
             <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania i bez ryzyka kontuzji.</p>
             <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
@@ -741,8 +836,6 @@
       <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: opis ćwiczenia po polsku">
         <div class="card-inner">
           <div class="card-face card-front">
-            <span class="num">/02</span>
-            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></div>
             <h3>Masz dość anglojęzycznych tutoriali?</h3>
             <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
             <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
@@ -756,10 +849,8 @@
       <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: kalendarz treningów">
         <div class="card-inner">
           <div class="card-face card-front">
-            <span class="num">/03</span>
-            <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
-            <h3>Nie masz czasu na regularny trening?</h3>
-            <p>Twój trening jest zawsze przy Tobie — 24/7 w Twojej kieszeni. Ćwiczysz kiedy chcesz i gdzie chcesz.</p>
+            <h3>Nie masz czasu na trening?</h3>
+            <p>Twój trening jest zawsze przy Tobie — 24/7 w Twojej kieszeni. Planujesz, zapisujesz w kalendarzu i ćwiczysz.</p>
             <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
           </div>
           <div class="card-face card-back">
@@ -805,8 +896,9 @@
               </ul>
               <div class="price-row">
                 <span class="price" id="planPrice">79 <span class="zl">zł</span> <small>/ jednorazowo</small></span>
-                <a class="btn btn-lime" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek" target="_blank" rel="noopener">Zobacz plan</a>
+                <a class="btn btn-lime" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek" target="_blank" rel="noopener">Kup plan — 79 zł</a>
               </div>
+              <span class="plan-hint">Kliknij kartę — zobacz szczegóły planu →</span>
             </div>
           </div>
         </div>
@@ -828,8 +920,8 @@
                 przerwie i chcą wystartować bezpiecznie, ze zrozumieniem każdego ruchu.</p>
               <div class="price-row">
                 <a class="btn btn-lime" href="https://app.fitonlinecoach.com/plany/poczatek" target="_blank" rel="noopener">Kup plan — 79 zł</a>
-                <button class="btn btn-ghost" id="flipBack" type="button">← Wróć</button>
               </div>
+              <span class="plan-hint">Kliknij kartę — wróć do planu →</span>
             </div>
             <div class="plan-screens" aria-label="Prawdziwe ekrany z aplikacji">
               <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami">
@@ -846,7 +938,7 @@
     <div class="plan-tiles rv rv4" id="planTiles">
       <button class="ptile active" data-plan="0">
         <span class="ptile-thumb" style="background-image:url('assets/plan_sandbag.jpg')"></span>
-        <span class="ptile-info"><b>Początek</b><i>dla początkujących · 79 zł</i></span>
+        <span class="ptile-info"><b>Plan Początek</b><i>dla początkujących · 79 zł</i></span>
       </button>
       <button class="ptile" data-plan="1">
         <span class="ptile-thumb" style="background-image:url('assets/kettlebell.jpg')"></span>
@@ -877,9 +969,14 @@
   <div class="stack-pin">
 
     <!-- warstwa pod spodem: przerywnik z deszczem -->
-    <section class="layer layer-under divider">
-      <video class="bgv" autoplay muted loop playsinline preload="metadata" poster="assets/rain_divider_poster.jpg" src="assets/rain_divider.mp4" aria-hidden="true"></video>
-      <h2>Nie musi być idealnie.<br><span>Ma być regularnie.</span></h2>
+    <section class="layer layer-under divider divider-czarny" id="hasloRegularnie">
+      <!-- Talerz wytacza się zza zdjęcia z „o mnie", przetacza się w prawo i w swoim
+           śladzie odsłania hasło; wytoczywszy się za prawą krawędź — znika. -->
+      <div class="sztangownia" id="sztangownia" aria-hidden="true">
+        <div class="talerz-cien" id="talerzCien"></div>
+        <div class="talerz-roll" id="talerzRoll"><img src="assets/talerz_red25.webp" alt=""></div>
+      </div>
+      <h2 id="hasloTekst">Nie musi być idealnie.<br><span>Ma być regularnie.</span></h2>
     </section>
 
     <!-- warstwa wierzchnia: o mnie (rozjeżdża się na boki) -->
@@ -1234,7 +1331,43 @@
   /* pętla przewijania: parallax + hero + manifest + progress + kurtyna */
   const pxEls = [...document.querySelectorAll('[data-parallax]')];
   const heroContent = document.getElementById('heroContent');
-  const heroVideo = document.getElementById('heroVideo');
+  const heroVideo = document.getElementById('heroVideo');   /* może nie istnieć — hero jest dziś bez wideo */
+  const topblok = document.getElementById('topblok');
+  const talerze = [...document.querySelectorAll('.talerz')];
+  /* Rząd talerzy w hero: tuż pod nagłówkiem, dolne krawędzie na jednej linii
+     („stoją na podłodze"), każdy pod innym kątem — kąty ustawia pętla przewijania. */
+  const ustawTalerzeHero = () => {
+    const h1 = document.querySelector('.hero h1');
+    const hero = document.querySelector('.topblok .hero');
+    const cont = document.querySelector('.talerze');
+    if (!h1 || !hero || !cont || !talerze.length) return;
+    const hr = h1.getBoundingClientRect(), cr = cont.getBoundingClientRect(), er = hero.getBoundingClientRect();
+    const waski = cr.width < 760;
+    /* Telefon: obok kolumny z tekstem nie ma wolnego pasa (akapit i przyciski idą przez
+       całą szerokość), więc talerze stoją na dole hero po prawej, lekko zachodząc na siebie
+       — jak prawdziwe bumpery oparte o siebie na podłodze siłowni.
+       Komputer: wolne miejsce jest zaraz pod nagłówkiem po prawej. */
+    /* Talerz jest obrócony, więc na ekranie zajmuje więcej miejsca niż jego własna
+       szerokość — bez tej poprawki trzeci wyjeżdżał poza prawą krawędź telefonu. */
+    const ef = t => { const a = (+t.dataset.kat || 0) * Math.PI / 180;
+      return t.offsetWidth * (Math.abs(Math.cos(a)) + Math.abs(Math.sin(a))); };
+    /* Telefon: talerze startują wyżej — na poziomie przycisku „APLIKACJA" (nie na dole hero). */
+    const aplBtn = document.querySelector('.hero-actions .btn');
+    const podloga = waski
+      ? (aplBtn ? (aplBtn.getBoundingClientRect().bottom - cr.top) + 10 : (er.bottom - cr.top) - 12)
+      : (hr.bottom - cr.top) + 12 + Math.max(...talerze.map(ef));
+    /* Ciasna grupka: dwa talerze stoją tuż obok siebie, trzeci ZA nimi (wyżej i między
+       nimi, pod spodem w kolejności rysowania). Start bliżej środka strony. */
+    const [a, b, c] = talerze;
+    const x0 = cr.width * (waski ? 0.40 : 0.50);
+    const poz = (t, x, wGlab) => {
+      t.style.left = Math.round(x + (ef(t) - t.offsetWidth) / 2) + 'px';
+      t.style.top = Math.round(podloga - (ef(t) + t.offsetHeight) / 2 - wGlab * ef(t)) + 'px';
+    };
+    poz(a, x0, 0);
+    poz(b, x0 + ef(a) * 0.92, 0);
+    if (c) poz(c, x0 + ef(a) * 0.46, 0.17);
+  };
   const stackEl = document.querySelector('.stack:not(.stack-about)');
   const doorL = document.getElementById('doorL');
   const doorR = document.getElementById('doorR');
@@ -1249,6 +1382,70 @@
   const aboutPhoto = document.getElementById('aboutPhoto');
   const aboutText = document.getElementById('aboutText');
   let ticking = false;
+
+  /* ---------- toczący się talerz odsłaniający hasło „nie musi być idealnie" ----------
+     Talerz wytacza się z lewej (zza zdjęcia z „o mnie") na prawą stronę i w swoim śladzie
+     odsłania hasło. g = 0: talerz schowany za lewą krawędzią, tekst niewidoczny.
+     g = 1: talerz wytoczył się za prawą krawędź i zniknął, tekst w pełni odsłonięty. */
+  const sztangownia = document.getElementById('sztangownia');
+  const hasloEl = document.getElementById('hasloRegularnie');
+  const talerzRoll = document.getElementById('talerzRoll');
+  const talerzCien = document.getElementById('talerzCien');
+  const hasloTekst = document.getElementById('hasloTekst');
+  const rollImg = talerzRoll ? talerzRoll.querySelector('img') : null;
+  let rollD = 0;
+
+  const rollUstaw = () => {
+    if (!sztangownia || !rollImg) return;
+    const W = sztangownia.clientWidth;
+    if (!W) return;
+    rollD = Math.min(W * (W < 760 ? 0.34 : 0.16), 250);   /* średnica toczącego się talerza */
+    rollImg.style.width = Math.round(rollD) + 'px';
+    if (talerzCien) {                                     /* cień szerszy od talerza (miękki) */
+      const s = Math.round(rollD * 2.1);
+      talerzCien.style.width = s + 'px'; talerzCien.style.height = s + 'px';
+    }
+  };
+
+  const ogr01 = v => Math.min(Math.max(v, 0), 1);
+  const rollRysuj = g => {
+    if (!sztangownia || !talerzRoll || !hasloTekst) return;
+    const W = sztangownia.clientWidth;
+    if (!W) return;
+    const r = rollD * 0.463;                                 /* promień WIDOCZNEGO koła (0.926 obrazka / 2) */
+    const startX = -rollD * 0.7, endX = W + rollD * 0.7;
+    const x = startX + (endX - startX) * g;                  /* środek talerza (px w sekcji) */
+    const obrot = ((x - startX) / (Math.PI * rollD)) * 360;   /* toczenie, nie ślizganie */
+    talerzRoll.style.transform =
+      `translate(-50%,-50%) translateX(${Math.round(x)}px) rotate(${obrot.toFixed(1)}deg)`;
+    talerzRoll.style.opacity = (g <= 0.001 || g >= 0.999) ? '0' : '1';
+    /* cień sunie z talerzem, lekko opuszczony — jakby talerz rzucał go na hasło */
+    if (talerzCien) {
+      talerzCien.style.transform =
+        `translate(-50%,-50%) translateX(${Math.round(x)}px) translateY(${Math.round(rollD * 0.12)}px)`;
+      talerzCien.style.opacity = (g <= 0.001 || g >= 0.999) ? '0' : '1';
+    }
+    /* Odsłona idzie po ŁUKU talerza: granicą widocznego napisu jest LEWA krawędź jego koła
+       (półkole o średnicy talerza), a nie pionowa linia — napis wychodzi zza talerza po łuku.
+       Maskę budujemy jako wielokąt w układzie współrzędnych napisu. */
+    const kr = hasloTekst.getBoundingClientRect(), sr = sztangownia.getBoundingClientRect();
+    const localX = (sr.left + x) - kr.left;                  /* środek talerza względem napisu */
+    const localCy = (sr.top + sr.height / 2) - kr.top;
+    const W2 = kr.width, H2 = kr.height;
+    const L = -0.25 * W2, T = -0.3 * H2, Bt = 1.3 * H2;      /* zapas poza ramką napisu */
+    const bx = py => { const dy = py - localCy; return Math.abs(dy) <= r ? localX - Math.sqrt(r * r - dy * dy) : localX; };
+    const N = 26, pts = [`${L.toFixed(1)}px ${T.toFixed(1)}px`];
+    for (let i = 0; i <= N; i++) { const py = T + (Bt - T) * i / N; pts.push(`${bx(py).toFixed(1)}px ${py.toFixed(1)}px`); }
+    pts.push(`${L.toFixed(1)}px ${Bt.toFixed(1)}px`);
+    hasloTekst.style.clipPath = `polygon(${pts.join(', ')})`;
+  };
+
+  if (sztangownia && talerzRoll) {
+    window.addEventListener('resize', () => { rollUstaw(); });
+    rollUstaw();
+    window.addEventListener('load', () => { rollUstaw(); rollRysuj(reduced ? 1 : 0); });
+    rollRysuj(reduced ? 1 : 0);
+  }
 
   const onScroll = () => {
     if (ticking) return;
@@ -1266,7 +1463,7 @@
       if (y < vh) {
         heroContent.style.transform = `translateY(${y * .35}px)`;
         heroContent.style.opacity = Math.max(1 - y / (vh * .72), 0);
-        heroVideo.style.transform = `scale(${1 + y / vh * .12})`;
+        if (heroVideo) heroVideo.style.transform = `scale(${1 + y / vh * .12})`;
       }
 
       /* parallax względem środka ekranu */
@@ -1275,6 +1472,39 @@
         const mid = r.top + r.height / 2 - vh / 2;
         el.style.transform = `translateY(${mid * -el.dataset.parallax}px)`;
       });
+
+      /* ---------- talerze olimpijskie ----------
+         Jeden komplet. Toczy się w dół razem z przewijaniem, od razu odchylając
+         w prawo — żeby minąć manifest prawą stroną ekranu i nie wchodzić na tekst.
+         Za sekcją „dlaczego" po prostu znikają: sekcja ma własne tło i zasłania je.
+         Pozycję liczymy w układzie ekranu, więc ruch odwraca się sam przy przewijaniu w górę. */
+      if (talerze.length && topblok) {
+        const contH = document.querySelector('.talerze').getBoundingClientRect();
+        const gornaDlaczego = stackEl ? stackEl.getBoundingClientRect().top : Infinity;
+        const ogr = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+        const droga = Math.max(topblok.offsetHeight, 1);
+        const u = ogr(y / droga, 0, 1);
+        /* ruch w bok: mocny na starcie, potem się wyczerpuje */
+        const wBok = 1 - Math.pow(1 - ogr(u / 0.34, 0, 1), 3);
+        talerze.forEach(t => {
+          const startX = contH.left + (parseFloat(t.style.left) || 0);
+          const startY = parseFloat(t.style.top) || 0;     /* pozycja na ekranie przy y = 0 */
+          /* Odchylenie w prawo ograniczamy tym, ile realnie zostało miejsca do krawędzi
+             ekranu — inaczej na wąskim ekranie talerz wyjeżdżałby poza stronę. */
+          const zapas = Math.max(innerWidth - 22 - (startX + t.offsetWidth * 1.42), 0);
+          const ex = startX + wBok * Math.min(innerWidth * (+t.dataset.x || 0.3), zapas);
+          const ey = startY + u * (+t.dataset.y || 190);
+          const obwod = Math.PI * (t.offsetWidth || 1);
+          /* obrót z realnie przebytej drogi w dokumencie — toczy się, nie ślizga */
+          const obrot = (+t.dataset.kat || 0) +
+            (((ex - startX) + (y + ey - startY)) / obwod) * 360;
+          t.style.transform =
+            `translate3d(${ex - startX}px, ${ey - (contH.top + startY)}px, 0) rotate(${obrot}deg)`;
+          /* Sekcja „dlaczego" ma własne tło i zasłania talerze — gdy przykryje talerz
+             w całości, gasimy go. Bez tego wystawałby potem nad sekcją planów. */
+          t.style.opacity = gornaDlaczego <= ey ? '0' : '1';
+        });
+      }
 
       /* manifest scrub */
       const mr = manifest.getBoundingClientRect();
@@ -1314,11 +1544,21 @@
         aboutText.style.transform = `translateX(${e2 * 140}%) rotate(${e2 * 3}deg)`;
         aboutText.style.opacity = Math.max(1 - e2 * 1.2, 0);
         aboutLayer.style.pointerEvents = e2 > .4 ? 'none' : '';
+
+        /* talerz toczy się i odsłania hasło w miarę rozjeżdżania się kurtyny „o mnie" */
+        rollRysuj(ogr01((p2 - .5) / .32));
+      }
+      /* Na telefonie nie ma kurtyny (sekcje idą jedna pod drugą), więc toczeniem
+         steruje po prostu pozycja przerywnika na ekranie. */
+      if (!stackMode() && hasloEl) {
+        const hr2 = hasloEl.getBoundingClientRect();
+        rollRysuj(ogr01((vh * .82 - hr2.top) / (hr2.height * .7)));
       }
     });
   };
   document.addEventListener('scroll', onScroll, {passive: true});
   onScroll();
+
 
   /* karty — poświata podąża za kursorem + klik obraca kafelek na ekran z aplikacji */
   document.querySelectorAll('.card').forEach(card => {
@@ -1360,7 +1600,7 @@
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
       img: 'assets/plan_sandbag.jpg', alt: 'Tomek w wykroku z sandbagiem w limonkowym świetle',
-      url: 'https://app.fitonlinecoach.com/plany/poczatek', cta: 'Zobacz plan'
+      url: 'https://app.fitonlinecoach.com/plany/poczatek', cta: 'Kup plan — 79 zł'
     },
     {
       tag: 'Wkrótce', title: 'Plan 2',
@@ -1409,13 +1649,13 @@
     setPlan(+t.dataset.plan);
   }));
 
-  /* odwracanie karty planu: „Zobacz plan" pokazuje tył ze szczegółami i ekranami z aplikacji */
+  /* Odwracanie karty planu: klik w dowolne miejsce przodu pokazuje tył ze szczegółami
+     i ekranami z aplikacji. Przycisk „Kup plan" jest wyjątkiem — prowadzi do zakupu. */
   const planFlip = document.getElementById('planFlip');
-  document.getElementById('planCta').addEventListener('click', e => {
-    e.preventDefault();
-    planFlip.classList.add('flipped');
+  document.getElementById('planFlip').addEventListener('click', e => {
+    if (e.target.closest('a')) return;             /* przyciski zakupu prowadzą do zakupu */
+    planFlip.classList.toggle('flipped');
   });
-  document.getElementById('flipBack').addEventListener('click', () => planFlip.classList.remove('flipped'));
 
   /* liczba filmów z playlisty YouTube — plik odświeżany automatycznie raz w tygodniu.
      Odmieniamy po polsku, bo liczba się zmienia: 1 poradnik / 3 poradniki / 5 poradników */
@@ -1481,7 +1721,13 @@
   };
   buildMarquee();
   let mqTimer;
-  window.addEventListener('resize', () => { clearTimeout(mqTimer); mqTimer = setTimeout(buildMarquee, 200); });
+  window.addEventListener('resize', () => {
+    clearTimeout(mqTimer);
+    mqTimer = setTimeout(() => { buildMarquee(); ustawTalerzeHero(); onScroll(); }, 200);
+  });
+  /* pozycje talerzy pod kafelkami liczymy, gdy układ i obrazki są już gotowe */
+  window.addEventListener('load', () => { ustawTalerzeHero(); onScroll(); });
+  setTimeout(() => { ustawTalerzeHero(); onScroll(); }, 400);
 
   /* menu mobilne */
   const burger = document.getElementById('burger');
