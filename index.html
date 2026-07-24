@@ -199,6 +199,10 @@
   .burger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
 
   /* ---------- hero ---------- */
+  /* Hero przypięte na czas dokowania telefonu (desktop): wysoki „stack" daje zapas scrolla,
+     a wewnętrzny „pin" jest lepki — widok stoi na hero, dopóki telefon się nie zadokuje. */
+  .hero-stack{position:relative;height:200vh}
+  .hero-pin{position:sticky;top:0;height:100vh;overflow:hidden}
   .hero{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;overflow:hidden}
   .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
   .hero::before{content:"";position:absolute;inset:0;z-index:1;
@@ -206,6 +210,34 @@
   .hero::after{content:"";position:absolute;inset:0;z-index:1;
     background:radial-gradient(900px 500px at 20% 60%,rgba(153,230,109,.10),transparent 60%)}
   .hero-content{position:relative;z-index:2;will-change:transform,opacity}
+  /* Telefon 3D w hero (wzorzec z konceptu). Kotwica w środku hero; JS ustawia
+     translate+scale (dokowanie) i obrót 3D. z-index 6 = na pierwszym planie na starcie;
+     po zadokowaniu JS dodaje klasę .docked → z-index 1 (za napisem „rozumiesz."). */
+  .hero-phone{position:absolute;left:50%;top:50%;z-index:6;pointer-events:none;
+    perspective:1500px;will-change:transform;transform:translate(-50%,-50%) scale(.5)}
+  .hero-phone.docked{z-index:1}
+  /* Korpus telefonu: metaliczna rama z jasnym rantem (edge light) i miękką poświatą. */
+  .hp-body{position:relative;width:300px;height:624px;border-radius:46px;
+    background:linear-gradient(145deg,#3a4640 0%,#202a25 30%,#0e1512 100%);
+    box-shadow:inset 0 0 0 1.5px rgba(200,230,210,.28), inset 0 2px 3px rgba(255,255,255,.14),
+      0 44px 100px -34px rgba(0,0,0,.92);
+    transform-style:preserve-3d;will-change:transform;transition:transform .16s ease-out}
+  /* poświata dookoła telefonu (miękka, limonkowa) */
+  .hp-body::after{content:"";position:absolute;inset:0;border-radius:46px;pointer-events:none;
+    box-shadow:0 0 46px 4px rgba(153,230,109,.30);transform:translateZ(-1px)}
+  .hp-screen{position:absolute;inset:9px;border-radius:38px;overflow:hidden;background:#0b0f0d;
+    box-shadow:inset 0 0 0 2px #05080660;transform:translateZ(1px)}
+  .hp-screen img{width:100%;height:100%;object-fit:cover;object-position:top}
+  .hp-notch{position:absolute;top:15px;left:50%;transform:translateX(-50%) translateZ(2px);width:80px;height:7px;
+    border-radius:99px;background:rgba(0,0,0,.6);z-index:3}
+  /* Grubość telefonu = ekstruzja: kilkanaście identycznych, zaokrąglonych warstw krok po kroku
+     w głąb. Bok jest przez to gładki i zaokrąglony jak korpus — bez uskoków na narożnikach
+     (płaskie ścianki zostawiały szczelinę przy rogach). Warstwy dodaje JS. */
+  .hp-ext{position:absolute;inset:0;border-radius:46px;pointer-events:none}
+  /* cień RZUCANY przez telefon na napis — nad napisem (z5), pod telefonem gdy jest z przodu */
+  .hp-cien{position:absolute;left:50%;top:50%;z-index:5;pointer-events:none;opacity:0;border-radius:50%;
+    background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.92) 0%,rgba(0,0,0,.6) 46%,rgba(0,0,0,0) 78%);
+    filter:blur(6px);will-change:transform,opacity}
   .hero .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.78rem;font-weight:600;
     letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:28px;
     opacity:0;animation:fadeUp .8s .2s forwards}
@@ -262,7 +294,10 @@
   /* Talerze wyjeżdżają transformem poniżej bloku — bez przycięcia rozpychały stronę
      i pod stopką robiła się pusta przestrzeń. `clip` nie tworzy kontenera przewijania. */
   .topblok{position:relative;background:var(--black);isolation:isolate;overflow:hidden;overflow:clip}
-  .tb-wzor{position:absolute;top:-8%;right:-12%;width:54%;height:120%;
+  /* Pepitka STATYCZNA: przypięta do ekranu (fixed), nie przewija się razem ze stroną
+     — podczas dokowania telefonu (gdy hero stoi w miejscu) tło również stoi nieruchomo.
+     JS wygasza ją, gdy blok górny (hero+pasek+manifest) wyjeżdża z kadru. */
+  .tb-wzor{position:fixed;top:-8%;right:-12%;width:54%;height:120vh;
     background-image:url('assets/foc_kafel.png');background-size:96px 60px;background-repeat:repeat;
     transform:rotate(-14deg);opacity:.16;pointer-events:none;z-index:0;
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 42%);
@@ -273,8 +308,10 @@
   .topblok .manifest{overflow:visible}   /* talerze muszą móc wytoczyć się poza sekcję */
 
   /* ---------- talerze olimpijskie toczące się przy przewijaniu ---------- */
-  .talerze{position:absolute;inset:0;z-index:1;pointer-events:none}
-  .talerz{position:absolute;height:auto;will-change:transform;
+  /* Nakładka na cały ekran (fixed): talerze są odczepione od przewijania i przypięcia hero
+     — JS ustawia ich pozycję w układzie EKRANU, więc wychodzą spod zadokowanego telefonu. */
+  .talerze{position:fixed;left:0;top:0;width:100%;height:100%;z-index:3;pointer-events:none}
+  .talerz{position:absolute;left:0;top:0;height:auto;will-change:transform,opacity;
     filter:drop-shadow(0 24px 30px rgba(0,0,0,.6))}
   /* Szerokości; pozycję startową (rząd tuż pod nagłówkiem, na wspólnej „podłodze")
      wylicza JS z realnego układu — dzięki temu trafia pod „rozumiesz." na każdym ekranie. */
@@ -503,18 +540,46 @@
   .yt h2{font-size:clamp(2rem,4.6vw,3.6rem);color:#fff;margin-bottom:18px}
   .yt h2 .yt-count{color:var(--lime)}
   .yt p{color:#B9C4BD;max-width:520px;margin:0 auto 42px}
-  /* karuzela z poradnikami — wolno płynie, pauza po najechaniu */
-  .vcar{overflow:hidden;margin:0 auto 20px;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
-    mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
-  .vcar-track{display:flex;width:max-content;animation:vmarq 60s linear infinite}
-  .vcar:hover .vcar-track{animation-play-state:paused}
-  .vcar-group{display:flex;gap:22px;padding-right:22px;align-items:center}
-  .vcar-group video{height:232px;width:auto;display:block;border-radius:16px;
-    border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 44px rgba(0,0,0,.5)}
-  @keyframes vmarq{to{transform:translateX(-50%)}}
   .yt p .yt-count{color:var(--lime);font-weight:600}
-  .vcar{margin-bottom:46px}
+  /* ===== Efekt 3: POZIOMY telefon 3D z auto-swajpowanymi filmami (ten sam styl co hero) ===== */
+  .vphone-wrap{display:flex;justify-content:center;margin:0 auto 46px;perspective:1600px}
+  .vphone{position:relative;transform-style:preserve-3d;will-change:transform;
+    transition:transform .18s ease-out}
+  .vp-body{position:relative;width:560px;height:310px;border-radius:44px;
+    background:linear-gradient(145deg,#3a4640 0%,#202a25 30%,#0e1512 100%);
+    box-shadow:inset 0 0 0 1.5px rgba(200,230,210,.28), inset 0 2px 3px rgba(255,255,255,.14),
+      0 44px 100px -34px rgba(0,0,0,.92);
+    transform-style:preserve-3d}
+  .vp-body::after{content:"";position:absolute;inset:0;border-radius:44px;pointer-events:none;
+    box-shadow:0 0 46px 4px rgba(153,230,109,.30);transform:translateZ(-1px)}
+  .vp-ext{position:absolute;inset:0;border-radius:44px;pointer-events:none}
+  .vp-screen{position:absolute;inset:11px;border-radius:34px;overflow:hidden;background:#0b0f0d;
+    box-shadow:inset 0 0 0 2px #05080660;transform:translateZ(1px);z-index:2}
+  .vp-notch{position:absolute;left:15px;top:50%;transform:translateY(-50%) translateZ(2px);
+    width:7px;height:80px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
+  .vp-track{display:flex;height:100%;width:100%;transition:transform .6s cubic-bezier(.62,.03,.2,1)}
+  .vp-track.vp-snap{transition:none}
+  .vp-slide{flex:0 0 100%;height:100%}
+  .vp-slide video{width:100%;height:100%;object-fit:cover;display:block;background:#0b0f0d}
+  /* Szklane pop-upy WYPRZEDZAJĄCE telefon: dzieci .vphone z translateZ do przodu, więc
+     „wychodzą" przed ekran i pochylają się razem z telefonem — mocniejszy efekt 3D. */
+  .vp-pop{position:absolute;border-radius:16px;padding:13px 17px;max-width:232px;
+    background:rgba(16,24,20,.52);backdrop-filter:blur(13px) saturate(1.25);
+    -webkit-backdrop-filter:blur(13px) saturate(1.25);border:1px solid rgba(200,230,210,.24);
+    box-shadow:0 26px 54px -18px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.14);
+    color:#eaf3ec;font-size:.98rem;line-height:1.32;font-weight:600;will-change:transform}
+  .vp-pop-eyebrow{display:block;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--lime);font-weight:700;margin-bottom:5px}
+  .vp-pop-a{left:-52px;top:56px;transform:translateZ(72px);pointer-events:none}
+  .vp-pop-b{right:-46px;bottom:-30px;transform:translateZ(96px);display:inline-flex;align-items:center;
+    gap:12px;text-decoration:none;background:rgba(153,230,109,.16);border-color:rgba(153,230,109,.55);
+    transition:background .2s ease, box-shadow .2s ease}
+  .vp-pop-b:hover{background:rgba(153,230,109,.28);box-shadow:0 30px 60px -16px rgba(0,0,0,.8),0 0 0 1px rgba(153,230,109,.4)}
+  .vp-pop-b b{color:#eef8e9}
+  .vp-pop-ic{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;
+    background:var(--lime);color:#0c130c;font-size:.82rem;padding-left:2px}
+  .vp-pop-txt{font-size:.9rem;font-weight:600;line-height:1.25;color:#dfeede}
+  @media(prefers-reduced-motion:reduce){.vp-track{transition:none}}
 
   /* ---------- opinie klientów ---------- */
   .reviews{border-top:1px solid var(--line)}
@@ -565,10 +630,14 @@
        PRAWYM rogu — dzięki temu obrócony wysoki pasek nie odchyla się w hero w lewo.
        Lewa strona ekranu czysta, prawa (z górnym prawym narożnikiem) zakryta; maska
        wygasza lewą krawędź wzoru. */
-    .tb-wzor{top:-6%;right:-8%;left:auto;width:62%;height:130%;
+    .tb-wzor{top:-6%;right:-8%;left:auto;width:62%;height:130vh;
       transform:rotate(-14deg);transform-origin:100% 0;
       -webkit-mask-image:linear-gradient(102deg,transparent,#000 54%);
       mask-image:linear-gradient(102deg,transparent,#000 54%)}
+    /* Na telefonie przypięcie hero wyłączone — sekcje płyną normalnie, telefon dokuje
+       się przy zwykłym przewijaniu (jak reszta efektów na mobile). */
+    .hero-stack{height:auto}
+    .hero-pin{position:static;height:auto;overflow:visible}
     /* Na telefonie talerze stoją na dole hero po prawej, więc wskaźnik „Przewiń"
        przesuwamy ze środka na lewą krawędź — inaczej leżałby na talerzach. */
     .scroll-cue{left:24px;transform:none}
@@ -633,6 +702,10 @@
     .layer-over{background:var(--black)}
     .stack-pin .divider{position:relative;height:auto;min-height:58vh;overflow:hidden}
     .stack-pin .divider .bgv{top:0;height:100%}
+    /* Przy ograniczonym ruchu pętla przewijania nie działa (nie wygasza pepitki), więc
+       wracamy do wersji przewijanej wraz z blokiem górnym — inaczej statyczne, przypięte
+       tło zasłaniałoby kolejne sekcje. */
+    .tb-wzor{position:absolute;height:120%}
   }
 </style>
 
@@ -748,7 +821,23 @@
          data-kat="52" data-x="0.26" data-y="160">
   </div>
 
+<!-- Hero PRZYPIĘTE na czas dokowania telefonu (desktop): dopóki telefon się nie zadokuje,
+     scroll napędza animację, a widok stoi na hero. Na mobile przypięcie wyłączone. -->
+<div class="hero-stack" id="heroStack">
+ <div class="hero-pin">
 <div class="hero" id="top">
+  <!-- Telefon 3D: na starcie duży, na pierwszym planie, lekko w prawo od środka.
+       Przy przewijaniu maleje i dokuje się ZA słowem „rozumiesz." (JS liczy pozycję). -->
+  <!-- cień rzucany przez telefon na napis „rozumiesz." — szeroki/słaby z daleka,
+       wąski/mocny gdy telefon się przybliża (JS steruje szerokością i mocą) -->
+  <div class="hp-cien" id="hpCien" aria-hidden="true"></div>
+  <div class="hero-phone" id="heroPhone" aria-hidden="true">
+    <div class="hp-body">
+      <!-- grubość telefonu: warstwy ekstruzji w głąb (dodaje JS) dają gładki, zaokrąglony bok -->
+      <span class="hp-notch"></span>
+      <div class="hp-screen"><img src="assets/screen_trening.jpg" alt=""></div>
+    </div>
+  </div>
   <div class="wrap hero-content" id="heroContent">
     <span class="eyebrow">Trening — Dieta — Fizjoterapia</span>
     <h1>
@@ -765,6 +854,8 @@
   </div>
   <div class="scroll-cue">Przewiń<i></i></div>
 </div>
+ </div><!-- /hero-pin -->
+</div><!-- /hero-stack -->
 
 <!-- ===== MARQUEE ===== -->
 <div class="marquee" aria-hidden="true">
@@ -1019,27 +1110,31 @@
   <div class="wrap">
     <div class="sec-label rv" style="justify-content:center">05 — Darmowa wiedza</div>
     <h2 class="rv rv2"><span class="yt-count">80</span> <span class="yt-adj">darmowych</span> <span class="yt-noun">poradników</span> wideo</h2>
-    <p class="rv rv3">Zanim kupisz plan, sprawdź jak tłumaczę. Na moim kanale YouTube znajdziesz
-      <span class="yt-count">80</span> <span class="yt-noun">poradników</span> do ćwiczeń — dla każdego poziomu.</p>
-    <div class="vcar rv rv3" aria-label="Karuzela z fragmentami poradników wideo">
-      <div class="vcar-track">
-        <div class="vcar-group">
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_plecy.mp4" aria-label="Pompki w oparciu — checklista techniki"></video>
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_przysiad.mp4" aria-label="Przysiad ze sztangą — wersja pionowa"></video>
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_licznik.mp4" aria-label="Pompki — licznik powtórzeń"></video>
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_hollow.mp4" aria-label="Hollow body na macie"></video>
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_counter.mp4" aria-label="Pompki na podwyższeniu — licznik serii"></video>
+    <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem SAM „przewija" (swajp)
+         do kolejnego — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
+         które „wyprzedzają" telefon i dodają głębi 3D: pierwszy niesie tekst spod tytułu, drugi
+         jest jednocześnie przyciskiem na YouTube. Ekstruzję boku, klon pętli i skalę dodaje JS. -->
+    <div class="vphone-wrap rv rv3">
+      <div class="vphone" id="vphone">
+        <div class="vp-body">
+          <span class="vp-notch"></span>
+          <div class="vp-screen">
+            <div class="vp-track" id="vpTrack" aria-hidden="true">
+              <div class="vp-slide"><video muted loop autoplay playsinline preload="auto" src="assets/cwiczenie_plecy.mp4"></video></div>
+              <div class="vp-slide"><video muted loop autoplay playsinline preload="auto" src="assets/cwiczenie_licznik.mp4"></video></div>
+              <div class="vp-slide"><video muted loop autoplay playsinline preload="auto" src="assets/cwiczenie_hollow.mp4"></video></div>
+              <div class="vp-slide"><video muted loop autoplay playsinline preload="auto" src="assets/cwiczenie_counter.mp4"></video></div>
+            </div>
+          </div>
         </div>
-        <div class="vcar-group" aria-hidden="true">
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_plecy.mp4"></video>
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_przysiad.mp4"></video>
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_licznik.mp4"></video>
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_hollow.mp4"></video>
-          <video autoplay muted loop playsinline preload="metadata" src="assets/cwiczenie_counter.mp4"></video>
-        </div>
+        <!-- szklane pop-upy wyprzedzające telefon (więcej 3D) -->
+        <div class="vp-pop vp-pop-a"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</div>
+        <a class="vp-pop vp-pop-b" href="https://youtube.com/playlist?list=PLEgy8VO2gIhkaWkcrwXJrCfdo338oPv4v" target="_blank" rel="noopener">
+          <span class="vp-pop-ic" aria-hidden="true">▶</span>
+          <span class="vp-pop-txt"><b>80 poradników wideo</b><br>Oglądaj na YouTube</span>
+        </a>
       </div>
     </div>
-    <a class="btn btn-lime rv rv4" href="https://youtube.com/playlist?list=PLEgy8VO2gIhkaWkcrwXJrCfdo338oPv4v" target="_blank" rel="noopener">Oglądaj na YouTube</a>
   </div>
 </section>
 
@@ -1334,40 +1429,185 @@
   const heroVideo = document.getElementById('heroVideo');   /* może nie istnieć — hero jest dziś bez wideo */
   const topblok = document.getElementById('topblok');
   const talerze = [...document.querySelectorAll('.talerz')];
+  const heroPhone = document.getElementById('heroPhone');
+  const hpBody = heroPhone ? heroPhone.querySelector('.hp-body') : null;
+  const hpCien = document.getElementById('hpCien');
+  /* Ekstruzja korpusu telefonu: kilkanaście zaokrąglonych warstw krok po kroku w głąb daje
+     gładką ściankę boczną (bez uskoków na narożnikach, jakie robiły płaskie ścianki). */
+  if (hpBody) {
+    const WARSTW = 40, GLEB = 46;                     /* grubszy telefon (głębiej) + więcej warstw = gładki bok */
+    for (let i = 1; i <= WARSTW; i++) {
+      const w = document.createElement('span');
+      w.className = 'hp-ext';
+      w.style.transform = `translateZ(${(-GLEB * i / WARSTW).toFixed(2)}px)`;
+      /* s: 0 = tuż za ekranem, 1 = w głębi. Metaliczny rant: mocny, JASNY połysk zaraz za ekranem
+         (wąski „hot spot", jak odbicie światła na aluminiowej ramce), szybko ciemniejący w głąb —
+         duży kontrast jasny→ciemny czyta się jako metal, nie matowy plastik. */
+      const s = i / WARSTW;
+      const polysk = Math.exp(-Math.pow((s - 0.07) / 0.15, 2));   /* wąski, mocny szczyt połysku tuż za bezelem */
+      const Lg = (12 + 44 * polysk * (1 - s * 0.5)).toFixed(1);   /* górna krawędź rantu — mocny błysk */
+      const Ld = (4 + 18 * polysk * (1 - s * 0.6)).toFixed(1);    /* dolna krawędź — ciemniej (kontrast) */
+      w.style.background = `linear-gradient(150deg,hsl(150 9% ${Lg}%) 0%,hsl(158 16% ${Ld}%) 100%)`;
+      hpBody.insertBefore(w, hpBody.firstChild);
+    }
+  }
+
+  /* ===== Efekt 3: POZIOMY telefon 3D z auto-swajpowaniem filmów (sekcja „Darmowa wiedza") ===== */
+  const vphone = document.getElementById('vphone');
+  const vpTrack = document.getElementById('vpTrack');
+  if (vphone && vpTrack) {
+    const reducedVP = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const vpBody = vphone.querySelector('.vp-body');
+    /* ekstruzja boku — identyczny metaliczny styl jak telefon w hero */
+    if (vpBody) {
+      const WARSTW = 36, GLEB = 40;
+      for (let i = 1; i <= WARSTW; i++) {
+        const w = document.createElement('span');
+        w.className = 'vp-ext';
+        w.style.transform = `translateZ(${(-GLEB * i / WARSTW).toFixed(2)}px)`;
+        const s = i / WARSTW;
+        const polysk = Math.exp(-Math.pow((s - 0.07) / 0.15, 2));
+        const Lg = (12 + 44 * polysk * (1 - s * 0.5)).toFixed(1);
+        const Ld = (4 + 18 * polysk * (1 - s * 0.6)).toFixed(1);
+        w.style.background = `linear-gradient(150deg,hsl(150 9% ${Lg}%) 0%,hsl(158 16% ${Ld}%) 100%)`;
+        vpBody.insertBefore(w, vpBody.firstChild);
+      }
+    }
+    /* responsywna skala (żeby zmieścił się na telefonie) + obrót 3D za kursorem */
+    const vpWrap = vphone.parentElement;
+    let vpx = 0, vpy = 0, vpScale = 1;
+    const vpPrzelicz = () => { vpScale = Math.min(1, (vpWrap.clientWidth - 20) / 560); };
+    const vpStosuj = () => {
+      const ry = -8 + vpx * 12, rx = 5 - vpy * 8;   /* bazowy lekki obrót + odchylenie od kursora */
+      vphone.style.transform = `scale(${vpScale.toFixed(3)}) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`;
+    };
+    vpPrzelicz(); vpStosuj();
+    window.addEventListener('resize', () => { vpPrzelicz(); vpStosuj(); });
+    if (!reducedVP) {
+      vphone.addEventListener('mousemove', ev => {
+        const r = vphone.getBoundingClientRect();
+        vpx = ((ev.clientX - r.left) / r.width - 0.5) * 2;
+        vpy = ((ev.clientY - r.top) / r.height - 0.5) * 2;
+        vpStosuj();
+      });
+      vphone.addEventListener('mouseleave', () => { vpx = 0; vpy = 0; vpStosuj(); });
+    }
+    /* auto-swajp: klon 1. slajdu na końcu = płynna, jednokierunkowa pętla */
+    const vpN = vpTrack.children.length;
+    vpTrack.appendChild(vpTrack.children[0].cloneNode(true));
+    let vpIdx = 0;
+    const vpDalej = () => {
+      vpIdx++;
+      vpTrack.classList.remove('vp-snap');
+      vpTrack.style.transform = `translateX(${-vpIdx * 100}%)`;
+    };
+    vpTrack.addEventListener('transitionend', () => {
+      if (vpIdx >= vpN) {                 /* dojechaliśmy do klonu → cichy powrót na start */
+        vpTrack.classList.add('vp-snap');
+        vpIdx = 0;
+        vpTrack.style.transform = 'translateX(0%)';
+        void vpTrack.offsetWidth;         /* wymuś reflow, żeby snap nie animował */
+        vpTrack.classList.remove('vp-snap');
+      }
+    });
+    if (!reducedVP) setInterval(vpDalej, 3800);   /* każdy film ~3,2 s + 0,6 s swajp */
+  }
+
+  const slowoRozumiesz = document.querySelector('.hero h1 .outline');
+  const heroEl = document.getElementById('top');
+  const heroStack = document.getElementById('heroStack');
+  const tbWzor = document.querySelector('.tb-wzor');   /* topblok zadeklarowany wyżej */
+  let dockProg = 0;   /* 0 = telefon duży na starcie, 1 = zadokowany za „rozumiesz." */
+  /* Postęp dokowania: na desktopie z przewinięcia przypiętego stacka (widok stoi na hero,
+     dopóki telefon się nie zadokuje); na mobile/redukcji — ze zwykłego scrolla. */
+  const dokProgFn = () => {
+    const vh = window.innerHeight;
+    if (stackMode() && heroStack && heroStack.offsetHeight > vh * 1.2) {
+      return (window.scrollY - heroStack.offsetTop) / Math.max(heroStack.offsetHeight - vh, 1);
+    }
+    return window.scrollY / (vh * 0.82);
+  };
+
+  /* Telefon 3D: na starcie duży, lekko z lewej od środka; przy przewijaniu maleje i dokuje
+     się za słowem „rozumiesz.". Zwraca postęp dokowania (0..1) — steruje też talerzami. */
+  let ptrX = 0, ptrY = 0;         /* pozycja kursora w hero, -1..1 */
+  let tiltY = 0, tiltX = 0;       /* bazowy obrót z dokowania (bez kursora) */
+  /* Obrót telefonu = baza z dokowania + odchylenie od kursora (telefon „patrzy" za myszą). */
+  const stosujTelefon = () => {
+    if (!hpBody) return;
+    const ry = tiltY + ptrX * 13;
+    const rx = tiltX - ptrY * 9;
+    hpBody.style.transform = `rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`;
+  };
+  const dokujTelefon = (force) => {
+    if (!heroPhone || !hpBody || !heroEl || !slowoRozumiesz) return 0;
+    const hr = heroEl.getBoundingClientRect();
+    const ogr = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+    /* Na desktopie postęp z przypiętego scrolla. Na MOBILE (brak przypięcia) telefon jest
+       OD RAZU zadokowany za napisami — p=1 — zamiast startować duży i zasłaniać nagłówek. */
+    const przypiete = stackMode() && heroStack && heroStack.offsetHeight > window.innerHeight * 1.2;
+    const p = force != null ? force : (przypiete ? ogr(dokProgFn(), 0, 1) : 1);
+    dockProg = p;
+    const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;   /* ease-in-out */
+    /* start: telefon prawie na całą wysokość hero, lekko w PRAWO od środka */
+    const sStart = Math.min((hr.height * 0.9) / 624, hr.width * 0.62 / 300);
+    const xStart = hr.width * 0.05, yStart = 0;
+    /* cel: mały telefon za słowem „rozumiesz." (jego środek) */
+    const wr = slowoRozumiesz.getBoundingClientRect();
+    let sDock = Math.max(wr.height * 3.4 / 624, 0.24);
+    let xDock = (wr.left + wr.width / 2) - (hr.left + hr.width / 2);
+    let yDock = (wr.top + wr.height / 2) - (hr.top + hr.height / 2);
+    if (!przypiete) {
+      /* MOBILE: telefon zadokowany, lekko obrócony, w PRAWYM GÓRNYM rogu hero (najluźniejsze
+         miejsce) i trochę mniejszy — żeby cała scena była czytelniejsza na małym ekranie. */
+      sDock = 0.40;
+      xDock = hr.width * 0.21;
+      yDock = -hr.height * 0.24;
+    }
+    const x = xStart + (xDock - xStart) * e;
+    const y = yStart + (yDock - yStart) * e;
+    const s = sStart + (sDock - sStart) * e;
+    heroPhone.style.transform = `translate(-50%,-50%) translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${s.toFixed(3)})`;
+    tiltY = -15 * (1 - e);
+    tiltX = 4 * (1 - e);
+    if (!przypiete) { tiltY = -14; tiltX = 6; }   /* MOBILE: stały lekki obrót 3D — widać metaliczny bok */
+    stosujTelefon();
+    /* Cień RZUCANY przez telefon na napis. Telefon jest Z PRZODU napisu przez większość
+       dokowania i wtedy rzuca cień: z daleka szeroki i słaby, im bliżej — węższy i mocniejszy.
+       Gdy pod koniec chowa się ZA napis (dok > 0.72), cień gaśnie. */
+    if (hpCien) {
+      const przod = ogr((p - 0.10) / 0.55, 0, 1);    /* narasta, gdy telefon z przodu się zbliża */
+      const chowa = ogr((p - 0.76) / 0.18, 0, 1);    /* gaśnie dopiero pod sam koniec (chowa się za napis) */
+      /* Cień coraz SZERSZY, im bliżej napisu — obejmuje CORAZ WIĘCEJ liter „rozumiesz.".
+         Szerokość liczona OD SZEROKOŚCI SŁOWA (nie tylko od rozmiaru telefonu), żeby przy
+         dokowaniu przykrywał większą część wyrazu. */
+      const szer = wr.width * (0.55 + przod * 1.00);            /* od ~0.55 do ~1.55 szerokości słowa */
+      const wys  = Math.max(624 * s * 1.15, wr.height * (1.5 + przod * 0.9));
+      hpCien.style.width = Math.round(szer) + 'px';
+      hpCien.style.height = Math.round(wys) + 'px';
+      hpCien.style.transform =
+        `translate(-50%,-50%) translate(${Math.round(x)}px, ${Math.round(y + 30 * s)}px)`;
+      hpCien.style.opacity = (przod * (1 - chowa) * 0.92).toFixed(2);
+    }
+    /* Telefon zostaje NA WIERZCHU (przed napisem), rzucając cień; dopiero pod koniec
+       dokowania chowa się za napis. */
+    heroPhone.classList.toggle('docked', p > 0.72);
+    return p;
+  };
+  if (heroEl) {
+    heroEl.addEventListener('mousemove', ev => {
+      const r = heroEl.getBoundingClientRect();
+      ptrX = ((ev.clientX - r.left) / r.width - 0.5) * 2;
+      ptrY = ((ev.clientY - r.top) / r.height - 0.5) * 2;
+      stosujTelefon();
+    });
+    heroEl.addEventListener('mouseleave', () => { ptrX = 0; ptrY = 0; stosujTelefon(); });
+  }
   /* Rząd talerzy w hero: tuż pod nagłówkiem, dolne krawędzie na jednej linii
      („stoją na podłodze"), każdy pod innym kątem — kąty ustawia pętla przewijania. */
-  const ustawTalerzeHero = () => {
-    const h1 = document.querySelector('.hero h1');
-    const hero = document.querySelector('.topblok .hero');
-    const cont = document.querySelector('.talerze');
-    if (!h1 || !hero || !cont || !talerze.length) return;
-    const hr = h1.getBoundingClientRect(), cr = cont.getBoundingClientRect(), er = hero.getBoundingClientRect();
-    const waski = cr.width < 760;
-    /* Telefon: obok kolumny z tekstem nie ma wolnego pasa (akapit i przyciski idą przez
-       całą szerokość), więc talerze stoją na dole hero po prawej, lekko zachodząc na siebie
-       — jak prawdziwe bumpery oparte o siebie na podłodze siłowni.
-       Komputer: wolne miejsce jest zaraz pod nagłówkiem po prawej. */
-    /* Talerz jest obrócony, więc na ekranie zajmuje więcej miejsca niż jego własna
-       szerokość — bez tej poprawki trzeci wyjeżdżał poza prawą krawędź telefonu. */
-    const ef = t => { const a = (+t.dataset.kat || 0) * Math.PI / 180;
-      return t.offsetWidth * (Math.abs(Math.cos(a)) + Math.abs(Math.sin(a))); };
-    /* Telefon: talerze startują wyżej — na poziomie przycisku „APLIKACJA" (nie na dole hero). */
-    const aplBtn = document.querySelector('.hero-actions .btn');
-    const podloga = waski
-      ? (aplBtn ? (aplBtn.getBoundingClientRect().bottom - cr.top) + 10 : (er.bottom - cr.top) - 12)
-      : (hr.bottom - cr.top) + 12 + Math.max(...talerze.map(ef));
-    /* Ciasna grupka: dwa talerze stoją tuż obok siebie, trzeci ZA nimi (wyżej i między
-       nimi, pod spodem w kolejności rysowania). Start bliżej środka strony. */
-    const [a, b, c] = talerze;
-    const x0 = cr.width * (waski ? 0.40 : 0.50);
-    const poz = (t, x, wGlab) => {
-      t.style.left = Math.round(x + (ef(t) - t.offsetWidth) / 2) + 'px';
-      t.style.top = Math.round(podloga - (ef(t) + t.offsetHeight) / 2 - wGlab * ef(t)) + 'px';
-    };
-    poz(a, x0, 0);
-    poz(b, x0 + ef(a) * 0.92, 0);
-    if (c) poz(c, x0 + ef(a) * 0.46, 0.17);
-  };
+  /* Pozycje talerzy liczy teraz pętla przewijania w układzie ekranu (nakładka fixed),
+     więc ta funkcja nic już nie ustawia — zostaje pusta dla zgodności z wywołaniami. */
+  const ustawTalerzeHero = () => {};
   const stackEl = document.querySelector('.stack:not(.stack-about)');
   const doorL = document.getElementById('doorL');
   const doorR = document.getElementById('doorR');
@@ -1459,12 +1699,30 @@
       header.classList.toggle('scrolled', y > 40);
       if (reduced) return;
 
-      /* hero: treść ucieka szybciej, wideo delikatnie się przybliża */
-      if (y < vh) {
+      /* Gdy hero jest PRZYPIĘTE (desktop), treść ma stać nieruchomo — inaczej parallax/zanikanie
+         ze starego designu przesuwałyby i wygaszały napis, za którym dokuje się telefon.
+         Przy braku przypięcia (mobile) zostaje dawny parallax. */
+      const heroPinned = stackMode() && heroStack && heroStack.offsetHeight > vh * 1.2;
+      if (heroPinned) {
+        heroContent.style.transform = 'none';
+        heroContent.style.opacity = '1';
+      } else if (y < vh) {
         heroContent.style.transform = `translateY(${y * .35}px)`;
         heroContent.style.opacity = Math.max(1 - y / (vh * .72), 0);
         if (heroVideo) heroVideo.style.transform = `scale(${1 + y / vh * .12})`;
       }
+
+      /* pepitka jest przypięta do ekranu (fixed) — pokazujemy ją tylko, gdy blok górny
+         (hero + pasek + manifest) jest w kadrze; przy wjeździe sekcji „dlaczego" gaśnie,
+         żeby statyczne tło nie prześwitywało nad kolejnymi sekcjami. */
+      if (tbWzor && topblok) {
+        const tbr = topblok.getBoundingClientRect();
+        const f = Math.min(Math.max(tbr.bottom / (vh * 0.5), 0), 1);
+        tbWzor.style.opacity = (0.16 * f).toFixed(3);
+      }
+
+      /* telefon 3D: maleje i dokuje się za „rozumiesz." (ustawia też dockProg dla talerzy) */
+      dokujTelefon();
 
       /* parallax względem środka ekranu */
       pxEls.forEach(el => {
@@ -1478,31 +1736,41 @@
          w prawo — żeby minąć manifest prawą stroną ekranu i nie wchodzić na tekst.
          Za sekcją „dlaczego" po prostu znikają: sekcja ma własne tło i zasłania je.
          Pozycję liczymy w układzie ekranu, więc ruch odwraca się sam przy przewijaniu w górę. */
-      if (talerze.length && topblok) {
-        const contH = document.querySelector('.talerze').getBoundingClientRect();
-        const gornaDlaczego = stackEl ? stackEl.getBoundingClientRect().top : Infinity;
+      if (talerze.length) {
         const ogr = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
-        const droga = Math.max(topblok.offsetHeight, 1);
-        const u = ogr(y / droga, 0, 1);
-        /* ruch w bok: mocny na starcie, potem się wyczerpuje */
-        const wBok = 1 - Math.pow(1 - ogr(u / 0.34, 0, 1), 3);
-        talerze.forEach(t => {
-          const startX = contH.left + (parseFloat(t.style.left) || 0);
-          const startY = parseFloat(t.style.top) || 0;     /* pozycja na ekranie przy y = 0 */
-          /* Odchylenie w prawo ograniczamy tym, ile realnie zostało miejsca do krawędzi
-             ekranu — inaczej na wąskim ekranie talerz wyjeżdżałby poza stronę. */
-          const zapas = Math.max(innerWidth - 22 - (startX + t.offsetWidth * 1.42), 0);
-          const ex = startX + wBok * Math.min(innerWidth * (+t.dataset.x || 0.3), zapas);
-          const ey = startY + u * (+t.dataset.y || 190);
-          const obwod = Math.PI * (t.offsetWidth || 1);
-          /* obrót z realnie przebytej drogi w dokumencie — toczy się, nie ślizga */
-          const obrot = (+t.dataset.kat || 0) +
-            (((ex - startX) + (y + ey - startY)) / obwod) * 360;
+        /* Nakładka na ekran: talerze wytaczają się ZZA ruchomego paska pod hero (maska chowa
+           wszystko powyżej jego dolnej krawędzi), a potem toczą się w dół przez manifest —
+           KAŻDY Z INNĄ PRĘDKOŚCIĄ, więc rozjeżdżają się w trakcie. Znikają na „dlaczego".
+           Postęp q liczony ze scrolla, więc ruch odwraca się sam przy przewijaniu w górę. */
+        const pinEnd = (stackMode() && heroStack && heroStack.offsetHeight > vh * 1.2)
+          ? heroStack.offsetTop + heroStack.offsetHeight - vh : vh * 0.72;
+        /* maska: talerze są PEŁNE, ale schowane za paskiem — wyłaniają się spod jego dolnej
+           krawędzi w miarę, jak pasek jedzie w górę */
+        const pasek = document.querySelector('.marquee');
+        const pr = pasek ? pasek.getBoundingClientRect() : null;
+        const talerzeEl = document.querySelector('.talerze');
+        if (talerzeEl) {
+          const clipT = pr ? Math.max(pr.bottom, 0) : 0;
+          talerzeEl.style.clipPath = clipT > 1 ? `inset(${Math.round(clipT)}px 0px 0px 0px)` : 'none';
+        }
+        /* Talerze toczą się W DÓŁ wprost od przewiniętej drogi (NIE są „przyklejone" do paska —
+           wcześniej dlatego zawisały w połowie). Prędkość w kadrze jest stała i wyraźna, więc
+           poruszają się nieprzerwanie, aż wytoczą się z kadru. Maska paska (wyżej) sprawia, że
+           wyłaniają się spod niego. Każdy ma inną prędkość → rozjeżdżają się. */
+        const droga = Math.max(y - pinEnd, 0);
+        const predkosc = [0.62, 0.90, 0.48];        /* px w kadrze na px scrolla — różne = rozjazd */
+        const xFrac    = [0.30, 0.54, 0.74];        /* rozstaw w poprzek ekranu */
+        talerze.forEach((t, i) => {
+          const w = t.offsetWidth || 110, h = t.offsetHeight || 110;
+          const startCy = -h * 0.2;                                 /* start tuż nad kadrem (schowany maską) */
+          const cy = startCy + droga * predkosc[i % 3];             /* opada wraz z przewijaniem — bez zawisania */
+          const cx = innerWidth * xFrac[i % 3]
+                   + Math.min(droga, vh) / vh * innerWidth * 0.05 * (i % 2 ? -1 : 1);
+          const obwod = Math.PI * w;
+          const obrot = (+t.dataset.kat || 0) + (cy - startCy) / obwod * 360;
           t.style.transform =
-            `translate3d(${ex - startX}px, ${ey - (contH.top + startY)}px, 0) rotate(${obrot}deg)`;
-          /* Sekcja „dlaczego" ma własne tło i zasłania talerze — gdy przykryje talerz
-             w całości, gasimy go. Bez tego wystawałby potem nad sekcją planów. */
-          t.style.opacity = gornaDlaczego <= ey ? '0' : '1';
+            `translate(${Math.round(cx - w / 2)}px, ${Math.round(cy - h / 2)}px) rotate(${obrot.toFixed(1)}deg)`;
+          t.style.opacity = '1';   /* pełny kolor do końca */
         });
       }
 
@@ -1723,11 +1991,12 @@
   let mqTimer;
   window.addEventListener('resize', () => {
     clearTimeout(mqTimer);
-    mqTimer = setTimeout(() => { buildMarquee(); ustawTalerzeHero(); onScroll(); }, 200);
+    mqTimer = setTimeout(() => { buildMarquee(); ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); }, 200);
   });
-  /* pozycje talerzy pod kafelkami liczymy, gdy układ i obrazki są już gotowe */
-  window.addEventListener('load', () => { ustawTalerzeHero(); onScroll(); });
-  setTimeout(() => { ustawTalerzeHero(); onScroll(); }, 400);
+  /* pozycje talerzy pod kafelkami liczymy, gdy układ i obrazki są już gotowe;
+     telefon też ustawiamy od razu (przy redukcji ruchu — od razu zadokowany, żeby nie zasłaniał tekstu) */
+  window.addEventListener('load', () => { ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); });
+  setTimeout(() => { ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); }, 400);
 
   /* menu mobilne */
   const burger = document.getElementById('burger');
