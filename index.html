@@ -368,7 +368,7 @@
   .door-l{left:0}
   .door-r{right:0}
   /* druga kurtyna: o mnie nad przerywnikiem deszczu */
-  .stack-about{height:240vh}
+  .stack-about{height:260vh}   /* dłuższa droga scrolla = talerz przy haśle toczy się wyraźnie wolniej */
   .stack-pin .divider{height:100%;min-height:0}
   .about-content{position:relative;z-index:2;width:100%}
   #aboutPhoto,#aboutText{will-change:transform,opacity}
@@ -533,7 +533,7 @@
   .role-detail.show{opacity:1;transform:none}
 
   /* ---------- YT banner ---------- */
-  .yt{position:relative;overflow:hidden;padding:170px 0;text-align:center}
+  .yt{position:relative;overflow:hidden;padding:84px 0;text-align:center}
   .yt .bg{position:absolute;inset:-15% 0;background:url('assets/banner_gym.jpg') center/cover no-repeat;will-change:transform}
   .yt::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--black) 0%,rgba(7,9,8,.55) 30%,rgba(7,9,8,.55) 70%,var(--black) 100%);z-index:1}
   .yt .wrap{position:relative;z-index:2}
@@ -582,18 +582,34 @@
   @media(prefers-reduced-motion:reduce){.vp-track{transition:none}}
 
   /* ---------- opinie klientów ---------- */
-  .reviews{border-top:1px solid var(--line)}
-  .rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:56px}
-  .rev{background:var(--graphite);border:1px solid var(--line);border-radius:16px;padding:32px 28px;
-    display:flex;flex-direction:column;gap:14px}
-  .rev-stars{letter-spacing:.18em;font-size:1.05rem;color:var(--lime);line-height:1}
-  .rev-stars i{font-style:normal;color:rgba(255,255,255,.16)}
-  .rev-body{color:#DFE7E2;font-size:.97rem;line-height:1.65;flex:1}
-  .rev-author{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--muted)}
+  .reviews{border-top:1px solid var(--line);padding:64px 0}
+  /* Efekt 4: karuzela opinii KRĄŻĄCA PO ORBICIE — karty jadą po elipsie, przednia największa
+     i najczytelniejsza, boczne mniejsze, tylne przygaszone/rozmyte. Pozycje liczy JS co klatkę. */
+  .orbit-stage{position:relative;height:440px;margin-top:24px;overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+  .orbit{position:absolute;inset:0;perspective:1500px}
+  /* „Wypukłe" szkło: jaśniej u góry-lewej → ciemniej u dołu-prawej, wewnętrzne światło na górze
+     i cień na dole + mocny cień rzucany = wrażenie wypukłej, trójwymiarowej płytki. */
+  .orbit-card{position:absolute;left:50%;top:50%;width:320px;
+    background:linear-gradient(158deg,rgba(34,45,38,.94) 0%,rgba(16,22,19,.94) 60%,rgba(11,16,13,.95) 100%);
+    backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2);
+    border:1px solid rgba(200,230,210,.22);border-radius:20px;padding:26px 28px;
+    display:flex;flex-direction:column;gap:13px;
+    box-shadow:0 46px 74px -26px rgba(0,0,0,.82), 0 12px 26px -10px rgba(0,0,0,.6),
+      inset 0 1.5px 0 rgba(255,255,255,.16), inset 0 -20px 36px -22px rgba(0,0,0,.7);
+    will-change:transform,opacity}
+  .oc-stars{letter-spacing:.18em;font-size:1.05rem;color:var(--lime);line-height:1}
+  .oc-stars i{font-style:normal;color:rgba(255,255,255,.16)}
+  .oc-body{color:#DFE7E2;font-size:.98rem;line-height:1.6}
+  .oc-author{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.76rem;letter-spacing:.14em;
+    text-transform:uppercase;color:#8fbf8a}
+  @media(max-width:640px){.orbit-stage{height:406px}
+    .orbit-card{width:min(75vw,262px);padding:20px 20px;gap:11px}
+    .orbit-card .oc-body{font-size:.92rem;line-height:1.5}}
 
   /* ---------- newsletter ---------- */
-  .nl{border-top:1px solid var(--line)}
+  .nl{border-top:1px solid var(--line);padding:70px 0}
   .nl-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
   .nl h2{font-size:clamp(1.7rem,3vw,2.5rem);color:#fff;margin-bottom:14px}
   .nl p{color:var(--muted);max-width:420px}
@@ -1141,9 +1157,12 @@
 <!-- ===== OPINIE (pokazuje się dopiero, gdy są zatwierdzone opinie) ===== -->
 <section class="reviews" id="opinie" hidden>
   <div class="wrap">
-    <div class="sec-label rv">06 — Opinie</div>
-    <h2 class="sec-title rv rv2">Co mówią osoby,<br>które już trenują.</h2>
-    <div class="rev-grid" id="revGrid"></div>
+    <div class="sec-label rv" style="justify-content:center">06 — Opinie</div>
+    <h2 class="sec-title rv rv2" style="text-align:center;margin-left:auto;margin-right:auto">Co mówią osoby,<br>które <span style="color:var(--lime)">już trenują</span>.</h2>
+    <!-- Karuzela po orbicie: karty (buduje je renderOpinie z danych) krążą po elipsie; JS pozycjonuje. -->
+    <div class="orbit-stage rv rv3">
+      <div class="orbit" id="revGrid"></div>
+    </div>
   </div>
 </section>
 
@@ -1554,15 +1573,16 @@
     const xStart = hr.width * 0.05, yStart = 0;
     /* cel: mały telefon za słowem „rozumiesz." (jego środek) */
     const wr = slowoRozumiesz.getBoundingClientRect();
-    let sDock = Math.max(wr.height * 3.4 / 624, 0.24);
-    let xDock = (wr.left + wr.width / 2) - (hr.left + hr.width / 2);
-    let yDock = (wr.top + wr.height / 2) - (hr.top + hr.height / 2);
+    /* WEB: telefon dokuje się za „rozumiesz." — trochę mniejszy i przesunięty w prawo/górę. */
+    let sDock = Math.max(wr.height * 2.95 / 624, 0.22);
+    let xDock = (wr.left + wr.width / 2) - (hr.left + hr.width / 2) + hr.width * 0.055;
+    let yDock = (wr.top + wr.height / 2) - (hr.top + hr.height / 2) - hr.height * 0.06;
     if (!przypiete) {
       /* MOBILE: telefon zadokowany, lekko obrócony, w PRAWYM GÓRNYM rogu hero (najluźniejsze
          miejsce) i trochę mniejszy — żeby cała scena była czytelniejsza na małym ekranie. */
       sDock = 0.40;
-      xDock = hr.width * 0.21;
-      yDock = -hr.height * 0.24;
+      xDock = hr.width * 0.28;
+      yDock = -hr.height * 0.245;
     }
     const x = xStart + (xDock - xStart) * e;
     const y = yStart + (yDock - yStart) * e;
@@ -1758,7 +1778,9 @@
            poruszają się nieprzerwanie, aż wytoczą się z kadru. Maska paska (wyżej) sprawia, że
            wyłaniają się spod niego. Każdy ma inną prędkość → rozjeżdżają się. */
         const droga = Math.max(y - pinEnd, 0);
-        const predkosc = [0.62, 0.90, 0.48];        /* px w kadrze na px scrolla — różne = rozjazd */
+        /* px w kadrze na px scrolla (różne = rozjazd). Na WEBIE mniejsze = mniejsza czułość na
+           scroll (talerze toczą się łagodniej); na mobile bez zmian. */
+        const predkosc = stackMode() ? [0.45, 0.65, 0.35] : [0.62, 0.90, 0.48];
         const xFrac    = [0.30, 0.54, 0.74];        /* rozstaw w poprzek ekranu */
         talerze.forEach((t, i) => {
           const w = t.offsetWidth || 110, h = t.offsetHeight || 110;
@@ -1813,8 +1835,9 @@
         aboutText.style.opacity = Math.max(1 - e2 * 1.2, 0);
         aboutLayer.style.pointerEvents = e2 > .4 ? 'none' : '';
 
-        /* talerz toczy się i odsłania hasło w miarę rozjeżdżania się kurtyny „o mnie" */
-        rollRysuj(ogr01((p2 - .5) / .32));
+        /* talerz toczy się i odsłania hasło w miarę rozjeżdżania się kurtyny „o mnie".
+           Szeroki zakres na dłuższej sekcji = talerz jedzie WYRAŹNIE wolniej. */
+        rollRysuj(ogr01((p2 - .44) / .52));
       }
       /* Na telefonie nie ma kurtyny (sekcje idą jedna pod drugą), więc toczeniem
          steruje po prostu pozycja przerywnika na ekranie. */
@@ -1954,18 +1977,64 @@
     if (!sec || !grid) return;
     const esc = s => String(s == null ? '' : s)
       .replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+    const reducedOrbit = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    let orbitRAF = 0, orbitPaused = false, orbitT = 0;
+    /* Krążenie po orbicie: karty rozstawione co 360/N wokół osi; kąt rośnie z czasem.
+       „Głębia" = cos(kąta): przód (=1) największy i ostry, tył (=-1) mały, przygaszony, rozmyty. */
+    function startOrbit() {
+      cancelAnimationFrame(orbitRAF);
+      const stage = grid.parentElement;
+      const cards = [...grid.children];
+      const N = cards.length;
+      if (!N) return;
+      let last = performance.now();
+      const tick = now => {
+        const dt = Math.min((now - last) / 1000, 0.05); last = now;
+        if (!orbitPaused && !reducedOrbit) orbitT += dt * 0.34;   /* prędkość krążenia */
+        /* promień elipsy: na szerokim ekranie karty rozstawione; na wąskim WIĘKSZY promień, żeby
+           przednia była na środku, a sąsiednie schodziły na brzegi (peek) — bez nakładania. */
+        const a = stage.clientWidth > 640 ? Math.min(stage.clientWidth * 0.34, 330) : stage.clientWidth * 0.72;
+        cards.forEach((c, i) => {
+          const th = orbitT + (i / N) * Math.PI * 2;
+          const depth = Math.cos(th);                            /* 1 = przód, -1 = tył */
+          const x = Math.sin(th) * a;
+          const s = 0.64 + (depth + 1) / 2 * 0.44;               /* 0.64 .. 1.08 */
+          const op = 0.26 + (depth + 1) / 2 * 0.74;
+          const y = depth * 34;                                  /* przód NIŻEJ, tył WYŻEJ (łuk) */
+          const ry = -Math.sin(th) * 19;                         /* obrót 3D — boczne karty pod kątem */
+          c.style.transform = `translate(-50%,-50%) translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${s.toFixed(3)}) rotateY(${ry.toFixed(1)}deg)`;
+          c.style.opacity = op.toFixed(2);
+          c.style.zIndex = String(Math.round((depth + 1) * 100));
+          c.style.filter = depth < 0.25 ? `blur(${((0.25 - depth) * 2.4).toFixed(1)}px)` : 'none';
+        });
+        orbitRAF = requestAnimationFrame(tick);
+      };
+      orbitRAF = requestAnimationFrame(tick);
+      /* Pauza: na desktopie (hover) — najechanie pauzuje, zjechanie wznawia. Na DOTYKU (mobile)
+         hover „się zawiesza" (mouseleave nie przychodzi) i karuzela zostawała zatrzymana na stałe —
+         dlatego na dotyku pauzujemy TYLKO na czas dotknięcia i wznawiamy po puszczeniu palca. */
+      if (window.matchMedia('(hover:hover)').matches) {
+        stage.addEventListener('mouseenter', () => { orbitPaused = true; });
+        stage.addEventListener('mouseleave', () => { orbitPaused = false; });
+      } else {
+        stage.addEventListener('touchstart', () => { orbitPaused = true; }, { passive: true });
+        stage.addEventListener('touchend', () => { orbitPaused = false; });
+        stage.addEventListener('touchcancel', () => { orbitPaused = false; });
+      }
+    }
     window.renderOpinie = rows => {
       const list = (Array.isArray(rows) ? rows : []).filter(r => r && r.body);
       if (!list.length) return false;
       grid.innerHTML = list.map(r => {
         const n = Math.max(0, Math.min(5, Math.round(r.rating || 0)));
-        return `<article class="rev">
-            <div class="rev-stars" aria-label="Ocena ${n} na 5">${'★'.repeat(n)}<i>${'★'.repeat(5 - n)}</i></div>
-            <p class="rev-body">${esc(r.body)}</p>
-            ${r.author_name ? `<span class="rev-author">— ${esc(r.author_name)}</span>` : ''}
+        return `<article class="orbit-card">
+            <div class="oc-stars" aria-label="Ocena ${n} na 5">${'★'.repeat(n)}<i>${'★'.repeat(5 - n)}</i></div>
+            <p class="oc-body">${esc(r.body)}</p>
+            ${r.author_name ? `<span class="oc-author">— ${esc(r.author_name)}</span>` : ''}
           </article>`;
       }).join('');
       sec.hidden = false;
+      startOrbit();
       return true;
     };
     fetch(`${SUPA_URL}/rest/v1/reviews?select=rating,body,author_name&published=eq.true`, {
@@ -1974,6 +2043,8 @@
       .then(r => (r.ok ? r.json() : []))
       .then(window.renderOpinie)
       .catch(() => {});
+    /* Opinie do orbity ładują się WYŁĄCZNIE z bazy (Supabase, tylko zatwierdzone). Dopóki nie ma
+       żadnej prawdziwej — sekcja pozostaje ukryta. (Atrapy demo były tylko lokalnie, do podglądu.) */
   })();
 
   /* pasek marquee — buduje tyle powtórzeń, żeby wypełnić każdą szerokość ekranu bez dziury */
