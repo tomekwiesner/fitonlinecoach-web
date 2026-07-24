@@ -520,17 +520,35 @@
     background:radial-gradient(500px 300px at 70% 20%,rgba(153,230,109,.08),transparent 60%)}
   .about-visual img{position:relative;z-index:1;filter:drop-shadow(0 20px 40px rgba(0,0,0,.5))}
   .about p{color:var(--muted);margin-bottom:18px;max-width:480px}
-  .roles{display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px}
-  .role{border:1px solid var(--line);padding:10px 20px;font-size:.8rem;font-weight:600;
-    letter-spacing:.12em;text-transform:uppercase;color:#CFD8D2;border-radius:2px;transition:.25s;
-    background:transparent;font-family:inherit;cursor:pointer}
-  .role:hover{border-color:var(--lime);color:var(--lime)}
-  .role.active{border-color:var(--lime);background:var(--lime);color:var(--black)}
-  /* rozwijane kwalifikacje pod rolami */
+  /* Role z MIKRO-INTERAKCJAMI (efekt 2): obrót 3D za kursorem, unos, poświata, wypełnienie sweep. */
+  .roles{position:relative;display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 20px;perspective:800px}
+  .role{position:relative;overflow:hidden;isolation:isolate;border:1px solid var(--line);
+    padding:11px 22px;font-size:.8rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:#CFD8D2;border-radius:7px;background:transparent;font-family:inherit;cursor:pointer;
+    transform-style:preserve-3d;will-change:transform;
+    transition:transform .16s ease-out, border-color .25s, color .25s, box-shadow .25s}
+  .role>span{position:relative;z-index:1;display:inline-block;transition:transform .2s}
+  /* limonkowe wypełnienie wjeżdżające z lewej — dla WYBRANEJ roli (klik) */
+  .role::before{content:"";position:absolute;inset:0;z-index:0;background:var(--lime);
+    transform:translateX(-101%);transition:transform .38s cubic-bezier(.6,.02,.2,1)}
+  /* Najechanie = delikatne POWIĘKSZENIE + poświata. Skala tylko ROŚNIE, więc kursor nigdy nie
+     „wypada" spod przycisku — brak migotania :hover (żadnego drżenia; wcześniej robił je obrót/unos). */
+  .role:hover{border-color:var(--lime);color:var(--lime);transform:scale(1.05);
+    box-shadow:0 14px 30px -10px rgba(153,230,109,.5)}
+  .role:hover>span{transform:translateY(-1px)}
+  .role.active{border-color:var(--lime);color:var(--black);
+    box-shadow:0 14px 32px -12px rgba(153,230,109,.6)}
+  .role.active::before{transform:translateX(0)}
+  .role.press{transform:scale(.95)!important}     /* wciśnięcie */
+  @media(prefers-reduced-motion:reduce){.role{transition:border-color .2s,color .2s}.role::before{transition:none}}
+  /* Kwalifikacje pod rolami. Panel jest ZAWSZE w układzie (rezerwuje wysokość), a gdy nic nie
+     wybrano — jest tylko niewidoczny (opacity 0). Dzięki temu treść pod nim nie skacze, gdy się
+     pojawia/znika. min-height = wysokość 1 wiersza (na telefonie najdłuższy wpis ma 2 wiersze). */
   .role-detail{margin:0 0 28px;padding:16px 20px;border-left:2px solid var(--lime);
     background:rgba(153,230,109,.06);border-radius:0 8px 8px 0;color:#DFE7E2;font-size:.94rem;
-    opacity:0;transform:translateY(-6px);transition:opacity .3s,transform .3s}
+    min-height:56px;opacity:0;transform:translateY(-6px);transition:opacity .3s,transform .3s}
   .role-detail.show{opacity:1;transform:none}
+  @media(max-width:640px){.role-detail{min-height:80px}}
 
   /* ---------- YT banner ---------- */
   .yt{position:relative;overflow:hidden;padding:84px 0;text-align:center}
@@ -1106,11 +1124,11 @@
             <p class="rv rv3">Wierzę w złoty środek — mądry ruch, proste zasady odżywiania
               i systematyczność, którą utrzymasz latami.</p>
             <div class="roles rv rv4" id="roles">
-              <button class="role" type="button" data-detail="Szkolenia EXOS, EPI – NCSC, IFBB i inne">Trener personalny</button>
-              <button class="role" type="button" data-detail="mgr fizjoterapii — AWF Katowice">Fizjoterapeuta</button>
-              <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice">Dietetyk</button>
+              <button class="role" type="button" data-detail="Szkolenia EXOS, EPI – NCSC, IFBB i inne"><span>Trener personalny</span></button>
+              <button class="role" type="button" data-detail="mgr fizjoterapii — AWF Katowice"><span>Fizjoterapeuta</span></button>
+              <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice"><span>Dietetyk</span></button>
             </div>
-            <div class="role-detail" id="roleDetail" hidden></div>
+            <div class="role-detail" id="roleDetail" aria-live="polite"></div>
             <a class="btn btn-lime rv rv4" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Trenuj ze mną</a>
           </div>
         </div>
@@ -1870,17 +1888,25 @@
   document.querySelectorAll('.role').forEach(btn => btn.addEventListener('click', () => {
     const wasActive = btn.classList.contains('active');
     document.querySelectorAll('.role').forEach(b => b.classList.remove('active'));
-    if (wasActive) {                       /* ponowny klik zwija szczegóły */
+    if (wasActive) {                       /* ponowny klik chowa treść — MIEJSCE zostaje zarezerwowane */
       roleDetail.classList.remove('show');
-      setTimeout(() => { roleDetail.hidden = true; }, 300);
       return;
     }
     btn.classList.add('active');
     roleDetail.textContent = btn.dataset.detail;
-    roleDetail.hidden = false;
     void roleDetail.offsetHeight;
     roleDetail.classList.add('show');
   }));
+  /* Mikro-interakcje ról (efekt 2): najechanie/skala robi CSS (:hover — bezpieczne, bez drżenia).
+     Tu tylko krótka reakcja na WCIŚNIĘCIE (klik/dotyk). */
+  document.querySelectorAll('.role').forEach(btn => {
+    const down = () => btn.classList.add('press');
+    const up = () => btn.classList.remove('press');
+    btn.addEventListener('pointerdown', down);
+    btn.addEventListener('pointerup', up);
+    btn.addEventListener('pointercancel', up);
+    btn.addEventListener('pointerleave', up);
+  });
 
   /* przełącznik planów — kafelki podmieniają treść głównej karty */
   const plans = [
