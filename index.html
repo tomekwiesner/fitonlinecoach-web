@@ -348,12 +348,168 @@
   .card p{color:var(--muted);font-size:.94rem;position:relative}
   .card-hint{margin-top:auto;padding-top:20px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
     color:var(--lime);opacity:.75;position:relative}
-  .card-back{transform:rotateY(180deg);background:var(--graphite-2);display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:16px;padding:26px}
-  .card-back img{max-height:74%;width:auto;max-width:100%;border-radius:12px;
-    border:1px solid rgba(255,255,255,.14);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+  /* --dev-h = WSPÓLNA wysokość wszystkich trzech urządzeń na kafelkach (telefon/tablet/laptop) */
+  .card-back{--dev-h:214px;transform:rotateY(180deg);background:var(--graphite-2);display:flex;
+    flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px}
   .card-back b{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.75rem;letter-spacing:.16em;
     text-transform:uppercase;color:var(--lime)}
+  /* Nieaktywna strona kafelka nie może łapać kliknięć — inaczej klik „w rewers" trafiałby w awers. */
+  .card:not(.flipped) .card-back{pointer-events:none}
+  .card.flipped .card-front{pointer-events:none}
+  /* ZRZUT ZADOKOWANY W URZĄDZENIU 3D (rewers kafelka): 1 = telefon, 2 = tablet, 3 = laptop.
+     Perspektywa jest WEWNĄTRZ transformu (perspective(...)), więc działa mimo że kafelek sam jest
+     obrócony w 3D. Grubość = schodkowane cienie w prawo/dół (metaliczny bok) + miękki cień. */
+  .cb-dev{position:relative;flex:0 0 auto;cursor:zoom-in;will-change:transform;
+    transition:transform .35s cubic-bezier(.2,.7,.3,1)}
+  .cb-body{position:relative;background:linear-gradient(150deg,#3d4a43 0%,#212b26 34%,#0e1512 100%);
+    box-shadow:inset 0 0 0 1px rgba(200,230,210,.30), inset 0 1.5px 0 rgba(255,255,255,.18),
+      2px 2px 0 -0.5px #263029, 4px 4px 0 -1px #1c2521, 6px 6px 0 -1.5px #141b17,
+      8px 8px 0 -2px #0e1412, 0 26px 52px -18px rgba(0,0,0,.85),
+      0 0 34px 2px rgba(153,230,109,.18)}
+  .cb-screen{position:relative;overflow:hidden;background:#0b0f0d;box-shadow:inset 0 0 0 1.5px rgba(5,8,6,.55)}
+  .cb-screen img{display:block;max-width:none}   /* max-width:none — globalne 100% psułoby proporcje */
+  /* delikatny połysk szkła na ekranie — ukośna smuga jak odbicie światła */
+  .cb-screen::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+    background:linear-gradient(122deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.03) 22%,transparent 42%)}
+  /* --- TELEFON (kafelek 1) --- */
+  .cb-phone{height:var(--dev-h);transform:perspective(820px) rotateY(-10deg) rotateX(3deg)}
+  .cb-phone:hover{transform:perspective(820px) rotateY(-4deg) rotateX(1deg) scale(1.045)}
+  .cb-phone .cb-body{height:100%;padding:6px;border-radius:20px}
+  /* stałe proporcje ekranu telefonu (9:19.5) — dzięki temu telefon ma ten sam kształt
+     niezależnie od tego, jaki zrzut w nim pokazujemy */
+  .cb-phone .cb-screen{height:100%;aspect-ratio:9/19.5;border-radius:15px}
+  .cb-phone .cb-screen img{width:100%;height:100%;object-fit:cover;object-position:top}
+  /* WERSJE URZĄDZEŃ: na dużym ekranie telefon/tablet/laptop, na telefonie — same telefony */
+  .cb-mob{display:none}
+  .cb-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:42px;height:5px;
+    border-radius:99px;background:rgba(0,0,0,.62);z-index:2}
+  /* --- TABLET (kafelek 2) — proporcje najnowszego iPada Pro: ekran 4:3 (w pionie 3:4),
+         cienkie, RÓWNE ramki dookoła, duży promień narożników, kamerka na DŁUŻSZEJ krawędzi
+         (w pionie: po lewej, na środku) — tak jak w iPadzie Pro M4. --- */
+  .cb-tablet{height:var(--dev-h);transform:perspective(900px) rotateY(-9deg) rotateX(3deg)}
+  .cb-tablet:hover{transform:perspective(900px) rotateY(-4deg) rotateX(1deg) scale(1.045)}
+  .cb-tablet .cb-body{height:100%;padding:5px;border-radius:16px}
+  .cb-tablet .cb-screen{height:100%;aspect-ratio:3/4;border-radius:11px}
+  .cb-tablet .cb-screen img{width:100%;height:100%;object-fit:cover;object-position:top}
+  .cb-cam{position:absolute;left:2.5px;top:50%;transform:translateY(-50%);width:3px;height:3px;
+    border-radius:50%;background:rgba(0,0,0,.65);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.16);z-index:3}
+  /* --- LAPTOP (kafelek 3) — jak MacBook: ekran ~16:10.4 z wcięciem (notch) u góry,
+         cienkie czarne ramki, aluminiowa pokrywa i podstawa z wycięciem z przodu. --- */
+  /* laptop: sterujemy wysokością EKRANU, żeby cała bryła (pokrywa + pulpit) miała tę samą
+     wysokość co telefon i tablet; szerokość wynika z proporcji 1.54 */
+  /* margines na dole = miejsce na widoczny (skrócony perspektywą) pulpit — dzięki niemu
+     środkowanie w kafelku bierze pod uwagę całą bryłę i laptop stoi równo z telefonem/tabletem */
+  /* `perspective` (właściwość) działa na DZIECI — dzięki temu obrócony pulpit dostaje prawdziwą
+     perspektywę: przy zawiasie ma DOKŁADNIE szerokość pokrywy, a z przodu tylko wydaje się szerszy
+     (jak w prawdziwym MacBooku). `perspective()` w transformie pochyla całą bryłę. */
+  .cb-laptop{width:auto;margin-bottom:calc(var(--dev-h) * 0.155);
+    perspective:1500px;perspective-origin:50% 0%;
+    transform:perspective(1050px) rotateY(-8deg) rotateX(4deg)}
+  .cb-laptop .cb-screen{height:calc(var(--dev-h) * 0.79)}
+  .cb-laptop:hover{transform:perspective(1050px) rotateY(-3deg) rotateX(1deg) scale(1.04)}
+  /* pokrywa: cienka aluminiowa obwódka + czarne, równe ramki ekranu i minimalnie grubszy „podbródek";
+     na dole zawias — ciemniejszy pasek łączący pokrywę z pulpitem */
+  .cb-laptop .cb-body{padding:4px 4px 6px;border-radius:9px 9px 2px 2px;
+    background:linear-gradient(160deg,#55635c 0%,#39443e 26%,#1b231f 72%,#121815 100%)}
+  /* ZAWIAS: ciemna, wąska belka między pokrywą a pulpitem — w referencji to wyraźna szczelina
+     węższa od obudowy, z cieniem rzucanym na pulpit tuż pod nią. */
+  .cb-laptop .cb-body::before{content:"";position:absolute;left:11%;right:11%;bottom:-3px;height:4px;
+    border-radius:0 0 3px 3px;
+    background:linear-gradient(180deg,#050807 0%,#141b18 55%,#2b352f 100%);
+    box-shadow:0 3px 7px -2px rgba(0,0,0,.9);z-index:4}
+  .cb-laptop .cb-screen{aspect-ratio:1.54;border-radius:3px;background:#050706}
+  .cb-laptop .cb-screen img{width:100%;height:100%;object-fit:cover;object-position:top}
+  .cb-notch-mac{position:absolute;top:5px;left:50%;transform:translateX(-50%);width:13%;height:6px;
+    border-radius:0 0 4px 4px;background:#080b0a;z-index:3}
+  /* PULPIT MacBooka: prawdziwa, położona płasko klawiatura (obrót w 3D) z klawiszami i gładzikiem.
+     `preserve-3d` na obudowie pozwala pochylić pulpit względem pokrywy. */
+  .cb-laptop{transform-style:preserve-3d}
+  /* Pulpit jest POZYCJONOWANY ABSOLUTNIE (nie zajmuje miejsca w układzie) — dzięki temu wysokość
+     bryły laptopa liczy się jak sama pokrywa i wszystkie trzy urządzenia stoją w jednej linii. */
+  /* pulpit ma DOKŁADNIE szerokość pokrywy (jak w MacBooku) — rozszerzenie ku przodowi
+     robi sama perspektywa z rodzica, a nie sztuczne poszerzenie elementu */
+  .cb-deck{position:absolute;top:100%;left:0;display:block;width:100%;aspect-ratio:3.45;
+    transform-origin:top center;transform:rotateX(77deg);
+    background:linear-gradient(180deg,#4a564f 0%,#333d38 22%,#242c28 62%,#161c19 100%);
+    border-radius:0 0 16px 16px;   /* zaokrąglona przednia krawędź — jak w mockupie MacBooka */
+    box-shadow:0 24px 40px -16px rgba(0,0,0,.92), inset 0 1px 0 rgba(255,255,255,.18),
+      inset 0 -2px 0 rgba(255,255,255,.16)}   /* jasny rant przedniej krawędzi (aluminium) */
+  /* zagłębienie klawiatury + siatka klawiszy */
+  /* KLAWIATURA jak w MacBooku: czarne zagłębienie („studnia"), a w nim jasne klawisze rozdzielone
+     ciemnymi szczelinami. Dwie warstwy tła: dolna robi KOLUMNY klawiszy, górna przykrywa je
+     poziomymi szczelinami — w efekcie powstaje siatka 14 × 6 klawiszy. */
+  .cb-keys{position:absolute;left:5.5%;right:5.5%;top:8%;height:54%;border-radius:3px;
+    background-color:#080b0a;
+    background-image:
+      repeating-linear-gradient(180deg,transparent 0 13.4%,#080b0a 13.4% 16.66%),
+      repeating-linear-gradient(90deg,#1c2320 0 5.9%,#080b0a 5.9% 7.14%);
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.75), inset 0 2px 8px rgba(0,0,0,.7)}
+  /* spacja w dolnym rzędzie */
+  .cb-keys::after{content:"";position:absolute;left:33%;right:33%;bottom:1.5%;height:11.9%;
+    background:#1c2320;box-shadow:inset 0 0 0 1px rgba(0,0,0,.55)}
+  /* gładzik — duży, wyśrodkowany pod klawiaturą (proporcje jak w MacBooku) */
+  .cb-pad{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);width:31%;height:28%;
+    border-radius:4px;background:linear-gradient(180deg,#39433d,#2a332e);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 1px 4px rgba(0,0,0,.4)}
+  /* wycięcie na palec z przodu obudowy (jak w mockupie: półokrągłe, na środku krawędzi) */
+  .cb-deck::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);
+    width:15%;height:7%;border-radius:8px 8px 0 0;
+    background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.28))}
+  @media(prefers-reduced-motion:reduce){.cb-dev{transition:none}}
+
+  /* ---------- DUŻY PODGLĄD ZRZUTU (liquid glass) ----------
+     Cała strona za spodem przygasa i rozmywa się (backdrop-filter), a zrzut siedzi w szklanej
+     ramce z odblaskiem. Klik w dowolne miejsce = zamknięcie. */
+  /* UWAGA: bez tego atrybut `hidden` NIE działa — `display:grid` niżej by go nadpisał,
+     a niewidoczna warstwa łapałaby kliknięcia na całej stronie (kursor „lupka z minusem"). */
+  .shot[hidden]{display:none}
+  .shot{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:26px 20px;
+    background:rgba(6,10,8,.58);
+    backdrop-filter:blur(20px) saturate(.85) brightness(.5);
+    -webkit-backdrop-filter:blur(20px) saturate(.85) brightness(.5);
+    opacity:0;transition:opacity .42s ease;cursor:zoom-out}
+  .shot.open{opacity:1}
+  /* Bez dodatkowej ramki/tła — na ciemnym, rozmytym tle stoi WYŁĄCZNIE urządzenie. */
+  .shot-glass{position:relative;margin:0;padding:0;background:none;border:0;box-shadow:none;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;transform:scale(.9) translateY(16px);
+    transition:opacity .4s ease, transform .52s cubic-bezier(.2,.9,.25,1)}
+  .shot.open .shot-glass{opacity:1;transform:none}
+  /* Powiększone URZĄDZENIE w szklanej ramce: duże i wyprostowane (bez przechyłu), bez reakcji
+     na najechanie — to już tylko podgląd. */
+  /* w powiększeniu urządzenie reaguje na kursor (kąty ustawia JS przez styl inline) */
+  .shot-glass .cb-dev{cursor:zoom-out;position:relative;z-index:3;transition:transform .12s ease-out}
+  .shot-glass .cb-phone{height:min(74vh,660px)}
+  .shot-glass .cb-tablet{height:min(74vh,700px)}
+  /* w powiększeniu laptop ma szerokość z okna, a wysokość ekranu wynika z proporcji
+     (jawne `auto` kasuje wyliczanie z --dev-h, które obowiązuje tylko na kafelkach) */
+  .shot-glass .cb-laptop{width:min(60vw,680px)}
+  .shot-glass .cb-laptop .cb-screen{height:auto}
+  .shot-glass .cb-phone .cb-body{padding:9px;border-radius:34px}
+  .shot-glass .cb-phone .cb-screen{border-radius:26px}
+  .shot-glass .cb-phone .cb-notch{top:16px;width:70px;height:8px}
+  .shot-glass .cb-tablet .cb-body{padding:10px;border-radius:26px}
+  .shot-glass .cb-tablet .cb-screen{border-radius:18px}
+  .shot-glass .cb-tablet .cb-cam{left:4px;width:5px;height:5px}
+  .shot-glass .cb-laptop .cb-body{padding:11px 11px 15px;border-radius:16px 16px 5px 5px}
+  .shot-glass .cb-laptop .cb-screen{border-radius:6px}
+  .shot-glass .cb-laptop .cb-notch-mac{top:11px;height:11px;border-radius:0 0 7px 7px}
+  .shot-hint{position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:.7rem;
+    letter-spacing:.18em;text-transform:uppercase;color:rgba(223,231,226,.6)}
+  /* gdy podgląd otwarty — strona pod spodem stoi (bez przewijania); gutter rezerwowany globalnie,
+     więc zablokowanie przewijania nie przesuwa treści w bok */
+  html{scrollbar-gutter:stable}
+  html.shot-open{overflow:hidden}
+  @media(max-width:640px){
+    .shot-glass{padding:12px;border-radius:26px}
+    .shot-glass::after{border-radius:26px}
+    .shot-glass img{max-height:68vh;border-radius:18px}
+    .shot-hint{bottom:18px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .shot,.shot-glass{transition:none}
+    .shot-glass{transform:none}
+  }
 
   /* ---------- kurtyna: „dlaczego" rozjeżdża się i odsłania „jak to działa" ---------- */
   .stack{position:relative;height:300vh}
@@ -687,8 +843,10 @@
     .card h3{font-size:1.05rem;margin-bottom:10px}
     .card p{font-size:.88rem}
     .card-hint{padding-top:14px;font-size:.64rem}
-    .card-back{padding:18px}
-    .card-back img{max-height:78%}
+    .card-back{padding:18px;gap:9px;--dev-h:190px}
+    /* na telefonie wszystkie trzy kafelki pokazują TELEFON */
+    .cb-desk{display:none}
+    .cb-mob{display:block}
     .how-grid{grid-template-columns:1fr;gap:40px}
     .how-left{position:static}
     /* na telefonie kurtyna off — zwykłe sekcje jedna pod drugą (dlaczego przed jak-to-działa) */
@@ -953,8 +1111,11 @@
             <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
           </div>
           <div class="card-face card-back">
-            <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami">
-            <b>Biblioteka ćwiczeń</b>
+            <div class="cb-dev cb-phone" aria-label="Powiększ ekran: biblioteka ćwiczeń">
+              <div class="cb-body"><span class="cb-notch"></span>
+                <div class="cb-screen"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji na telefonie: biblioteka ćwiczeń z filmami"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -966,8 +1127,17 @@
             <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
           </div>
           <div class="card-face card-back">
-            <img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera">
-            <b>Wszystko po polsku</b>
+            <div class="cb-dev cb-tablet cb-desk" aria-label="Powiększ ekran: opis ćwiczenia po polsku">
+              <div class="cb-body"><span class="cb-cam"></span>
+                <div class="cb-screen"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji na tablecie: opis ćwiczenia po polsku ze wskazówkami trenera"></div>
+              </div>
+            </div>
+            <!-- na telefonie ten sam ekran pokazujemy w telefonie (tablet/laptop tylko na dużym ekranie) -->
+            <div class="cb-dev cb-phone cb-mob" aria-label="Powiększ ekran: opis ćwiczenia po polsku">
+              <div class="cb-body"><span class="cb-notch"></span>
+                <div class="cb-screen"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -979,8 +1149,18 @@
             <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
           </div>
           <div class="card-face card-back">
-            <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów">
-            <b>Kalendarz treningów</b>
+            <div class="cb-dev cb-laptop cb-desk" aria-label="Powiększ ekran: kalendarz treningów">
+              <div class="cb-body"><span class="cb-notch-mac"></span>
+                <div class="cb-screen"><img src="assets/screen_kalendarz_laptop.jpg" alt="Ekran aplikacji na laptopie: kalendarz treningów"></div>
+              </div>
+              <span class="cb-deck"><span class="cb-keys"></span><span class="cb-pad"></span></span>
+            </div>
+            <!-- na telefonie: ten sam kalendarz, ale w telefonie (pionowy zrzut) -->
+            <div class="cb-dev cb-phone cb-mob" aria-label="Powiększ ekran: kalendarz treningów">
+              <div class="cb-body"><span class="cb-notch"></span>
+                <div class="cb-screen"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1234,6 +1414,16 @@
     </div>
   </div>
 </footer>
+
+<!-- ===== DUŻY PODGLĄD ZRZUTU Z APLIKACJI (klik w kafelek „dlaczego") =====
+     Kafelek się obraca, a zrzut wyskakuje TUTAJ na całą stronę w szklanej ramce (liquid glass),
+     reszta strony przygasa i się rozmywa. Klik w podgląd = zamknięcie i powrót kafelka.
+     Warstwa musi siedzieć POZA sekcjami (kurtyna „dlaczego" ma overflow:hidden i by ją przycięła). -->
+<div class="shot" id="shot" role="dialog" aria-modal="true" aria-label="Powiększony ekran aplikacji" hidden>
+  <!-- tu JS wstawia KOPIĘ całego urządzenia (telefon/tablet/laptop) z kafelka -->
+  <div class="shot-glass" id="shotGlass"></div>
+  <span class="shot-hint">Kliknij, żeby zamknąć</span>
+</div>
 
 <!-- ===== BANER ZGÓD NA CIASTECZKA =====
      Nic nie śledzi, dopóki klient nie kliknie. Zgoda zapisywana na domenie nadrzędnej
@@ -1870,14 +2060,71 @@
 
 
   /* karty — poświata podąża za kursorem + klik obraca kafelek na ekran z aplikacji */
+  /* ---- DUŻY PODGLĄD ZRZUTU z kafelków „dlaczego" (liquid glass) ----
+     Otwiera się po obrocie kafelka; klik w podgląd (lub Esc) zamyka go i cofa obrót kafelka. */
+  const shot = document.getElementById('shot');
+  const shotGlass = document.getElementById('shotGlass');
+  const reducedShot = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  let shotCard = null;
+  /* Na duży ekran przenosimy CAŁE urządzenie (obudowa + ekran) — kopiujemy je z kafelka. */
+  const shotOpen = card => {
+    if (!shot || !shotGlass) return;
+    /* kafelek może mieć dwa warianty urządzenia (duży ekran / telefon) — bierzemy WIDOCZNY */
+    const dev = [...card.querySelectorAll('.cb-dev')].find(d => d.offsetParent !== null)
+      || card.querySelector('.cb-dev');
+    if (!dev) return;
+    shotCard = card;
+    const kopia = dev.cloneNode(true);
+    kopia.removeAttribute('aria-label');
+    kopia.style.transform = 'perspective(1500px) rotateY(0deg) rotateX(0deg)';   /* start: na wprost */
+    shotGlass.innerHTML = '';
+    shotGlass.appendChild(kopia);
+    shot.hidden = false;
+    document.documentElement.classList.add('shot-open');   /* strona pod spodem stoi */
+    void shot.offsetWidth;                                  /* reflow, żeby przejście zadziałało */
+    shot.classList.add('open');
+  };
+  /* Zamknięcie WRACA DO REWERSU kafelka (telefon dalej widoczny) — kafelek obraca się na przód
+     dopiero po kliknięciu w rewers obok telefonu. */
+  const shotClose = () => {
+    if (!shot || shot.hidden) return;
+    shot.classList.remove('open');
+    document.documentElement.classList.remove('shot-open');
+    shotCard = null;
+    setTimeout(() => { shot.hidden = true; shotGlass.innerHTML = ''; }, reducedShot ? 0 : 430);
+  };
+  if (shot) {
+    shot.addEventListener('click', shotClose);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') shotClose(); });
+    /* Powiększone urządzenie żyje w 3D — obraca się za kursorem po całym ciemnym ekranie. */
+    if (!reducedShot) {
+      shot.addEventListener('pointermove', e => {
+        const dev = shotGlass.firstElementChild;
+        if (!dev) return;
+        const px = (e.clientX / window.innerWidth - 0.5) * 2;    /* -1..1 */
+        const py = (e.clientY / window.innerHeight - 0.5) * 2;
+        dev.style.transform =
+          `perspective(1500px) rotateY(${(px * 15).toFixed(1)}deg) rotateX(${(-py * 10).toFixed(1)}deg)`;
+      });
+    }
+  }
+
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
       card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
       card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
     });
+    /* Klik w kafelek OBRACA go (awers ↔ rewers ze zrzutem w telefonie 3D).
+       Klik w sam TELEFON na rewersie — otwiera duży podgląd (liquid glass), bez obracania. */
     const flip = () => card.classList.toggle('flipped');
-    card.addEventListener('click', flip);
+    card.addEventListener('click', e => {
+      if (card.classList.contains('flipped') && e.target.closest('.cb-dev')) {
+        shotOpen(card);
+        return;
+      }
+      flip();
+    });
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
     });
