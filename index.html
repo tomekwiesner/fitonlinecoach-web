@@ -254,6 +254,12 @@
     letter-spacing:.12em;text-transform:uppercase;padding:18px 40px;border-radius:2px;cursor:pointer;transition:.25s;border:0}
   .btn-lime{background:var(--lime);color:var(--black)}
   .btn-lime:hover{box-shadow:0 0 34px rgba(153,230,109,.5);transform:translateY(-2px)}
+  /* przycisk „DOŁĄCZ” w hero: duże słowo + cena mniejszym drukiem pod spodem.
+     Drugi wiersz jest ZAMIERZONY, dzięki czemu napis mieści się nawet na 288 px. */
+  .btn-join{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:5px;padding:16px 46px;line-height:1}
+  .btn-join .bj-main{font-size:1.6rem;font-weight:900;letter-spacing:.13em;line-height:1}
+  .btn-join .bj-sub{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:lowercase;opacity:.72}
   .btn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.28)}
   .btn-ghost:hover{border-color:var(--lime);color:var(--lime)}
   .scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:2;display:flex;
@@ -547,6 +553,120 @@
   .stp .n{font-family:'Montserrat',sans-serif;font-weight:900;font-size:2.4rem;color:var(--lime);line-height:1}
   .stp h3{font-size:1.3rem;color:#fff;margin-bottom:10px}
   .stp p{color:var(--muted);font-size:.97rem}
+
+  /* ---------- PODGLĄD KROKU: mini-animacja w szklanym pop-upie ----------
+     Pokazuje się po najechaniu (lub tabulatorze) na TYTUŁ kroku. Animacje są zdefiniowane
+     dopiero w stanie „widoczny", dzięki czemu za każdym razem startują od początku
+     i nie chodzą w tle, gdy pop-up jest schowany. */
+  .stp{position:relative}
+  .sp-tit{display:inline-block;cursor:default}
+  .sp-pop{position:absolute;right:0;top:34px;z-index:20;width:264px;padding:12px;border-radius:16px;
+    background:rgba(16,24,20,.62);backdrop-filter:blur(14px) saturate(1.25);
+    -webkit-backdrop-filter:blur(14px) saturate(1.25);border:1px solid rgba(200,230,210,.24);
+    box-shadow:0 30px 60px -22px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.14);
+    opacity:0;visibility:hidden;transform:translateY(8px) scale(.97);pointer-events:none;
+    transition:opacity .28s ease, transform .32s cubic-bezier(.2,.9,.25,1), visibility .28s}
+  .stp:hover .sp-pop,.sp-tit:focus-visible ~ .sp-pop{opacity:1;visibility:visible;transform:none}
+  .sp-scene{position:relative;height:150px;border-radius:11px;overflow:hidden;
+    background:linear-gradient(160deg,#0e1512,#080b0a)}
+
+  /* --- 01. „Wybierz plan": kursor klika w guzik „Kup plan" na stronie --- */
+  .sp-www .sp-bar{position:absolute;left:0;right:0;top:0;height:16px;background:#161d19;
+    display:flex;align-items:center;gap:4px;padding-left:7px}
+  .sp-www .sp-bar i{width:4px;height:4px;border-radius:50%;background:#3b4a42}
+  .sp-plan{position:absolute;left:16px;right:16px;top:28px;height:56px;border-radius:8px;
+    background:#141b17;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+  .sp-plan b{position:absolute;left:10px;top:12px;width:52%;height:7px;border-radius:4px;background:#2b3630}
+  .sp-plan em{position:absolute;left:10px;top:26px;width:34%;height:6px;border-radius:4px;background:#212a25}
+  .sp-btn{position:absolute;left:50%;top:98px;transform:translateX(-50%);padding:7px 18px;border-radius:7px;
+    background:var(--lime);color:#0c130c;font-family:'Montserrat',sans-serif;font-weight:800;
+    font-size:.62rem;letter-spacing:.1em;text-transform:uppercase}
+  .sp-cur{position:absolute;left:0;top:0;width:13px;height:13px;pointer-events:none;
+    background:linear-gradient(135deg,#fff 42%,transparent 42%);
+    clip-path:polygon(0 0,0 76%,26% 58%,44% 96%,62% 88%,44% 52%,74% 50%);
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.7));opacity:0}
+  .stp:hover .sp-cur{animation:spCur 3.2s ease-in-out infinite}
+  .stp:hover .sp-btn{animation:spBtn 3.2s ease-in-out infinite}
+  @keyframes spCur{
+    0%{opacity:0;transform:translate(210px,140px)}
+    12%{opacity:1}
+    45%{opacity:1;transform:translate(122px,103px)}
+    52%{transform:translate(122px,103px) scale(.82)}
+    60%{transform:translate(122px,103px) scale(1)}
+    88%{opacity:1;transform:translate(122px,103px)}
+    100%{opacity:0;transform:translate(122px,103px)}}
+  @keyframes spBtn{
+    0%,45%{transform:translateX(-50%) scale(1);box-shadow:0 0 0 0 rgba(153,230,109,0)}
+    54%{transform:translateX(-50%) scale(.93);box-shadow:0 0 0 8px rgba(153,230,109,.16)}
+    64%,100%{transform:translateX(-50%) scale(1);box-shadow:0 0 0 14px rgba(153,230,109,0)}}
+
+  /* --- 02. „Otwórz w telefonie": przeglądarka → menu „Dodaj do ekranu głównego" → ikona na ekranie --- */
+  .sp-add .sp-ph{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:88px;height:138px;
+    border-radius:14px;background:#050806;overflow:hidden;
+    box-shadow:inset 0 0 0 2px #333f38, 0 12px 24px rgba(0,0,0,.7), 0 0 40px 6px rgba(153,230,109,.14)}
+  .sp-add .sp-scr{position:absolute;inset:4px;border-radius:9px;overflow:hidden}
+  /* widok przeglądarki: pasek adresu + linijki treści */
+  .sp-add .sp-brw{background:#0d1310}
+  .sp-add .sp-ub{position:absolute;left:5px;right:5px;top:5px;height:8px;border-radius:4px;background:#212a25}
+  .sp-add .sp-l1,.sp-add .sp-l2,.sp-add .sp-l3{position:absolute;left:5px;height:5px;border-radius:3px;background:#18201c}
+  .sp-add .sp-l1{top:20px;right:5px}
+  .sp-add .sp-l2{top:30px;right:22px}
+  .sp-add .sp-l3{top:40px;right:12px}
+  /* ekran główny: siatka ikon + nasza ikona w pierwszym miejscu */
+  .sp-add .sp-hom{background:linear-gradient(165deg,#101a14,#070b09);opacity:0;
+    display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:20px;gap:8px;padding:11px 9px;align-content:start}
+  .sp-add .sp-hom i{border-radius:6px;background:#1a231e}
+  .sp-add .sp-app{grid-column:1;grid-row:1;border-radius:5px;
+    background:linear-gradient(150deg,var(--lime),#5fae44);opacity:0;transform:scale(.3)}
+  /* wysuwane menu z pozycją „Dodaj do ekranu głównego" */
+  .sp-add .sp-sheet{position:absolute;left:2px;right:2px;bottom:2px;height:40px;border-radius:9px;
+    background:#1b231f;box-shadow:0 -8px 16px rgba(0,0,0,.6);display:flex;align-items:center;gap:6px;
+    padding:0 7px;transform:translateY(115%)}
+  .sp-add .sp-si{width:16px;height:16px;border-radius:5px;flex:0 0 16px;
+    background:linear-gradient(150deg,var(--lime),#5fae44)}
+  .sp-add .sp-st{height:5px;border-radius:3px;background:#465249;flex:1}
+  .stp:hover .sp-sheet{animation:spSheet 4s ease-in-out infinite}
+  .stp:hover .sp-brw{animation:spBrw 4s ease-in-out infinite}
+  .stp:hover .sp-hom{animation:spHom 4s ease-in-out infinite}
+  .stp:hover .sp-app{animation:spApp 4s ease-in-out infinite}
+  @keyframes spSheet{
+    0%,14%{transform:translateY(115%)}
+    28%,54%{transform:translateY(0)}
+    64%,100%{transform:translateY(115%)}}
+  @keyframes spBrw{0%,62%{opacity:1}70%,100%{opacity:0}}
+  @keyframes spHom{0%,62%{opacity:0}70%,100%{opacity:1}}
+  @keyframes spApp{
+    0%,70%{opacity:0;transform:scale(.3)}
+    80%{opacity:1;transform:scale(1.3)}
+    88%,100%{opacity:1;transform:scale(1)}}
+
+  /* --- 03. „Trenuj z wideo": rosnąca linia trendu (jak w aplikacji) --- */
+  .sp-trend{padding:10px 12px}
+  .sp-trend .sp-b1{position:absolute;left:12px;top:12px;width:38%;height:6px;border-radius:4px;background:#2b3630}
+  .sp-trend .sp-b2{position:absolute;left:12px;top:24px;width:22%;height:9px;border-radius:5px;background:#38463f}
+  .sp-trend svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:74px}
+  .sp-area{fill:rgba(153,230,109,.13);opacity:0}
+  .sp-line{fill:none;stroke:var(--lime);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:230;stroke-dashoffset:230}
+  .sp-pt{fill:#0b0f0d;stroke:var(--lime);stroke-width:2;opacity:0}
+  .sp-last{fill:var(--lime)}
+  .stp:hover .sp-line{animation:spDraw 1.5s cubic-bezier(.4,.1,.2,1) forwards}
+  .stp:hover .sp-area{animation:spFade .7s ease .9s forwards}
+  .stp:hover .sp-pt{animation:spPt .35s ease forwards}
+  .stp:hover .p1{animation-delay:.1s}.stp:hover .p2{animation-delay:.45s}
+  .stp:hover .p3{animation-delay:.75s}.stp:hover .p4{animation-delay:1.05s}
+  .stp:hover .p5{animation-delay:1.35s}
+  @keyframes spDraw{to{stroke-dashoffset:0}}
+  @keyframes spFade{to{opacity:1}}
+  @keyframes spPt{to{opacity:1}}
+
+  /* bez animacji przy „ograniczonym ruchu" — pokazujemy od razu stan końcowy */
+  @media(prefers-reduced-motion:reduce){
+    .sp-line{stroke-dashoffset:0}.sp-area,.sp-pt,.sp-hom,.sp-app{opacity:1}
+    .sp-sheet{transform:translateY(115%)}
+    .stp:hover .sp-cur,.stp:hover .sp-btn,.stp:hover .sp-sheet,.stp:hover .sp-brw,.stp:hover .sp-hom,
+    .stp:hover .sp-app,.stp:hover .sp-line,.stp:hover .sp-area,
+    .stp:hover .sp-pt{animation:none}}
 
   /* ---------- toczący się talerz odsłaniający hasło „nie musi być idealnie" ---------- */
   .divider-czarny{background:var(--black)}
@@ -848,6 +968,8 @@
     .cb-desk{display:none}
     .cb-mob{display:block}
     .how-grid{grid-template-columns:1fr;gap:40px}
+    /* pop-upy kroków tylko na dużym ekranie — na telefonie nie ma najeżdżania kursorem */
+    .sp-pop{display:none}
     .how-left{position:static}
     /* na telefonie kurtyna off — zwykłe sekcje jedna pod drugą (dlaczego przed jak-to-działa) */
     .stack{height:auto}
@@ -1039,9 +1161,14 @@
     </h1>
     <p class="lead">Plany treningowe z poradnikiem wideo do każdego ćwiczenia.
       Po polsku, konkretnie, bez ściemy — zawsze w Twoim telefonie.</p>
+    <!-- Jeden przycisk zamiast dwóch: „DOŁĄCZ" dużą czcionką + cena mniejszym drukiem.
+         Prowadzi do szybkiej rejestracji, a po niej (parametr `next`) prosto do wyboru planów
+         w aplikacji. Zalogowany klient trafia do planów od razu. -->
     <div class="hero-actions">
-      <a class="btn btn-lime" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Aplikacja</a>
-      <a class="btn btn-ghost" href="#wideo">Darmowe wideo</a>
+      <a class="btn btn-lime btn-join" href="https://app.fitonlinecoach.com/start?next=%2Fplany" target="_blank" rel="noopener">
+        <span class="bj-main">Dołącz</span>
+        <span class="bj-sub">już od 79 zł</span>
+      </a>
     </div>
   </div>
   <div class="scroll-cue">Przewiń<i></i></div>
@@ -1078,15 +1205,48 @@
           <div class="steps">
             <div class="stp" data-step>
               <span class="n">01</span>
-              <div><h3>Wybierz plan</h3><p>Wybierasz plan dopasowany do swojego poziomu i celu. Płacisz raz — plan zostaje z Tobą.</p></div>
+              <div><h3 class="sp-tit">Wybierz plan</h3><p>Wybierasz plan dopasowany do swojego poziomu i celu. Płacisz raz — plan zostaje z Tobą.</p></div>
+              <!-- podgląd kroku: mini-animacja w szklanym pop-upie (pokazuje się po najechaniu na tytuł) -->
+              <div class="sp-pop" aria-hidden="true">
+                <div class="sp-scene sp-www">
+                  <span class="sp-bar"><i></i><i></i><i></i></span>
+                  <span class="sp-plan"><b></b><em></em></span>
+                  <span class="sp-btn">Kup plan</span>
+                  <span class="sp-cur"></span>
+                </div>
+              </div>
             </div>
             <div class="stp" data-step>
               <span class="n">02</span>
-              <div><h3>Otwórz w telefonie</h3><p>Plan działa w aplikacji, którą otworzysz na telefonie, tablecie i komputerze. W domu, na siłowni, w podróży — zawsze pod ręką.</p></div>
+              <div><h3 class="sp-tit">Otwórz w telefonie</h3><p>Plan działa w aplikacji, którą otworzysz na telefonie, tablecie i komputerze. W domu, na siłowni, w podróży — zawsze pod ręką.</p></div>
+              <div class="sp-pop" aria-hidden="true">
+                <div class="sp-scene sp-add">
+                  <span class="sp-ph">
+                    <span class="sp-scr sp-brw"><i class="sp-ub"></i><i class="sp-l1"></i><i class="sp-l2"></i><i class="sp-l3"></i></span>
+                    <span class="sp-scr sp-hom"><i></i><i></i><i></i><i></i><i></i><b class="sp-app"></b></span>
+                    <span class="sp-sheet"><i class="sp-si"></i><i class="sp-st"></i></span>
+                  </span>
+                </div>
+              </div>
             </div>
             <div class="stp" data-step>
               <span class="n">03</span>
-              <div><h3>Trenuj z wideo</h3><p>Przy każdym ćwiczeniu masz poradnik wideo po polsku. Oglądasz, powtarzasz, robisz progres.</p></div>
+              <div><h3 class="sp-tit">Trenuj z wideo</h3><p>Przy każdym ćwiczeniu masz poradnik wideo po polsku. Oglądasz, powtarzasz, robisz progres.</p></div>
+              <div class="sp-pop" aria-hidden="true">
+                <div class="sp-scene sp-trend">
+                  <!-- bez nazw, dat i ciężarów — tak samo bezosobowo jak dwie pozostałe scenki -->
+                  <i class="sp-b1"></i><i class="sp-b2"></i>
+                  <svg viewBox="0 0 230 96" preserveAspectRatio="none">
+                    <path class="sp-area" d="M12 58 L66 45 L120 33 L166 20 L214 7 L214 96 L12 96 Z"/>
+                    <path class="sp-line" d="M12 58 L66 45 L120 33 L166 20 L214 7"/>
+                    <circle class="sp-pt p1" cx="12" cy="58" r="3.4"/>
+                    <circle class="sp-pt p2" cx="66" cy="45" r="3.4"/>
+                    <circle class="sp-pt p3" cx="120" cy="33" r="3.4"/>
+                    <circle class="sp-pt p4" cx="166" cy="20" r="3.4"/>
+                    <circle class="sp-pt p5 sp-last" cx="214" cy="7" r="4.6"/>
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1201,7 +1361,7 @@
               </ul>
               <div class="price-row">
                 <span class="price" id="planPrice">79 <span class="zl">zł</span> <small>/ jednorazowo</small></span>
-                <a class="btn btn-lime" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek" target="_blank" rel="noopener">Kup plan — 79 zł</a>
+                <a class="btn btn-lime" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">Kup plan — 79 zł</a>
               </div>
               <span class="plan-hint">Kliknij kartę — zobacz szczegóły planu →</span>
             </div>
@@ -1224,7 +1384,7 @@
               <p class="pb-p">Dla osób, które zaczynają przygodę z treningiem siłowym albo wracają po dłuższej
                 przerwie i chcą wystartować bezpiecznie, ze zrozumieniem każdego ruchu.</p>
               <div class="price-row">
-                <a class="btn btn-lime" href="https://app.fitonlinecoach.com/plany/poczatek" target="_blank" rel="noopener">Kup plan — 79 zł</a>
+                <a class="btn btn-lime" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">Kup plan — 79 zł</a>
               </div>
               <span class="plan-hint">Kliknij kartę — wróć do planu →</span>
             </div>
@@ -2164,7 +2324,7 @@
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
       img: 'assets/plan_sandbag.jpg', alt: 'Tomek w wykroku z sandbagiem w limonkowym świetle',
-      url: 'https://app.fitonlinecoach.com/plany/poczatek', cta: 'Kup plan — 79 zł'
+      url: 'https://app.fitonlinecoach.com/plany/poczatek?kup=1', cta: 'Kup plan — 79 zł'
     },
     {
       tag: 'Wkrótce', title: 'Plan 2',
