@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ===== MARKETING: identyfikatory. Puste = nic się nie ładuje i nic nie śledzi. =====
      Wpisz tu identyfikatory dopiero, gdy założysz konta reklamowe (instrukcja u Tomka).
+     Po wpisaniu choć jednego: baner zgód włącza się sam, a klik w „Kup plan" / „Załóż konto"
+     zgłasza zdarzenia begin_checkout (Google) i InitiateCheckout (Meta) — tylko za zgodą klienta.
      Te same wartości musi znać aplikacja — patrz app.fitonlinecoach.com. -->
 <script>
   window.FOC_MARKETING = {
@@ -1643,22 +1645,26 @@
     try { const z = JSON.parse(decodeURIComponent(m[1])); return z && z.v === WERSJA ? z : null; } catch (_) { return null; }
   };
 
-  let zaladowane = false;
+  /* Każde narzędzie ma WŁASNĄ flagę „już wczytane". Dzięki temu, gdy klient najpierw
+     zgodzi się tylko na statystyki, a potem w „Ustawieniach" dołoży marketing,
+     brakujące narzędzia doładują się od razu — bez przeładowania strony —
+     a żadne nie wczyta się (ani nie policzy wejścia) drugi raz. */
+  let gtagJs = false, ga4Wczytane = false, adsWczytane = false, pixelWczytany = false;
   const wczytajNarzedzia = z => {
-    if (zaladowane) return;
+    const chceGa4 = !!(z.a && cfg.ga4Id), chceAds = !!(z.m && cfg.googleAdsId);
     /* Google: jedna biblioteka obsługuje i Ads, i Analytics */
-    const idGoogle = (z.a && cfg.ga4Id) || (z.m && cfg.googleAdsId) || '';
-    if (idGoogle) {
+    if ((chceGa4 || chceAds) && !gtagJs) {
       const s = document.createElement('script');
       s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + idGoogle;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + (chceGa4 ? cfg.ga4Id : cfg.googleAdsId);
       document.head.appendChild(s);
       gtag('js', new Date());
-      if (z.a && cfg.ga4Id) gtag('config', cfg.ga4Id, {anonymize_ip: true});
-      if (z.m && cfg.googleAdsId) gtag('config', cfg.googleAdsId);
+      gtagJs = true;
     }
+    if (chceGa4 && !ga4Wczytane) { gtag('config', cfg.ga4Id, {anonymize_ip: true}); ga4Wczytane = true; }
+    if (chceAds && !adsWczytane) { gtag('config', cfg.googleAdsId); adsWczytane = true; }
     /* Meta Pixel — tylko przy zgodzie marketingowej */
-    if (z.m && cfg.metaPixelId) {
+    if (z.m && cfg.metaPixelId && !pixelWczytany) {
       !function (f, b, e, v, n, t, s) {
         if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) };
         if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
@@ -1667,8 +1673,8 @@
       }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
       fbq('init', cfg.metaPixelId);
       fbq('track', 'PageView');
+      pixelWczytany = true;
     }
-    zaladowane = true;
   };
 
   const zastosuj = (z, zapisac) => {
@@ -1699,6 +1705,22 @@
     baner.classList.add('show');
   };
   el('ccReopen').addEventListener('click', pokaz);
+
+  /* ===== Pomiar konwersji: klik w „Kup plan" (?kup=1) albo „Załóż konto" (/start) =====
+     Nasłuch na CAŁYM dokumencie, bo przycisk „Kup plan" jest podmieniany skryptem
+     przy przełączaniu planów — nasłuch przypięty do samego przycisku by go zgubił.
+     Zdarzenie leci wyłącznie, gdy narzędzie jest realnie wczytane (czyli była zgoda
+     i wpisany identyfikator). Nigdy nie zatrzymuje przejścia do aplikacji. */
+  document.addEventListener('click', e => {
+    const a = e.target && e.target.closest ? e.target.closest('a[href*="app.fitonlinecoach.com"]') : null;
+    if (!a) return;
+    const adres = a.getAttribute('href') || '';
+    if (adres.indexOf('kup=1') === -1 && adres.indexOf('/start') === -1) return;
+    try {
+      if (ga4Wczytane || adsWczytane) gtag('event', 'begin_checkout', {link_url: adres});
+      if (pixelWczytany && window.fbq) fbq('track', 'InitiateCheckout');
+    } catch (_) { /* pomiar nigdy nie może zepsuć kliknięcia */ }
+  }, true);
 
   /* Baner pojawia się TYLKO wtedy, gdy jest o co pytać — czyli gdy skonfigurowano
      choć jeden identyfikator marketingowy. Dopóki gniazda są puste, strona nie zapisuje
