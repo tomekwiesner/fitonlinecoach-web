@@ -726,9 +726,6 @@
     color:#CFD8D2;font-size:.96rem}
   .plan-feats li::before{content:"—";color:var(--lime);font-weight:700}
   .price-row{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
-  .price{font-family:'Montserrat',sans-serif;font-weight:900;font-size:2.6rem;color:#fff}
-  .price small{font-size:.85rem;font-weight:600;color:var(--muted);letter-spacing:.08em}
-  .price .zl{color:var(--lime)}
   /* odwracana karta planu (3D flip) */
   .plan-flip{perspective:1800px}
   .plan-front{cursor:pointer}
@@ -763,40 +760,62 @@
   .plan-grid.swap .plan-visual img{opacity:0}
   #planCta.disabled{background:transparent;border:1px solid var(--line);color:var(--muted);
     pointer-events:none;box-shadow:none;transform:none}
-  /* kafelki wyboru planu */
-  /* poziomy slider planów — nie rozjedzie się, gdy planów przybędzie */
-  .plan-tiles{display:flex;gap:16px;margin-top:20px;overflow-x:auto;scroll-snap-type:x mandatory;
-    padding:2px 2px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;
-    scrollbar-color:var(--graphite-2) transparent}
-  .plan-tiles::-webkit-scrollbar{height:6px}
-  .plan-tiles::-webkit-scrollbar-track{background:transparent}
-  .plan-tiles::-webkit-scrollbar-thumb{background:var(--graphite-2);border-radius:99px}
-  .plan-tiles:hover::-webkit-scrollbar-thumb{background:rgba(153,230,109,.45)}
-  .ptile{flex:0 0 clamp(250px,31%,330px);scroll-snap-align:start;
-    display:flex;align-items:center;gap:16px;background:var(--graphite);border:1px solid var(--line);
-    border-radius:16px;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit;
-    /* tylko wygląd, bez szerokości — inaczej kafelki „pełzną" przy zmianie rozmiaru okna */
-    transition:border-color .25s,background .25s,transform .25s,box-shadow .25s}
-  .ptile:hover{border-color:rgba(153,230,109,.5);transform:translateY(-2px)}
-  .ptile.active{border-color:var(--lime);background:var(--graphite-2);box-shadow:0 0 24px rgba(153,230,109,.12)}
-  .ptile-thumb{flex:0 0 54px;height:54px;border-radius:10px;background-size:cover;background-position:center}
-  .ptile-info{display:flex;flex-direction:column;gap:2px;min-width:0}
-  .ptile-info b{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.95rem;color:#fff;
-    text-transform:uppercase;letter-spacing:.04em}
-  .ptile.active .ptile-info b{color:var(--lime)}
-  .ptile-info i{font-style:normal;font-size:.78rem;color:var(--muted);letter-spacing:.06em}
+  /* ---------- KARUZELA PLANÓW ----------
+     Jeden duży baner na wierzchu, sąsiednie stoją ZA nim — mniejsze, przechylone w przestrzeni
+     i gasnące w czerni tła. Zmiana: przeciągnięcie kursorem/palcem, strzałki albo kropki.
+     Karuzela chodzi w kółko: za ostatnim planem wraca pierwszy. */
+  .plan-slider{position:relative;perspective:1600px;touch-action:pan-y;cursor:grab}
+  .plan-slider.ciagne{cursor:grabbing}
+  .plan-slider .plan-flip{position:relative;z-index:3;will-change:transform}
+  .plan-slider.przeciagam .plan-flip-inner{transition:none}
+  /* Banery stojące z tyłu — CAŁE karty, nie skrawki: taki sam kształt jak główny baner,
+     tylko mniejsze, odsunięte na boki, przechylone i przyciemnione, jakby stały w oddali.
+     Przy zamkniętej karcie główny baner je zasłania; widać je w pełni, gdy się obraca. */
+  .pslide-peek{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:16px;z-index:1;
+    background:var(--graphite-2);background-size:cover;background-position:center;
+    border:1px solid var(--line);box-shadow:0 30px 60px -20px rgba(0,0,0,.95);
+    transition:transform .45s cubic-bezier(.2,.9,.25,1),opacity .35s;pointer-events:none}
+  /* odsunięcie liczone od SZEROKOŚCI OKNA (vw), nie karty — dzięki temu cała karta z tyłu
+     mieści się w kadrze na każdym ekranie, zamiast wychodzić poza krawędź */
+  .peek-l{transform:translateX(-17vw) scale(.52) rotateY(16deg)}
+  .peek-r{transform:translateX(17vw) scale(.52) rotateY(-16deg)}
+  /* lekkie zacienienie — karta ma być widoczna w całości, tylko „dalej" i ciemniej niż główna */
+  .pslide-peek::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:rgba(9,14,11,.58)}
+  .peek-l::after{background:linear-gradient(to left,rgba(9,14,11,.42) 0%,rgba(9,14,11,.72) 100%)}
+  .peek-r::after{background:linear-gradient(to right,rgba(9,14,11,.42) 0%,rgba(9,14,11,.72) 100%)}
+  /* strzałki — dla myszy; na dotyku i tak działa przesuwanie */
+  .pnav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;
+    border-radius:50%;border:1px solid rgba(200,230,210,.28);background:rgba(12,18,15,.72);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:1.5rem;
+    line-height:1;cursor:pointer;display:grid;place-items:center;padding-bottom:3px;
+    opacity:0;transition:opacity .25s,border-color .25s,color .25s}
+  .plan-slider:hover .pnav{opacity:1}
+  .pnav:hover{border-color:var(--lime);color:var(--lime)}
+  .pnav-l{left:-20px}
+  .pnav-r{right:-20px}
+  /* kropki — który plan z ilu */
+  .pdots{display:flex;justify-content:center;gap:10px;margin-top:26px}
+  .pdots button{width:9px;height:9px;padding:0;border:0;border-radius:50%;cursor:pointer;
+    background:rgba(255,255,255,.22);transition:background .25s,transform .25s}
+  .pdots button:hover{background:rgba(153,230,109,.6)}
+  .pdots button.on{background:var(--lime);transform:scale(1.25)}
+  .pswipe-hint{display:block;text-align:center;margin-top:12px;font-size:.7rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);opacity:.65}
 
-  /* ---------- statystyki ---------- */
-  /* liczniki mają czytelnie należeć do sekcji planów — trzymamy je tuż pod sliderem */
-  #plan{padding-bottom:24px}
-  .stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr)}
-  .stat{padding:40px 20px 46px;text-align:center;border-right:1px solid var(--line)}
-  .stat:last-child{border-right:0}
-  .stat .val{display:flex;justify-content:center;align-items:baseline;
-    font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(2.4rem,4vw,3.6rem);
-    color:var(--lime);line-height:1;margin-bottom:14px;font-variant-numeric:tabular-nums}
-  .stat .lbl{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  /* ---------- liczniki planu ----------
+     Były osobną sekcją pod kartami; teraz siedzą NA karcie, nad ceną — w mniejszej wersji.
+     Identyfikatory zostały te same, więc odometr i odmiana podpisów działają bez zmian. */
+  /* `width:100%` jest konieczne — karta to kolumna z `align-items:flex-start`, więc bez tego
+     pasek zwężałby się do treści zamiast wypełnić strefę nad przyciskiem zakupu */
+  .plan-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;
+    margin:30px 0 30px;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .pstat{text-align:center;min-width:0}
+  .pstat .val{display:flex;justify-content:center;align-items:baseline;
+    font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(1.9rem,2.6vw,2.9rem);
+    color:var(--lime);line-height:1;margin-bottom:9px;font-variant-numeric:tabular-nums}
+  .pstat .lbl{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* odometr — cyfry przewijają się w pionie jak na liczniku */
   .odo-col{display:inline-block;height:1em;overflow:hidden}
   .odo-strip{display:flex;flex-direction:column;transition:transform 2.2s cubic-bezier(.16,1,.3,1)}
@@ -1001,18 +1020,21 @@
     .plan-visual{min-height:340px}
     .plan-body{padding:48px 32px}
     /* cztery liczniki układają się 2×2, żeby liczby zostały czytelne */
-    .stats-grid{grid-template-columns:repeat(2,1fr)}
-    #plan{padding-bottom:18px}
-    .stat{padding:28px 10px 30px}
-    .stat .val{font-size:1.9rem;margin-bottom:10px}
-    .stat .lbl{font-size:.66rem;letter-spacing:.1em;line-height:1.4}
-    .stat:nth-child(2n){border-right:0}
-    .stat:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    /* na telefonie WSZYSTKIE CZTERY w jednym poziomym pasku — dlatego zwarte odstępy i podpisy */
+    /* na wąskiej karcie przycisk zakupu ma węższe marginesy, żeby napis został w jednej linii */
+    #planCta{padding-left:18px;padding-right:18px;letter-spacing:.08em}
+    .plan-stats{grid-template-columns:repeat(4,1fr);gap:2px;margin:20px 0;padding:14px 0}
+    .pstat .val{font-size:1.3rem;margin-bottom:5px}
+    /* podpis skaluje się z szerokością ekranu, żeby najdłuższy („treningów") nie był ucinany */
+    .pstat .lbl{font-size:clamp(.4rem,2.1vw,.54rem);letter-spacing:0}
     .about-grid{grid-template-columns:1fr;gap:60px}
     .nl-grid{grid-template-columns:1fr;gap:40px}
     .vcar-group video{height:170px}
-    /* na telefonie kolejny kafelek wystaje zza krawędzi — sygnał, że można przesuwać */
-    .ptile{flex:0 0 82%}
+    /* na telefonie sąsiednie plany wystają węziej, strzałki chowamy (jest przesuwanie palcem) */
+    /* na telefonie karty z tyłu odsuwamy dalej, żeby zostawić więcej miejsca głównej */
+    .peek-l{transform:translateX(-19vw) scale(.5) rotateY(15deg)}
+    .peek-r{transform:translateX(19vw) scale(.5) rotateY(-15deg)}
+    .pnav{display:none}
     .plan-back-grid{grid-template-columns:1fr;gap:32px;padding:36px 24px}
     .nav-links{position:fixed;inset:0;background:rgba(7,9,8,.97);flex-direction:column;
       justify-content:center;gap:34px;display:none}
@@ -1178,8 +1200,8 @@
     <p class="lead">Plany treningowe z poradnikiem wideo do każdego ćwiczenia.
       Po polsku, konkretnie, bez ściemy — zawsze w Twoim telefonie.</p>
     <!-- Jeden przycisk zamiast dwóch: „DOŁĄCZ" dużą czcionką + cena mniejszym drukiem.
-         Prowadzi do szybkiej rejestracji, a po niej (parametr `next`) prosto do wyboru planów
-         w aplikacji. Zalogowany klient trafia do planów od razu. -->
+         Prowadzi wprost do listy planów w aplikacji — ta trasa jest otwarta dla niezalogowanych
+         (reszta apki wita ekranem logowania). Rejestracja dzieje się dopiero przy zakupie. -->
     <div class="hero-actions">
       <a class="btn btn-lime btn-join" href="https://app.fitonlinecoach.com/plany" target="_blank" rel="noopener">
         <span class="bj-main">Dołącz</span>
@@ -1358,7 +1380,14 @@
   <div class="wrap">
     <div class="sec-label rv">03 — Plany treningowe</div>
     <h2 class="sec-title rv rv2">Zacznij od planu<br>dla siebie.</h2>
-    <div class="plan-flip rv rv3" id="planFlip" style="margin-top:70px">
+    <!-- Karuzela planów: widoczny jest jeden duży baner, a sąsiednie plany wystają zza jego
+         krawędzi. Zmiana planu: przesunięcie palcem / myszą albo strzałki po bokach. -->
+    <div class="plan-slider rv rv3" id="planSlider" style="margin-top:70px">
+      <span class="pslide-peek peek-l" id="peekL" aria-hidden="true"></span>
+      <span class="pslide-peek peek-r" id="peekR" aria-hidden="true"></span>
+      <button class="pnav pnav-l" id="pnavL" type="button" aria-label="Poprzedni plan">‹</button>
+      <button class="pnav pnav-r" id="pnavR" type="button" aria-label="Następny plan">›</button>
+    <div class="plan-flip" id="planFlip">
       <div class="plan-flip-inner">
 
         <!-- przód karty -->
@@ -1375,8 +1404,14 @@
                 <li>Wszystko po polsku, krok po kroku</li>
                 <li>Dostęp 24/7 w Twoim telefonie</li>
               </ul>
+              <!-- liczniki planu — przeniesione z osobnej sekcji pod kartami wprost na kartę -->
+              <div class="plan-stats">
+                <div class="pstat"><span class="val" id="statWeeks" data-odo="4"></span><span class="lbl" id="lblWeeks">tygodnie</span></div>
+                <div class="pstat"><span class="val" id="statWorkouts" data-odo="12"></span><span class="lbl" id="lblWorkouts">treningów</span></div>
+                <div class="pstat"><span class="val" id="statExercises" data-odo="49"></span><span class="lbl">video</span></div>
+                <div class="pstat"><span class="val" id="statMinutes" data-odo="620"></span><span class="lbl" id="lblMinutes">minut</span></div>
+              </div>
               <div class="price-row">
-                <span class="price" id="planPrice">79 <span class="zl">zł</span> <small>/ jednorazowo</small></span>
                 <a class="btn btn-lime" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">Kup plan — 79 zł</a>
               </div>
               <span class="plan-hint">Kliknij kartę — zobacz szczegóły planu →</span>
@@ -1414,36 +1449,17 @@
 
       </div>
     </div>
+    </div><!-- /plan-slider -->
 
-    <!-- kafelki wyboru planu -->
-    <div class="plan-tiles rv rv4" id="planTiles">
-      <button class="ptile active" data-plan="0">
-        <span class="ptile-thumb" style="background-image:url('assets/plan_sandbag.jpg')"></span>
-        <span class="ptile-info"><b>Plan Początek</b><i>dla początkujących · 79 zł</i></span>
-      </button>
-      <button class="ptile" data-plan="1">
-        <span class="ptile-thumb" style="background-image:url('assets/kettlebell.jpg')"></span>
-        <span class="ptile-info"><b>Plan 2</b><i>wkrótce</i></span>
-      </button>
-      <button class="ptile" data-plan="2">
-        <span class="ptile-thumb" style="background-image:url('assets/dust_beam.jpg')"></span>
-        <span class="ptile-info"><b>Plan 3</b><i>wkrótce</i></span>
-      </button>
+    <!-- kropki: który plan z ilu (zastąpiły kafelki pod banerem) -->
+    <div class="pdots rv rv4" id="pdots">
+      <button type="button" class="on" data-plan="0" aria-label="Plan Początek"></button>
+      <button type="button" data-plan="1" aria-label="Plan 2"></button>
+      <button type="button" data-plan="2" aria-label="Plan 3"></button>
     </div>
+    <span class="pswipe-hint rv rv4">Przesuń, żeby zobaczyć kolejny plan</span>
   </div>
 </section>
-
-<!-- ===== STATYSTYKI ===== -->
-<div class="stats">
-  <div class="wrap">
-    <div class="stats-grid">
-      <div class="stat rv"><span class="val" id="statWeeks" data-odo="4"></span><span class="lbl" id="lblWeeks">tygodnie</span></div>
-      <div class="stat rv rv2"><span class="val" id="statWorkouts" data-odo="12"></span><span class="lbl" id="lblWorkouts">treningów</span></div>
-      <div class="stat rv rv3"><span class="val" id="statExercises" data-odo="49"></span><span class="lbl">video</span></div>
-      <div class="stat rv rv4"><span class="val" id="statMinutes" data-odo="620"></span><span class="lbl" id="lblMinutes">minut</span></div>
-    </div>
-  </div>
-</div>
 
 <!-- ===== O MNIE nad DIVIDEREM deszczu (druga kurtyna) ===== -->
 <div class="stack stack-about" id="o-mnie">
@@ -2395,7 +2411,6 @@
       document.getElementById('planTitle').textContent = p.title;
       document.getElementById('planDesc').textContent = p.desc;
       document.getElementById('planFeats').innerHTML = p.feats.map(f => `<li>${f}</li>`).join('');
-      document.getElementById('planPrice').innerHTML = p.price;
       const cta = document.getElementById('planCta');
       cta.textContent = p.cta;
       if (p.url) { cta.href = p.url; cta.classList.remove('disabled'); }
@@ -2406,19 +2421,88 @@
       setPlanStats(p);   /* wszystkie cztery liczniki przeliczają się od zera */
     }, 290);
   };
-  document.querySelectorAll('.ptile').forEach(t => t.addEventListener('click', () => {
-    if (t.classList.contains('active')) return;
-    document.querySelectorAll('.ptile').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    planFlip.classList.remove('flipped');
-    setPlan(+t.dataset.plan);
-  }));
+  /* ---------- KARUZELA PLANÓW ----------
+     Kafelki pod banerem zastąpiło przesuwanie: sąsiednie plany wystają zza krawędzi karty,
+     a zmiana następuje przesunięciem palcem/myszą, strzałką albo kliknięciem w kropkę. */
+  const planFlip = document.getElementById('planFlip');
+  const planSlider = document.getElementById('planSlider');
+  const peekL = document.getElementById('peekL');
+  const peekR = document.getElementById('peekR');
+  const pnavL = document.getElementById('pnavL');
+  const pnavR = document.getElementById('pnavR');
+  const pdots = [...document.querySelectorAll('#pdots button')];
+  let planIdx = 0;
+
+  /* Banery z tyłu pokazują sąsiednie plany — karuzela chodzi W KÓŁKO, więc przy pierwszym
+     planie z lewej stoi ostatni, a przy ostatnim z prawej stoi pierwszy. */
+  const poprzedni = i => (i - 1 + plans.length) % plans.length;
+  const nastepny  = i => (i + 1) % plans.length;
+  const odswiezSasiadow = () => {
+    peekL.style.backgroundImage = `url('${plans[poprzedni(planIdx)].img}')`;
+    peekR.style.backgroundImage = `url('${plans[nastepny(planIdx)].img}')`;
+    pdots.forEach((d, i) => d.classList.toggle('on', i === planIdx));
+  };
+
+  const idzDoPlanu = i => {
+    const cel = (i + plans.length) % plans.length;      /* zawijanie: -1 → ostatni, n → pierwszy */
+    if (cel === planIdx) return;
+    planIdx = cel;
+    planFlip.classList.remove('flipped');   /* nowy plan zawsze pokazuje się przodem */
+    setPlan(cel);
+    odswiezSasiadow();
+  };
+  odswiezSasiadow();
+
+  pnavL.addEventListener('click', e => { e.stopPropagation(); idzDoPlanu(planIdx - 1); });
+  pnavR.addEventListener('click', e => { e.stopPropagation(); idzDoPlanu(planIdx + 1); });
+  pdots.forEach(d => d.addEventListener('click', () => idzDoPlanu(+d.dataset.plan)));
+
+  /* Przeciąganie kursorem i palcem. `setPointerCapture` sprawia, że gest działa dalej, nawet gdy
+     kursor zjedzie poza kartę. `przeciagniete` blokuje obrót karty, żeby swipe nie przewracał
+     banera. Banery z tyłu jadą wolniej — stąd wrażenie głębi. */
+  let startX = 0, startY = 0, dx = 0, ciagne = false, przeciagniete = false, pion = false;
+  const PROG = 60;
+  planSlider.addEventListener('pointerdown', e => {
+    if (e.target.closest('a, button')) return;     /* przyciski i strzałki działają normalnie */
+    ciagne = true; przeciagniete = false; pion = false;
+    startX = e.clientX; startY = e.clientY; dx = 0;
+    planSlider.classList.add('przeciagam', 'ciagne');
+    try { planSlider.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  planSlider.addEventListener('pointermove', e => {
+    if (!ciagne || pion) return;
+    dx = e.clientX - startX;
+    if (!przeciagniete && Math.abs(e.clientY - startY) > Math.abs(dx) + 4) { pion = true; return; }
+    if (Math.abs(dx) > 6) przeciagniete = true;
+    planFlip.style.transform = `translateX(${dx.toFixed(1)}px)`;
+    peekL.style.transform = `translateX(calc(-17vw + ${(dx * .35).toFixed(1)}px)) scale(.52) rotateY(16deg)`;
+    peekR.style.transform = `translateX(calc(17vw + ${(dx * .35).toFixed(1)}px)) scale(.52) rotateY(-16deg)`;
+  });
+  const koniecCiagniecia = e => {
+    if (!ciagne) return;
+    ciagne = false;
+    planSlider.classList.remove('przeciagam', 'ciagne');
+    if (e && e.pointerId != null) { try { planSlider.releasePointerCapture(e.pointerId); } catch (_) {} }
+    planFlip.style.transition = 'transform .35s cubic-bezier(.2,.9,.25,1)';
+    planFlip.style.transform = '';
+    peekL.style.transform = '';
+    peekR.style.transform = '';
+    setTimeout(() => { planFlip.style.transition = ''; }, 380);
+    if (dx <= -PROG) idzDoPlanu(planIdx + 1);
+    else if (dx >= PROG) idzDoPlanu(planIdx - 1);
+    dx = 0;
+  };
+  planSlider.addEventListener('pointerup', koniecCiagniecia);
+  planSlider.addEventListener('pointercancel', koniecCiagniecia);
 
   /* Odwracanie karty planu: klik w dowolne miejsce przodu pokazuje tył ze szczegółami
-     i ekranami z aplikacji. Przycisk „Kup plan" jest wyjątkiem — prowadzi do zakupu. */
-  const planFlip = document.getElementById('planFlip');
-  document.getElementById('planFlip').addEventListener('click', e => {
-    if (e.target.closest('a')) return;             /* przyciski zakupu prowadzą do zakupu */
+     i ekranami z aplikacji. Przycisk „Kup plan" jest wyjątkiem — prowadzi do zakupu.
+     UWAGA: nasłuch wisi na SUWAKU, nie na karcie — przechwytywanie kursora przy przeciąganiu
+     (`setPointerCapture`) przekierowuje kliknięcie na element przechwytujący, więc na samej
+     karcie zdarzenie by nie dotarło i obracanie przestałoby działać. */
+  planSlider.addEventListener('click', e => {
+    if (e.target.closest('a, button')) return;     /* przyciski zakupu, strzałki i kropki */
+    if (przeciagniete) return;                     /* to było przesunięcie, nie kliknięcie */
     planFlip.classList.toggle('flipped');
   });
 
