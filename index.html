@@ -262,6 +262,20 @@
     gap:5px;padding:16px 46px;line-height:1}
   .btn-join .bj-main{font-size:1.6rem;font-weight:900;letter-spacing:.13em;line-height:1}
   .btn-join .bj-sub{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:lowercase;opacity:.72}
+  /* wariant mniejszy — dłuższy napis („Opieka indywidualna”) musi zmieścić się w jednej
+     linii także na wąskim telefonie, dlatego mniejsza czcionka i węższe marginesy */
+  .btn-care{padding:15px 30px}
+  .btn-care .bj-main{font-size:1.02rem;letter-spacing:.1em}
+  .btn-care .bj-sub{font-size:.68rem}
+  @media(max-width:360px){
+    .btn-care{padding:14px 16px}
+    .btn-care .bj-main{font-size:.9rem;letter-spacing:.06em}
+  }
+  @media(max-width:320px){                    /* najstarsze, wąskie telefony */
+    .btn-care{padding:13px 10px}
+    .btn-care .bj-main{font-size:.78rem;letter-spacing:.02em}
+    .btn-care .bj-sub{font-size:.62rem}
+  }
   .btn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.28)}
   .btn-ghost:hover{border-color:var(--lime);color:var(--lime)}
   .scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:2;display:flex;
@@ -1471,7 +1485,12 @@
               <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice"><span>Dietetyk</span></button>
             </div>
             <div class="role-detail" id="roleDetail" aria-live="polite"></div>
-            <a class="btn btn-lime rv rv4" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Trenuj ze mną</a>
+            <!-- prowadzi wprost do oferty opieki indywidualnej w aplikacji (strona sama obsługuje
+                 gościa: pokazuje ofertę, a przy zakupie prowadzi przez rejestrację) -->
+            <a class="btn btn-lime btn-join btn-care rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny" target="_blank" rel="noopener">
+              <span class="bj-main">Opieka indywidualna</span>
+              <span class="bj-sub">już od 399 zł</span>
+            </a>
           </div>
         </div>
       </div>
