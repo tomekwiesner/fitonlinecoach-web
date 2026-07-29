@@ -714,22 +714,25 @@
   /* ---------- plan ---------- */
   .plan-grid{display:grid;grid-template-columns:.9fr 1.1fr;border:1px solid var(--line);background:var(--graphite);
     border-radius:16px;overflow:hidden}
-  .plan-visual{position:relative;overflow:hidden;min-height:520px}
+  .plan-visual{position:relative;overflow:hidden;min-height:420px}
   .plan-visual img,.plan-visual video{position:absolute;inset:-12% 0;width:100%;height:124%;object-fit:cover;will-change:transform}
-  .plan-body{padding:72px 64px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
-  .plan-tag{font-size:.72rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--lime);
-    border:1px solid rgba(153,230,109,.4);padding:8px 16px;border-radius:2px;margin-bottom:26px}
-  .plan-body h3{font-size:clamp(2rem,3.4vw,3rem);color:#fff;margin-bottom:16px}
-  .plan-body>p{color:var(--muted);margin-bottom:30px;max-width:420px}
-  .plan-feats{list-style:none;margin-bottom:38px;width:100%}
-  .plan-feats li{display:flex;gap:14px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);
-    color:#CFD8D2;font-size:.96rem}
+  .plan-body{padding:34px 48px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+  /* `inline-block` — bez tego ramka rozjeżdża się, gdy dłuższy napis („Plan »Początek« od środka")
+     łamie się na dwie linie na wąskiej karcie */
+  .plan-tag{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--lime);line-height:1.5;
+    border:1px solid rgba(153,230,109,.4);padding:7px 14px;border-radius:2px;margin-bottom:16px}
+  .plan-body h3{font-size:clamp(1.6rem,2.3vw,2.05rem);color:#fff;margin-bottom:10px}
+  .plan-body>p{color:var(--muted);margin-bottom:16px;max-width:420px;font-size:.92rem;line-height:1.55}
+  .plan-feats{list-style:none;margin-bottom:14px;width:100%}
+  .plan-feats li{display:flex;gap:12px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);
+    color:#CFD8D2;font-size:.92rem}
   .plan-feats li::before{content:"—";color:var(--lime);font-weight:700}
   .price-row{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
   /* odwracana karta planu (3D flip) */
   .plan-flip{perspective:1800px}
   .plan-front{cursor:pointer}
-  .plan-hint{display:block;margin-top:18px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  .plan-hint{display:block;margin-top:10px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
     color:var(--lime);opacity:.7}
   .plan-flip-inner{position:relative;display:grid;transform-style:preserve-3d;
     transition:transform .8s cubic-bezier(.45,.05,.2,1)}
@@ -743,8 +746,10 @@
   .plan-flip.flipped .plan-back{opacity:1;pointer-events:auto}
   .plan-back{transform:rotateY(180deg);background:var(--graphite);border:1px solid var(--line);
     border-radius:16px;overflow:hidden}
-  .plan-back-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;padding:56px 48px;
-    align-items:center;height:100%}
+  /* `align-items:start` — wcześniej treść była wyśrodkowana w pionie i nad ramką
+     „plan od środka" robiła się duża pusta przestrzeń */
+  .plan-back-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;padding:44px 48px;
+    align-items:start;height:100%}
   .plan-back h3{font-size:1.5rem;color:#fff;margin-bottom:16px}
   .plan-back .pb-h{margin-top:30px}
   .plan-back .pb-p{color:var(--muted);margin-bottom:30px;max-width:430px}
@@ -764,7 +769,7 @@
      Jeden duży baner na wierzchu, sąsiednie stoją ZA nim — mniejsze, przechylone w przestrzeni
      i gasnące w czerni tła. Zmiana: przeciągnięcie kursorem/palcem, strzałki albo kropki.
      Karuzela chodzi w kółko: za ostatnim planem wraca pierwszy. */
-  .plan-slider{position:relative;perspective:1600px;touch-action:pan-y;cursor:grab}
+  .plan-slider{position:relative;perspective:1600px;touch-action:pan-y;cursor:grab;margin-top:70px}
   .plan-slider.ciagne{cursor:grabbing}
   .plan-slider .plan-flip{position:relative;z-index:3;will-change:transform}
   .plan-slider.przeciagam .plan-flip-inner{transition:none}
@@ -795,13 +800,54 @@
   .pnav-l{left:-20px}
   .pnav-r{right:-20px}
   /* kropki — który plan z ilu */
-  .pdots{display:flex;justify-content:center;gap:10px;margin-top:26px}
+  .pdots{display:flex;justify-content:center;gap:10px;margin-top:14px}
   .pdots button{width:9px;height:9px;padding:0;border:0;border-radius:50%;cursor:pointer;
     background:rgba(255,255,255,.22);transition:background .25s,transform .25s}
   .pdots button:hover{background:rgba(153,230,109,.6)}
   .pdots button.on{background:var(--lime);transform:scale(1.25)}
-  .pswipe-hint{display:block;text-align:center;margin-top:12px;font-size:.7rem;letter-spacing:.14em;
+  .pswipe-hint{display:block;text-align:center;margin-top:7px;font-size:.7rem;letter-spacing:.14em;
     text-transform:uppercase;color:var(--muted);opacity:.65}
+
+  /* ---------- KOMPAKTOWA SEKCJA PLANÓW (tylko duże ekrany) ----------
+     Cały blok — etykieta „03", tytuł, karta, kropki i podpis — ma się zmieścić na jednym ekranie
+     laptopa 16" (ok. 1500×720 px), bez przewijania. Przed zmianą blok miał 891 px, a mieści się
+     ok. 660 px pod przyklejonym paskiem menu.
+     UWAGA: o wysokości karty decyduje jej TYŁ („Co dostajesz? / Dla kogo?" = 622 px), nie przód
+     (549 px) — obie ścianki leżą w tej samej komórce siatki, więc karta bierze wyższą z nich.
+     Ściskanie samego przodu nic nie daje. Telefonu to nie dotyczy (tam i tak się przewija). */
+  @media(min-width:981px){
+    #plan{padding-top:88px;padding-bottom:100px}
+    /* tytuł w jednej linii i mniejszy — dwie linie po 3,2rem to same 108 px */
+    #plan .sec-label{margin-bottom:10px}
+    #plan .sec-title{font-size:clamp(1.9rem,2.7vw,2.45rem);margin-bottom:0;max-width:none}
+    #plan .sec-title br{display:none}
+    #plan .plan-slider{margin-top:26px}
+
+    /* przód karty */
+    #plan .plan-visual{min-height:380px}
+    #plan .plan-body{padding:26px 44px}
+    #plan .plan-tag{font-size:.68rem;padding:5px 12px;margin-bottom:12px}
+    #plan .plan-body h3{font-size:clamp(1.45rem,2vw,1.8rem);margin-bottom:8px}
+    #plan .plan-body>p{font-size:.88rem;line-height:1.5;margin-bottom:12px}
+    #plan .plan-feats{margin-bottom:10px}
+    #plan .plan-feats li{padding:5px 0;font-size:.88rem}
+    #plan .plan-stats{margin:10px 0 12px;padding:10px 0}
+    #plan .pstat .val{font-size:clamp(1.35rem,1.7vw,1.85rem);margin-bottom:4px}
+    #plan .pstat .lbl{font-size:.62rem}
+    #plan .btn{padding:14px 32px;font-size:.8rem}
+    #plan .plan-hint{margin-top:8px;font-size:.66rem}
+
+    /* tył karty — to on ustala wysokość, więc tnie się najmocniej */
+    #plan .plan-back-grid{padding:26px 44px;gap:34px}
+    #plan .plan-back h3{font-size:1.3rem;margin-bottom:10px}
+    #plan .plan-back .pb-h{margin-top:18px}
+    #plan .plan-back .pb-p{font-size:.88rem;line-height:1.5;margin-bottom:16px}
+    #plan .plan-screens{gap:12px}
+
+    /* kropki i podpis pod kartą */
+    #plan .pdots{margin-top:12px}
+    #plan .pswipe-hint{margin-top:6px}
+  }
 
   /* ---------- liczniki planu ----------
      Były osobną sekcją pod kartami; teraz siedzą NA karcie, nad ceną — w mniejszej wersji.
@@ -809,11 +855,11 @@
   /* `width:100%` jest konieczne — karta to kolumna z `align-items:flex-start`, więc bez tego
      pasek zwężałby się do treści zamiast wypełnić strefę nad przyciskiem zakupu */
   .plan-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;
-    margin:30px 0 30px;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    margin:14px 0 16px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .pstat{text-align:center;min-width:0}
   .pstat .val{display:flex;justify-content:center;align-items:baseline;
-    font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(1.9rem,2.6vw,2.9rem);
-    color:var(--lime);line-height:1;margin-bottom:9px;font-variant-numeric:tabular-nums}
+    font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(1.6rem,2.1vw,2.25rem);
+    color:var(--lime);line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums}
   .pstat .lbl{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
     color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* odometr — cyfry przewijają się w pionie jak na liczniku */
@@ -1379,10 +1425,12 @@
 <section id="plan">
   <div class="wrap">
     <div class="sec-label rv">03 — Plany treningowe</div>
-    <h2 class="sec-title rv rv2">Zacznij od planu<br>dla siebie.</h2>
+    <!-- spacja przed <br> jest konieczna: na dużych ekranach ukrywamy łamanie (patrz
+         „KOMPAKTOWA SEKCJA PLANÓW"), a bez niej wychodzi „planuDla siebie" -->
+    <h2 class="sec-title rv rv2">Zacznij od planu <br>dla siebie.</h2>
     <!-- Karuzela planów: widoczny jest jeden duży baner, a sąsiednie plany wystają zza jego
          krawędzi. Zmiana planu: przesunięcie palcem / myszą albo strzałki po bokach. -->
-    <div class="plan-slider rv rv3" id="planSlider" style="margin-top:70px">
+    <div class="plan-slider rv rv3" id="planSlider">
       <span class="pslide-peek peek-l" id="peekL" aria-hidden="true"></span>
       <span class="pslide-peek peek-r" id="peekR" aria-hidden="true"></span>
       <button class="pnav pnav-l" id="pnavL" type="button" aria-label="Poprzedni plan">‹</button>
