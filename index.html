@@ -14,6 +14,11 @@
     googleAdsId: '',   /* Google Ads, np. 'AW-123456789'                    */
     ga4Id: ''          /* Google Analytics 4, np. 'G-XXXXXXXXXX'            */
   };
+  /* ===== NEWSLETTER: adres „action" osadzonego formularza MailerLite =====
+     (MailerLite → Forms → Embedded form → skopiuj atrybut action z <form>).
+     Pusty adres = formularz na stronie uprzejmie zapowiada start (10.08),
+     zamiast udawać zapis. Po wklejeniu adresu zapis działa od razu. */
+  window.FOC_NEWSLETTER = { action: '' };
   /* Tryb zgody Google (Consent Mode v2) — MUSI być ustawiony ZANIM cokolwiek się wczyta.
      Domyślnie wszystko zabronione; zmieniamy dopiero po kliknięciu klienta. */
   window.dataLayer = window.dataLayer || [];
@@ -765,12 +770,12 @@
   .plan-grid.swap .plan-visual img{opacity:0}
   #planCta.disabled{background:transparent;border:1px solid var(--line);color:var(--muted);
     pointer-events:none;box-shadow:none;transform:none}
-  /* ---------- KARUZELA PLANÓW ----------
-     Jeden duży baner na wierzchu, sąsiednie stoją ZA nim — mniejsze, przechylone w przestrzeni
-     i gasnące w czerni tła. Zmiana: przeciągnięcie kursorem/palcem, strzałki albo kropki.
-     Karuzela chodzi w kółko: za ostatnim planem wraca pierwszy. */
-  .plan-slider{position:relative;perspective:1600px;touch-action:pan-y;cursor:grab;margin-top:70px}
-  .plan-slider.ciagne{cursor:grabbing}
+  /* ---------- KARTA PLANU (dawniej karuzela planów) ----------
+     Do startu sprzedajemy jeden plan, więc karuzela pustych kart „Wkrótce" zeszła
+     ze strony (audyt 2026-07-29) — odciągała od jedynego kupowalnego produktu,
+     a jej rewers pokazywał zły plan. Style .pnav / .pdots / .pslide-peek zostają
+     na powrót karuzeli, gdy pojawi się drugi plan (HTML i JS — patrz historia gita). */
+  .plan-slider{position:relative;perspective:1600px;touch-action:pan-y;margin-top:70px}
   .plan-slider .plan-flip{position:relative;z-index:3;will-change:transform}
   .plan-slider.przeciagam .plan-flip-inner{transition:none}
   /* Banery stojące z tyłu — CAŁE karty, nie skrawki: taki sam kształt jak główny baner,
@@ -833,7 +838,7 @@
     #plan .plan-feats li{padding:5px 0;font-size:.88rem}
     #plan .plan-stats{margin:10px 0 12px;padding:10px 0}
     #plan .pstat .val{font-size:clamp(1.35rem,1.7vw,1.85rem);margin-bottom:4px}
-    #plan .pstat .lbl{font-size:.62rem}
+    #plan .pstat .lbl{font-size:.7rem}   /* min. 11 px — audyt 2026-07-29 */
     #plan .btn{padding:14px 32px;font-size:.8rem}
     #plan .plan-hint{margin-top:8px;font-size:.66rem}
 
@@ -860,12 +865,41 @@
   .pstat .val{display:flex;justify-content:center;align-items:baseline;
     font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(1.6rem,2.1vw,2.25rem);
     color:var(--lime);line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums}
-  .pstat .lbl{display:block;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  .pstat .lbl{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
     color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* odometr — cyfry przewijają się w pionie jak na liczniku */
   .odo-col{display:inline-block;height:1em;overflow:hidden}
   .odo-strip{display:flex;flex-direction:column;transition:transform 2.2s cubic-bezier(.16,1,.3,1)}
   .odo-strip i{font-style:normal;height:1em;line-height:1}
+
+  /* ---------- zajawka opieki pod kartą planu ----------
+     Zastąpiła kropki karuzeli: zamiast pustych planów „Wkrótce" prowadzi do oferty
+     opieki indywidualnej W APLIKACJI (decyzja Tomka 29.07: bez sekcji na stronie). */
+  .opieka-zajawka{display:block;margin-top:28px;padding:20px 22px;text-align:center;
+    background:var(--graphite);border:1px solid var(--line);border-radius:12px;
+    color:var(--muted);font-size:.95rem;line-height:1.5;transition:border-color .25s}
+  .opieka-zajawka b{color:var(--lime);font-weight:700}
+  .opieka-zajawka:hover{border-color:rgba(153,230,109,.5)}
+
+  /* ---------- FAQ (częste pytania) ---------- */
+  .faq-list{margin-top:56px;max-width:760px}
+  .faq-item{border-bottom:1px solid var(--line)}
+  .faq-item:first-child{border-top:1px solid var(--line)}
+  .faq-item summary{display:flex;align-items:baseline;justify-content:space-between;gap:18px;
+    padding:22px 0;cursor:pointer;list-style:none;font-family:'Montserrat',sans-serif;
+    font-weight:700;font-size:1.02rem;color:#fff;line-height:1.4;transition:color .2s}
+  .faq-item summary::-webkit-details-marker{display:none}
+  /* znak +/– po prawej — zmienia się w „–" po otwarciu pytania */
+  .faq-item summary::after{content:"+";flex:0 0 auto;font-weight:800;font-size:1.25rem;
+    color:var(--lime);line-height:1}
+  .faq-item[open] summary::after{content:"–"}
+  .faq-item summary:hover{color:var(--lime)}
+  .faq-item p{color:var(--muted);font-size:.95rem;line-height:1.65;padding:0 34px 22px 0;max-width:640px}
+  @media(max-width:640px){
+    .faq-list{margin-top:40px}
+    .faq-item summary{font-size:.95rem;padding:18px 0;gap:12px}
+    .faq-item p{font-size:.9rem;padding:0 0 18px}
+  }
 
   /* ---------- o mnie ---------- */
   .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center}
@@ -996,7 +1030,11 @@
   .nl-form button{background:transparent;border:0;color:var(--lime);font-family:'Montserrat',sans-serif;
     font-weight:800;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;padding:0 8px;transition:.2s}
   .nl-form button:hover{text-shadow:0 0 18px rgba(153,230,109,.8)}
-  /* TODO: podmienić na osadzony formularz MailerLite (Embedded form) */
+  /* komunikat pod formularzem (zapowiedź startu / potwierdzenie zapisu) + notka RODO.
+     Adres formularza MailerLite wpisuje się w window.FOC_NEWSLETTER na górze strony. */
+  .nl .nl-msg{margin-top:14px;font-size:.95rem;color:var(--lime)}
+  .nl .nl-rodo{margin-top:12px;font-size:.78rem;color:var(--muted);line-height:1.55}
+  .nl .nl-rodo a{color:var(--lime);border-bottom:1px solid rgba(153,230,109,.4)}
 
   /* ---------- stopka ---------- */
   footer{border-top:1px solid var(--line);padding:80px 0 40px}
@@ -1071,8 +1109,9 @@
     #planCta{padding-left:18px;padding-right:18px;letter-spacing:.08em}
     .plan-stats{grid-template-columns:repeat(4,1fr);gap:2px;margin:20px 0;padding:14px 0}
     .pstat .val{font-size:1.3rem;margin-bottom:5px}
-    /* podpis skaluje się z szerokością ekranu, żeby najdłuższy („treningów") nie był ucinany */
-    .pstat .lbl{font-size:clamp(.4rem,2.1vw,.54rem);letter-spacing:0}
+    /* podpisy liczników: minimum 11 px (audyt 2026-07-29 — odbiorca 35–55 nie może mrużyć
+       oczu); najdłuższy podpis skrócony „treningów"→„treningi", żeby wszedł też w 288 px */
+    .pstat .lbl{font-size:clamp(11px,3.8vw,13px);letter-spacing:0}
     .about-grid{grid-template-columns:1fr;gap:60px}
     .nl-grid{grid-template-columns:1fr;gap:40px}
     .vcar-group video{height:170px}
@@ -1198,6 +1237,9 @@
     </nav>
   </div>
 </header>
+
+<!-- ===== TREŚĆ GŁÓWNA (landmark <main>) — czytniki ekranu mogą przeskoczyć prosto do treści ===== -->
+<main>
 
 <!-- ===== HERO ===== -->
 <!-- ===== BLOK GÓRNY: hero + pasek + manifest na jednym, ciągłym tle ===== -->
@@ -1347,7 +1389,10 @@
           <h2 class="sec-title rv rv2">Wiedza różnych specjalistów.<br>Jeden spójny plan.</h2>
         </div>
         <div class="cards">
-      <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: biblioteka ćwiczeń z filmami">
+      <!-- bez aria-label na karcie: etykieta zagłuszała nagłówek sprzedażowy dla czytników
+           ekranu (audyt 2026-07-29) — nazwę przycisku buduje teraz treść karty, a etykiety
+           „Powiększ ekran…" zostały na wewnętrznych podglądach urządzeń (.cb-dev) -->
+      <div class="card" role="button" tabindex="0">
         <div class="card-inner">
           <div class="card-face card-front">
             <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
@@ -1357,13 +1402,13 @@
           <div class="card-face card-back">
             <div class="cb-dev cb-phone" aria-label="Powiększ ekran: biblioteka ćwiczeń">
               <div class="cb-body"><span class="cb-notch"></span>
-                <div class="cb-screen"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji na telefonie: biblioteka ćwiczeń z filmami"></div>
+                <div class="cb-screen"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji na telefonie: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: opis ćwiczenia po polsku">
+      <div class="card" role="button" tabindex="0">
         <div class="card-inner">
           <div class="card-face card-front">
             <h3>Masz dość anglojęzycznych tutoriali?</h3>
@@ -1373,36 +1418,37 @@
           <div class="card-face card-back">
             <div class="cb-dev cb-tablet cb-desk" aria-label="Powiększ ekran: opis ćwiczenia po polsku">
               <div class="cb-body"><span class="cb-cam"></span>
-                <div class="cb-screen"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji na tablecie: opis ćwiczenia po polsku ze wskazówkami trenera"></div>
+                <div class="cb-screen"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji na tablecie: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy" decoding="async"></div>
               </div>
             </div>
             <!-- na telefonie ten sam ekran pokazujemy w telefonie (tablet/laptop tylko na dużym ekranie) -->
             <div class="cb-dev cb-phone cb-mob" aria-label="Powiększ ekran: opis ćwiczenia po polsku">
               <div class="cb-body"><span class="cb-notch"></span>
-                <div class="cb-screen"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy"></div>
+                <div class="cb-screen"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy" decoding="async"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="card" role="button" tabindex="0" aria-label="Pokaż ekran aplikacji: kalendarz treningów">
+      <div class="card" role="button" tabindex="0">
         <div class="card-inner">
           <div class="card-face card-front">
             <h3>Nie masz czasu na trening?</h3>
-            <p>Twój trening jest zawsze przy Tobie — 24/7 w Twojej kieszeni. Planujesz, zapisujesz w kalendarzu i ćwiczysz.</p>
+            <p>3 treningi w tygodniu po ok. 50 minut — resztę zostaw życiu. Plan masz zawsze
+              w telefonie, a treningi wpisujesz prosto do kalendarza.</p>
             <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
           </div>
           <div class="card-face card-back">
             <div class="cb-dev cb-laptop cb-desk" aria-label="Powiększ ekran: kalendarz treningów">
               <div class="cb-body"><span class="cb-notch-mac"></span>
-                <div class="cb-screen"><img src="assets/screen_kalendarz_laptop.jpg" alt="Ekran aplikacji na laptopie: kalendarz treningów"></div>
+                <div class="cb-screen"><img src="assets/screen_kalendarz_laptop.jpg" alt="Ekran aplikacji na laptopie: kalendarz treningów" loading="lazy" decoding="async"></div>
               </div>
               <span class="cb-deck"><span class="cb-keys"></span><span class="cb-pad"></span></span>
             </div>
             <!-- na telefonie: ten sam kalendarz, ale w telefonie (pionowy zrzut) -->
             <div class="cb-dev cb-phone cb-mob" aria-label="Powiększ ekran: kalendarz treningów">
               <div class="cb-body"><span class="cb-notch"></span>
-                <div class="cb-screen"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy"></div>
+                <div class="cb-screen"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
               </div>
             </div>
           </div>
@@ -1428,20 +1474,18 @@
     <!-- spacja przed <br> jest konieczna: na dużych ekranach ukrywamy łamanie (patrz
          „KOMPAKTOWA SEKCJA PLANÓW"), a bez niej wychodzi „planuDla siebie" -->
     <h2 class="sec-title rv rv2">Zacznij od planu <br>dla siebie.</h2>
-    <!-- Karuzela planów: widoczny jest jeden duży baner, a sąsiednie plany wystają zza jego
-         krawędzi. Zmiana planu: przesunięcie palcem / myszą albo strzałki po bokach. -->
+    <!-- Karta planu. Do startu jest jeden plan — karuzela z pustymi kartami „Wkrótce"
+         zeszła ze strony (audyt 2026-07-29): odciągała od jedynego kupowalnego produktu,
+         a jej rewers pokazywał zły plan. Wróci razem z drugim planem (historia gita). -->
+    <!-- role+tabindex: kartę można obrócić też z klawiatury (Enter/spacja — patrz skrypt) -->
     <div class="plan-slider rv rv3" id="planSlider">
-      <span class="pslide-peek peek-l" id="peekL" aria-hidden="true"></span>
-      <span class="pslide-peek peek-r" id="peekR" aria-hidden="true"></span>
-      <button class="pnav pnav-l" id="pnavL" type="button" aria-label="Poprzedni plan">‹</button>
-      <button class="pnav pnav-r" id="pnavR" type="button" aria-label="Następny plan">›</button>
-    <div class="plan-flip" id="planFlip">
+    <div class="plan-flip" id="planFlip" role="button" tabindex="0">
       <div class="plan-flip-inner">
 
         <!-- przód karty -->
         <div class="plan-face plan-front">
           <div class="plan-grid" id="planGrid">
-            <div class="plan-visual"><img id="planImg" src="assets/plan_sandbag.jpg" alt="Tomek w wykroku z sandbagiem w limonkowym świetle" data-parallax="0.1"></div>
+            <div class="plan-visual"><img id="planImg" src="assets/plan_sandbag.jpg" alt="Tomek w wykroku z sandbagiem w limonkowym świetle" data-parallax="0.1" loading="lazy" decoding="async"></div>
             <div class="plan-body">
               <span class="plan-tag" id="planTag">Dla początkujących</span>
               <h3 id="planTitle">Początek</h3>
@@ -1455,8 +1499,10 @@
               <!-- liczniki planu — przeniesione z osobnej sekcji pod kartami wprost na kartę -->
               <div class="plan-stats">
                 <div class="pstat"><span class="val" id="statWeeks" data-odo="4"></span><span class="lbl" id="lblWeeks">tygodnie</span></div>
-                <div class="pstat"><span class="val" id="statWorkouts" data-odo="12"></span><span class="lbl" id="lblWorkouts">treningów</span></div>
-                <div class="pstat"><span class="val" id="statExercises" data-odo="49"></span><span class="lbl">video</span></div>
+                <!-- „treningi", nie „treningów" — dłuższa forma nie mieści się na 288 px (audyt W7);
+                     „ćwiczeń" zamiast anglicyzmu „video" (audyt W5) -->
+                <div class="pstat"><span class="val" id="statWorkouts" data-odo="12"></span><span class="lbl" id="lblWorkouts">treningi</span></div>
+                <div class="pstat"><span class="val" id="statExercises" data-odo="49"></span><span class="lbl" id="lblExercises">ćwiczeń</span></div>
                 <div class="pstat"><span class="val" id="statMinutes" data-odo="620"></span><span class="lbl" id="lblMinutes">minut</span></div>
               </div>
               <div class="price-row">
@@ -1488,9 +1534,9 @@
               <span class="plan-hint">Kliknij kartę — wróć do planu →</span>
             </div>
             <div class="plan-screens" aria-label="Prawdziwe ekrany z aplikacji">
-              <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami">
-              <img src="assets/screen_trening.jpg" alt="Ekran aplikacji: dzisiejszy trening">
-              <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów">
+              <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async">
+              <img src="assets/screen_trening.jpg" alt="Ekran aplikacji: dzisiejszy trening" loading="lazy" decoding="async">
+              <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async">
             </div>
           </div>
         </div>
@@ -1499,13 +1545,56 @@
     </div>
     </div><!-- /plan-slider -->
 
-    <!-- kropki: który plan z ilu (zastąpiły kafelki pod banerem) -->
-    <div class="pdots rv rv4" id="pdots">
-      <button type="button" class="on" data-plan="0" aria-label="Plan Początek"></button>
-      <button type="button" data-plan="1" aria-label="Plan 2"></button>
-      <button type="button" data-plan="2" aria-label="Plan 3"></button>
+    <!-- zamiast kropek karuzeli: most do opieki indywidualnej — opis produktu żyje W APLIKACJI
+         (decyzja Tomka 29.07: bez osobnej sekcji na stronie, sprzedaż opieki to nie priorytet) -->
+    <a class="opieka-zajawka rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny" target="_blank" rel="noopener">Wolisz plan pisany specjalnie dla Ciebie?
+      <b>Poznaj opiekę indywidualną →</b></a>
+  </div>
+</section>
+
+<!-- ===== FAQ =====
+     Obsługa obiekcji przed zakupem (audyt 2026-07-29). Liczby zgodne z planem w aplikacji
+     (12 treningów / 620 min ≈ 50 min na trening). Zwroty opisane zgodnie z regulaminem —
+     ŻADNEJ obietnicy „gwarancji zwrotu" (decyzja Tomka). -->
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="sec-label rv">04 — Częste pytania</div>
+    <h2 class="sec-title rv rv2">Masz pytania?<br>Odpowiadam wprost.</h2>
+    <div class="faq-list rv rv3">
+      <details class="faq-item">
+        <summary><span>Ile czasu zajmuje trening?</span></summary>
+        <p>Plan „Początek" to 3 treningi w tygodniu, każdy po ok. 50 minut. W sumie niecałe
+          3 godziny tygodniowo — resztę zostaw życiu.</p>
+      </details>
+      <details class="faq-item">
+        <summary><span>Nigdy nie ćwiczyłem/am — czy dam radę?</span></summary>
+        <p>Tak — ten plan powstał właśnie dla osób, które zaczynają albo wracają po dłuższej
+          przerwie. Każde ćwiczenie ma poradnik wideo po polsku. Zaczynasz spokojnie —
+          progres przychodzi z regularności.</p>
+      </details>
+      <details class="faq-item">
+        <summary><span>Jaki sprzęt jest potrzebny?</span></summary>
+        <p>Podstawowe wyposażenie siłowni: hantle, kettlebell, drążek albo guma oporowa.
+          Bez specjalistycznych maszyn — plan zrealizujesz w każdym klubie, także osiedlowym.</p>
+      </details>
+      <details class="faq-item">
+        <summary><span>Jak długo mam dostęp do planu?</span></summary>
+        <p>Bezterminowo — płacisz raz, a plan zostaje z Tobą. Chcesz przejść go drugi raz?
+          Restart masz za darmo.</p>
+      </details>
+      <details class="faq-item">
+        <summary><span>Czy mogę zwrócić plan po zakupie?</span></summary>
+        <p>Plan to treść cyfrowa — dostęp otwiera się od razu po zakupie, za Twoją wyraźną
+          zgodą, więc zgodnie z regulaminem prawo odstąpienia od umowy wtedy nie przysługuje.
+          Dlatego kupujesz raz i sprawdzasz w spokoju — dostęp nie znika i nic Cię nie goni.</p>
+      </details>
+      <details class="faq-item">
+        <summary><span>Mam kontuzję albo problemy zdrowotne — czy mogę trenować?</span></summary>
+        <p>Przed rozpoczęciem treningów dobrze skonsultować się ze specjalistą — zwłaszcza
+          jeśli masz niedawną kontuzję, leczysz się przewlekle, martwisz się swoim stanem
+          zdrowia albo jesteś w ciąży. Regularne badania to część zdrowego trybu życia.</p>
+      </details>
     </div>
-    <span class="pswipe-hint rv rv4">Przesuń, żeby zobaczyć kolejny plan</span>
   </div>
 </section>
 
@@ -1519,7 +1608,7 @@
            śladzie odsłania hasło; wytoczywszy się za prawą krawędź — znika. -->
       <div class="sztangownia" id="sztangownia" aria-hidden="true">
         <div class="talerz-cien" id="talerzCien"></div>
-        <div class="talerz-roll" id="talerzRoll"><img src="assets/talerz_red25.webp" alt=""></div>
+        <div class="talerz-roll" id="talerzRoll"><img src="assets/talerz_red25.webp" alt="" loading="lazy" decoding="async"></div>
       </div>
       <h2 id="hasloTekst">Nie musi być idealnie.<br><span>Ma być regularnie.</span></h2>
     </section>
@@ -1531,16 +1620,16 @@
       <div class="wrap about-content">
         <div class="about-grid">
           <div class="about-visual" id="aboutPhoto">
-            <div class="frame"><img src="assets/tomek_hoodie.jpg" alt="Tomek Wiesner w bluzie FitOnlineCoach z szeroko rozłożonymi ramionami"></div>
+            <div class="frame"><img src="assets/tomek_hoodie.jpg" alt="Tomek Wiesner w bluzie FitOnlineCoach z szeroko rozłożonymi ramionami" loading="lazy" decoding="async"></div>
           </div>
           <div id="aboutText">
-            <div class="sec-label rv">04 — O mnie</div>
+            <div class="sec-label rv">05 — O mnie</div>
             <h2 class="sec-title rv rv2">Cześć,<br>jestem Tomek.</h2>
             <p class="rv rv3">Jako trener personalny, fizjoterapeuta i dietetyk patrzę na Twój trening
               z trzech stron naraz — dzięki temu plan jest skuteczny, bezpieczny i możliwy do pogodzenia
               z normalnym życiem.</p>
             <p class="rv rv3">Od 2010 roku codziennie planuję i prowadzę treningi dla swoich klientów,
-              dlatego możesz być pewien, że moje plany treningowe to coś więcej niż Ctrl+C / Ctrl+V.</p>
+              dlatego masz pewność, że moje plany treningowe to coś więcej niż Ctrl+C / Ctrl+V.</p>
             <p class="rv rv3">Wierzę w złoty środek — mądry ruch, proste zasady odżywiania
               i systematyczność, którą utrzymasz latami.</p>
             <div class="roles rv rv4" id="roles">
@@ -1553,7 +1642,9 @@
                  gościa: pokazuje ofertę, a przy zakupie prowadzi przez rejestrację) -->
             <a class="btn btn-lime btn-join btn-care rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny" target="_blank" rel="noopener">
               <span class="bj-main">Opieka indywidualna</span>
-              <span class="bj-sub">już od 399 zł</span>
+              <!-- „/ mies." obowiązkowe: bez niego cena abonamentu wyglądała na jednorazową
+                   (audyt 2026-07-29); pełny cennik i opis — w aplikacji -->
+              <span class="bj-sub">od 399 zł / mies.</span>
             </a>
           </div>
         </div>
@@ -1567,7 +1658,7 @@
 <section class="yt" id="wideo">
   <div class="bg" data-parallax="0.16"></div>
   <div class="wrap">
-    <div class="sec-label rv" style="justify-content:center">05 — Darmowa wiedza</div>
+    <div class="sec-label rv" style="justify-content:center">06 — Darmowa wiedza</div>
     <h2 class="rv rv2"><span class="yt-count">80</span> <span class="yt-adj">darmowych</span> <span class="yt-noun">poradników</span> wideo</h2>
     <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem SAM „przewija" (swajp)
          do kolejnego — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
@@ -1579,10 +1670,10 @@
           <span class="vp-notch"></span>
           <div class="vp-screen">
             <div class="vp-track" id="vpTrack" aria-hidden="true">
-              <div class="vp-slide"><video muted loop autoplay playsinline preload="auto" src="assets/cwiczenie_plecy.mp4"></video></div>
-              <div class="vp-slide"><video muted loop autoplay playsinline preload="auto" src="assets/cwiczenie_licznik.mp4"></video></div>
-              <div class="vp-slide"><video muted loop autoplay playsinline preload="auto" src="assets/cwiczenie_hollow.mp4"></video></div>
-              <div class="vp-slide"><video muted loop autoplay playsinline preload="auto" src="assets/cwiczenie_counter.mp4"></video></div>
+              <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_plecy.mp4"></video></div>
+              <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_licznik.mp4"></video></div>
+              <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_hollow.mp4"></video></div>
+              <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_counter.mp4"></video></div>
             </div>
           </div>
         </div>
@@ -1600,7 +1691,7 @@
 <!-- ===== OPINIE (pokazuje się dopiero, gdy są zatwierdzone opinie) ===== -->
 <section class="reviews" id="opinie" hidden>
   <div class="wrap">
-    <div class="sec-label rv" style="justify-content:center">06 — Opinie</div>
+    <div class="sec-label rv" style="justify-content:center">07 — Opinie</div>
     <h2 class="sec-title rv rv2" style="text-align:center;margin-left:auto;margin-right:auto">Co mówią osoby,<br>które <span style="color:var(--lime)">już trenują</span>.</h2>
     <!-- Karuzela po orbicie: karty (buduje je renderOpinie z danych) krążą po elipsie; JS pozycjonuje. -->
     <div class="orbit-stage rv rv3">
@@ -1614,24 +1705,34 @@
   <div class="wrap">
     <div class="nl-grid">
       <div>
-        <div class="sec-label rv">07 — Newsletter</div>
+        <div class="sec-label rv">08 — Newsletter</div>
         <h2 class="rv rv2">Darmowa dawka wiedzy na start.</h2>
         <p class="rv rv3">Proste wskazówki treningowe i informacje o nowych planach. Zero spamu.</p>
       </div>
-      <!-- TODO: tu wkleimy osadzony formularz z MailerLite (Forms → Embedded form) -->
-      <form class="nl-form rv rv3" onsubmit="event.preventDefault();alert('Formularz podepniemy do MailerLite — na razie to podgląd.');">
-        <input type="email" placeholder="Twój adres e-mail" required>
-        <button type="submit">Zapisz się →</button>
-      </form>
+      <!-- Zapis do newslettera. Adres formularza MailerLite (atrybut action z osadzonego
+           formularza) wpisuje się w window.FOC_NEWSLETTER na górze strony — dopóki jest
+           pusty, wysyłka pokazuje zapowiedź startu zamiast udawać zapis (bez alert()). -->
+      <div class="rv rv3">
+        <form class="nl-form" id="nlForm">
+          <input type="email" name="fields[email]" placeholder="Twój adres e-mail" required aria-label="Adres e-mail">
+          <button type="submit">Zapisz się →</button>
+        </form>
+        <p class="nl-msg" id="nlMsg" hidden aria-live="polite"></p>
+        <p class="nl-rodo">Zapisując się, zgadzasz się na kontakt e-mailowy zgodnie z
+          <a href="https://app.fitonlinecoach.com/polityka-prywatnosci" target="_blank" rel="noopener">polityką prywatności</a>.
+          Wypiszesz się jednym kliknięciem.</p>
+      </div>
     </div>
   </div>
 </section>
+
+</main><!-- /treść główna -->
 
 <!-- ===== STOPKA ===== -->
 <footer>
   <div class="wrap">
     <div class="foot-grid">
-      <img src="assets/logo_stacked.png" alt="FitOnlineCoach" style="height:72px;width:auto">
+      <img src="assets/logo_stacked.png" alt="FitOnlineCoach" style="height:72px;width:auto" loading="lazy" decoding="async">
       <ul class="foot-links">
         <li><a href="#dlaczego">Dlaczego</a></li>
         <li><a href="#plan">Plan</a></li>
@@ -1789,7 +1890,9 @@
   };
   el('ccReopen').addEventListener('click', pokaz);
 
-  /* ===== Pomiar konwersji: klik w „Kup plan" (?kup=1) albo „Załóż konto" (/start) =====
+  /* ===== Pomiar konwersji: klik w „Kup plan" (?kup=1), „Załóż konto" (/start)
+     albo wejście na listę planów / opiekę indywidualną (/plany — m.in. hero „Dołącz";
+     wcześniej hero w ogóle nie było liczone — audyt 2026-07-29) =====
      Nasłuch na CAŁYM dokumencie, bo przycisk „Kup plan" jest podmieniany skryptem
      przy przełączaniu planów — nasłuch przypięty do samego przycisku by go zgubił.
      Zdarzenie leci wyłącznie, gdy narzędzie jest realnie wczytane (czyli była zgoda
@@ -1798,7 +1901,8 @@
     const a = e.target && e.target.closest ? e.target.closest('a[href*="app.fitonlinecoach.com"]') : null;
     if (!a) return;
     const adres = a.getAttribute('href') || '';
-    if (adres.indexOf('kup=1') === -1 && adres.indexOf('/start') === -1) return;
+    if (adres.indexOf('kup=1') === -1 && adres.indexOf('/start') === -1
+        && adres.indexOf('/plany') === -1) return;
     try {
       if (ga4Wczytane || adsWczytane) gtag('event', 'begin_checkout', {link_url: adres});
       if (pixelWczytany && window.fbq) fbq('track', 'InitiateCheckout');
@@ -1886,11 +1990,14 @@
     if (koncowka >= 2 && koncowka <= 4 && (setka < 12 || setka > 14)) return formy[1];
     return formy[2];
   };
-  /* liczniki pod planem — każdy plan liczony osobno, wszystkie animują się od zera */
+  /* liczniki pod planem — każdy plan liczony osobno, wszystkie animują się od zera.
+     UWAGA: statyczny podpis w HTML to „treningi" (forma „treningów" nie mieści się na
+     288 px — audyt W7); odmiana poniżej nadpisze go dopiero przy przełączaniu planów,
+     które dziś jest uśpione (jeden plan) — przy powrocie karuzeli sprawdź szerokości. */
   const STATY = [
     ['statWeeks', 'weeks', 'lblWeeks', ['tydzień', 'tygodnie', 'tygodni']],
     ['statWorkouts', 'workouts', 'lblWorkouts', ['trening', 'treningi', 'treningów']],
-    ['statExercises', 'exercises', null, null],
+    ['statExercises', 'exercises', 'lblExercises', ['ćwiczenie', 'ćwiczenia', 'ćwiczeń']],
     ['statMinutes', 'minutes', 'lblMinutes', ['minuta', 'minuty', 'minut']]
   ];
   const setPlanStats = p => STATY.forEach(([valId, pole, lblId, formy]) => {
@@ -2420,7 +2527,8 @@
     btn.addEventListener('pointerleave', up);
   });
 
-  /* przełącznik planów — kafelki podmieniają treść głównej karty */
+  /* Dane planów + przełącznik treści karty (setPlan). Dziś jest jeden plan, więc nic
+     nie woła setPlan — zaplecze zostaje pod powrót karuzeli przy drugim planie. */
   const plans = [
     {
       tag: 'Dla początkujących', title: 'Początek',
@@ -2430,25 +2538,10 @@
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
       img: 'assets/plan_sandbag.jpg', alt: 'Tomek w wykroku z sandbagiem w limonkowym świetle',
       url: 'https://app.fitonlinecoach.com/plany/poczatek?kup=1', cta: 'Kup plan — 79 zł'
-    },
-    {
-      tag: 'Wkrótce', title: 'Plan 2',
-      weeks: null, workouts: null, exercises: null, minutes: null,
-      desc: 'Pracuję nad kolejnym planem. Szczegóły już wkrótce — zapisz się na newsletter, a dam Ci znać pierwszemu.',
-      feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
-      price: '<small>cena wkrótce</small>',
-      img: 'assets/kettlebell.jpg', alt: 'Kettlebell w limonkowym świetle',
-      url: null, cta: 'Wkrótce dostępny'
-    },
-    {
-      tag: 'Wkrótce', title: 'Plan 3',
-      weeks: null, workouts: null, exercises: null, minutes: null,
-      desc: 'Trzeci plan w przygotowaniu. Szczegóły już wkrótce — zapisz się na newsletter, a dam Ci znać pierwszemu.',
-      feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
-      price: '<small>cena wkrótce</small>',
-      img: 'assets/dust_beam.jpg', alt: 'Limonkowy pył magnezji na czarnym tle',
-      url: null, cta: 'Wkrótce dostępny'
     }
+    /* Kolejne plany dopisuj TUTAJ (tag, title, liczby, desc, feats, img, url, cta).
+       Puste karty „Plan 2/3 — Wkrótce" zdjęte 2026-07-29 (audyt): odciągały od jedynego
+       kupowalnego produktu, a rewers karuzeli pokazywał przy nich zły plan. */
   ];
   const planGrid = document.getElementById('planGrid');
   const setPlan = i => {
@@ -2469,89 +2562,37 @@
       setPlanStats(p);   /* wszystkie cztery liczniki przeliczają się od zera */
     }, 290);
   };
-  /* ---------- KARUZELA PLANÓW ----------
-     Kafelki pod banerem zastąpiło przesuwanie: sąsiednie plany wystają zza krawędzi karty,
-     a zmiana następuje przesunięciem palcem/myszą, strzałką albo kliknięciem w kropkę. */
+  /* ---------- KARTA PLANU ----------
+     Karuzela (przeciąganie, strzałki, kropki, karty-podglądy z tyłu) zdjęta 2026-07-29:
+     przy jednym planie tylko rozpraszała, a jej rewers pokazywał zły plan (audyt, pkt 3
+     i 14). Kod karuzeli jest w historii gita — wróci razem z drugim planem. */
   const planFlip = document.getElementById('planFlip');
   const planSlider = document.getElementById('planSlider');
-  const peekL = document.getElementById('peekL');
-  const peekR = document.getElementById('peekR');
-  const pnavL = document.getElementById('pnavL');
-  const pnavR = document.getElementById('pnavR');
-  const pdots = [...document.querySelectorAll('#pdots button')];
-  let planIdx = 0;
+  const planFront = planFlip.querySelector('.plan-front');
+  const planBack = planFlip.querySelector('.plan-back');
 
-  /* Banery z tyłu pokazują sąsiednie plany — karuzela chodzi W KÓŁKO, więc przy pierwszym
-     planie z lewej stoi ostatni, a przy ostatnim z prawej stoi pierwszy. */
-  const poprzedni = i => (i - 1 + plans.length) % plans.length;
-  const nastepny  = i => (i + 1) % plans.length;
-  const odswiezSasiadow = () => {
-    peekL.style.backgroundImage = `url('${plans[poprzedni(planIdx)].img}')`;
-    peekR.style.backgroundImage = `url('${plans[nastepny(planIdx)].img}')`;
-    pdots.forEach((d, i) => d.classList.toggle('on', i === planIdx));
+  /* Czytniki ekranu: niewidoczna ścianka karty jest wyciszona (aria-hidden) i wyłączona
+     z tabulacji (inert) — inaczej rewers czytał się razem z awersem, a ukryty, drugi
+     przycisk „Kup plan" łapał fokus. */
+  const oznaczScianki = () => {
+    const odwrocona = planFlip.classList.contains('flipped');
+    planFront.setAttribute('aria-hidden', String(odwrocona));
+    planBack.setAttribute('aria-hidden', String(!odwrocona));
+    try { planFront.inert = odwrocona; planBack.inert = !odwrocona; } catch (_) {}
   };
+  const obrocKarte = () => { planFlip.classList.toggle('flipped'); oznaczScianki(); };
+  oznaczScianki();
 
-  const idzDoPlanu = i => {
-    const cel = (i + plans.length) % plans.length;      /* zawijanie: -1 → ostatni, n → pierwszy */
-    if (cel === planIdx) return;
-    planIdx = cel;
-    planFlip.classList.remove('flipped');   /* nowy plan zawsze pokazuje się przodem */
-    setPlan(cel);
-    odswiezSasiadow();
-  };
-  odswiezSasiadow();
-
-  pnavL.addEventListener('click', e => { e.stopPropagation(); idzDoPlanu(planIdx - 1); });
-  pnavR.addEventListener('click', e => { e.stopPropagation(); idzDoPlanu(planIdx + 1); });
-  pdots.forEach(d => d.addEventListener('click', () => idzDoPlanu(+d.dataset.plan)));
-
-  /* Przeciąganie kursorem i palcem. `setPointerCapture` sprawia, że gest działa dalej, nawet gdy
-     kursor zjedzie poza kartę. `przeciagniete` blokuje obrót karty, żeby swipe nie przewracał
-     banera. Banery z tyłu jadą wolniej — stąd wrażenie głębi. */
-  let startX = 0, startY = 0, dx = 0, ciagne = false, przeciagniete = false, pion = false;
-  const PROG = 60;
-  planSlider.addEventListener('pointerdown', e => {
-    if (e.target.closest('a, button')) return;     /* przyciski i strzałki działają normalnie */
-    ciagne = true; przeciagniete = false; pion = false;
-    startX = e.clientX; startY = e.clientY; dx = 0;
-    planSlider.classList.add('przeciagam', 'ciagne');
-    try { planSlider.setPointerCapture(e.pointerId); } catch (_) {}
-  });
-  planSlider.addEventListener('pointermove', e => {
-    if (!ciagne || pion) return;
-    dx = e.clientX - startX;
-    if (!przeciagniete && Math.abs(e.clientY - startY) > Math.abs(dx) + 4) { pion = true; return; }
-    if (Math.abs(dx) > 6) przeciagniete = true;
-    planFlip.style.transform = `translateX(${dx.toFixed(1)}px)`;
-    peekL.style.transform = `translateX(calc(-17vw + ${(dx * .35).toFixed(1)}px)) scale(.52) rotateY(16deg)`;
-    peekR.style.transform = `translateX(calc(17vw + ${(dx * .35).toFixed(1)}px)) scale(.52) rotateY(-16deg)`;
-  });
-  const koniecCiagniecia = e => {
-    if (!ciagne) return;
-    ciagne = false;
-    planSlider.classList.remove('przeciagam', 'ciagne');
-    if (e && e.pointerId != null) { try { planSlider.releasePointerCapture(e.pointerId); } catch (_) {} }
-    planFlip.style.transition = 'transform .35s cubic-bezier(.2,.9,.25,1)';
-    planFlip.style.transform = '';
-    peekL.style.transform = '';
-    peekR.style.transform = '';
-    setTimeout(() => { planFlip.style.transition = ''; }, 380);
-    if (dx <= -PROG) idzDoPlanu(planIdx + 1);
-    else if (dx >= PROG) idzDoPlanu(planIdx - 1);
-    dx = 0;
-  };
-  planSlider.addEventListener('pointerup', koniecCiagniecia);
-  planSlider.addEventListener('pointercancel', koniecCiagniecia);
-
-  /* Odwracanie karty planu: klik w dowolne miejsce przodu pokazuje tył ze szczegółami
-     i ekranami z aplikacji. Przycisk „Kup plan" jest wyjątkiem — prowadzi do zakupu.
-     UWAGA: nasłuch wisi na SUWAKU, nie na karcie — przechwytywanie kursora przy przeciąganiu
-     (`setPointerCapture`) przekierowuje kliknięcie na element przechwytujący, więc na samej
-     karcie zdarzenie by nie dotarło i obracanie przestałoby działać. */
+  /* Odwracanie karty planu: klik w dowolne miejsce pokazuje drugą stronę ze szczegółami
+     i ekranami z aplikacji. Odnośniki i przyciski (np. „Kup plan") działają normalnie. */
   planSlider.addEventListener('click', e => {
-    if (e.target.closest('a, button')) return;     /* przyciski zakupu, strzałki i kropki */
-    if (przeciagniete) return;                     /* to było przesunięcie, nie kliknięcie */
-    planFlip.classList.toggle('flipped');
+    if (e.target.closest('a, button')) return;
+    obrocKarte();
+  });
+  /* to samo z klawiatury — karta ma role="button" i tabindex="0" w HTML */
+  planFlip.addEventListener('keydown', e => {
+    if (e.target.closest('a, button')) return;   /* Enter na „Kup plan" ma kupować, nie obracać */
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); obrocKarte(); }
   });
 
   /* liczba filmów z playlisty YouTube — plik odświeżany automatycznie raz w tygodniu.
@@ -2674,6 +2715,25 @@
      telefon też ustawiamy od razu (przy redukcji ruchu — od razu zadokowany, żeby nie zasłaniał tekstu) */
   window.addEventListener('load', () => { ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); });
   setTimeout(() => { ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); }, 400);
+
+  /* ---------- newsletter ----------
+     Zamiast dawnej atrapy z alert(): dopóki w window.FOC_NEWSLETTER (góra strony) nie ma
+     adresu formularza MailerLite, wysyłka pokazuje zapowiedź startu. Po wpisaniu adresu
+     zapis leci POST-em w tle (no-cors — odpowiedzi nie da się odczytać, więc po prostu
+     potwierdzamy przyjęcie), a strona zostaje na miejscu. */
+  const nlForm = document.getElementById('nlForm');
+  const nlMsg = document.getElementById('nlMsg');
+  if (nlForm && nlMsg) {
+    const nlPokaz = tekst => { nlMsg.hidden = false; nlMsg.textContent = tekst; };
+    nlForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const akcja = ((window.FOC_NEWSLETTER || {}).action || '').trim();
+      if (!akcja) { nlPokaz('Zapis ruszy w dniu startu — wpadnij 10.08 🙂'); return; }
+      fetch(akcja, {method: 'POST', body: new FormData(nlForm), mode: 'no-cors'})
+        .then(() => { nlPokaz('Dzięki! Sprawdź skrzynkę — potwierdź zapis.'); nlForm.reset(); })
+        .catch(() => nlPokaz('Nie udało się wysłać — spróbuj jeszcze raz za chwilę.'));
+    });
+  }
 
   /* menu mobilne */
   const burger = document.getElementById('burger');
