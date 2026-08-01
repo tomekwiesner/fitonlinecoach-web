@@ -14,11 +14,14 @@
     googleAdsId: '',   /* Google Ads, np. 'AW-123456789'                    */
     ga4Id: ''          /* Google Analytics 4, np. 'G-XXXXXXXXXX'            */
   };
-  /* ===== NEWSLETTER: adres „action" osadzonego formularza MailerLite =====
-     (MailerLite → Forms → Embedded form → skopiuj atrybut action z <form>).
-     Pusty adres = formularz na stronie uprzejmie zapowiada start (10.08),
-     zamiast udawać zapis. Po wklejeniu adresu zapis działa od razu. */
-  window.FOC_NEWSLETTER = { action: '' };
+  /* ===== ZAPIS NA LISTĘ OCZEKUJĄCYCH: adres formularza MailerLite =====
+     Formularz „Strona www — zapis na listę oczekujących" (id 194586683979597714)
+     zapisuje do grupy „Lista oczekujących — start 7.09.2026" (id 194586674959746116).
+     Potwierdzenie mailem (double opt-in) jest WŁĄCZONE po stronie MailerLite.
+     Sprawdzone 2026-08-01: adres odpowiada, a pole musi się nazywać `fields[email]`
+     (sam `email` zwraca „field is required"). Pusty adres = strona zapowiada start
+     zamiast udawać zapis. */
+  window.FOC_NEWSLETTER = { action: 'https://assets.mailerlite.com/jsonp/796687/forms/194586683979597714/subscribe' };
   /* Tryb zgody Google (Consent Mode v2) — MUSI być ustawiony ZANIM cokolwiek się wczyta.
      Domyślnie wszystko zabronione; zmieniamy dopiero po kliknięciu klienta. */
   window.dataLayer = window.dataLayer || [];
@@ -250,11 +253,22 @@
     opacity:0;animation:fadeUp .8s .2s forwards}
   .hero .eyebrow::before{content:"";width:36px;height:1px;background:var(--lime)}
   .hero h1{font-size:clamp(2.6rem,7.2vw,6rem);font-weight:900;color:#fff;margin-bottom:28px}
+  /* Wąskie telefony: dolna granica 2,6rem była ZA DUŻA — słowo „rozumiesz." miało przy 288 px
+     aż 275 px przy dostępnych 224 px i rozpychało całą stronę w poziomie (usterka zastana,
+     zmierzona 2026-08-01: 53 px nadmiaru na wersji z serwera). `min-width:0` pilnuje, żeby
+     kolumna hero nie mogła urosnąć ponad szerokość marginesów. */
+  @media(max-width:400px){
+    .hero h1{font-size:clamp(1.9rem,9.6vw,2.6rem)}
+    .hero-content{min-width:0}
+  }
   .hero h1 .w{display:inline-block;opacity:0;transform:translateY(40px);animation:wordUp .7s forwards}
   .hero h1 .outline{color:var(--lime)}
   .hero p.lead{max-width:480px;color:#B9C4BD;font-size:1.08rem;margin-bottom:40px;
     opacity:0;animation:fadeUp .8s 1.15s forwards}
-  .hero-actions{display:flex;gap:18px;flex-wrap:wrap;opacity:0;animation:fadeUp .8s 1.35s forwards}
+  /* od sierpnia 2026 mieści zapis na listę (akapit + pole + zgoda + komunikat),
+     więc układ jest PIONOWY — wcześniej był rząd przycisków obok siebie */
+  .hero-actions{display:flex;flex-direction:column;align-items:flex-start;gap:0;
+    opacity:0;animation:fadeUp .8s 1.35s forwards}
   @keyframes wordUp{to{opacity:1;transform:translateY(0)}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   .btn{display:inline-block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.85rem;
@@ -1017,24 +1031,60 @@
     .orbit-card{width:min(75vw,262px);padding:20px 20px;gap:11px}
     .orbit-card .oc-body{font-size:.92rem;line-height:1.5}}
 
-  /* ---------- newsletter ---------- */
-  .nl{border-top:1px solid var(--line);padding:70px 0}
+  /* ---------- ZAPIS NA LISTĘ OCZEKUJĄCYCH (sierpień 2026) ----------
+     Jeden komponent `.zapis` używany w DWÓCH miejscach: w hero (zamiast przycisku
+     „Dołącz") i w sekcji na dole strony. Wspólny wygląd i jeden kod obsługi
+     (`[data-zapis]`), żeby nie rozjechały się dwie implementacje.
+     Na telefonie pole i przycisk układają się w pion — inaczej przy 288 px
+     napis na przycisku zawija się na dwie linie. */
+  /* Pole NAD przyciskiem — także na komputerze. Powody, oba zmierzone 2026-08-01:
+     (1) przy 1280 px układ obok siebie wchodził 46 px pod telefon 3D w hero i chował
+         przycisk — a to teraz najważniejsze wezwanie do działania na stronie;
+     (2) przy 288 px napis „ZAPISZ SIĘ →" obok pola łamał się na dwie linie.
+     `width:100%` jest konieczne — w hero formularz jest elementem kolumny
+     z `align-items:flex-start`, więc bez tego zwężał się do treści. */
+  .zapis{display:flex;flex-direction:column;width:100%;max-width:380px}
+  .zapis input[type=email]{width:100%;background:transparent;outline:none;color:#fff;
+    font-size:1.02rem;font-family:inherit;padding:14px 0;border:0;
+    border-bottom:2px solid rgba(255,255,255,.25);transition:border-color .3s}
+  .zapis input[type=email]:focus{border-bottom-color:var(--lime)}
+  .zapis input[type=email]::placeholder{color:var(--muted)}
+  .zapis button{margin-top:16px;width:100%;background:var(--lime);color:var(--black);border:0;
+    border-radius:2px;padding:16px 20px;font-family:'Montserrat',sans-serif;font-weight:800;
+    font-size:.84rem;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;transition:.25s}
+  .zapis button:hover{box-shadow:0 0 34px rgba(153,230,109,.5);transform:translateY(-2px)}
+  /* zgoda marketingowa — bez niej nie wolno wysyłać sekwencji sprzedażowych */
+  .zapis-zgoda{display:flex;gap:10px;align-items:flex-start;margin-top:14px;width:100%;max-width:380px;
+    font-size:.76rem;line-height:1.5;color:var(--muted);cursor:pointer}
+  .zapis-zgoda input{flex:0 0 auto;width:16px;height:16px;margin-top:2px;accent-color:var(--lime);cursor:pointer}
+  .zapis-zgoda a{color:var(--lime);border-bottom:1px solid rgba(153,230,109,.4)}
+  .zapis-msg{margin-top:12px;font-size:.92rem;color:var(--lime);max-width:380px;line-height:1.5}
+  .zapis-msg.blad{color:#FFB4A2}
+  .zapis-admin{margin-top:10px;font-size:.7rem;line-height:1.5;color:var(--muted);opacity:.75;
+    width:100%;max-width:380px}
+  /* wariant w hero — węższy, żeby przy 1280 px nie wchodził pod telefon 3D */
+  .zapis-hero{max-width:330px}
+  .zapis-hero+.zapis-zgoda{max-width:330px}
+  .hero-start{margin-bottom:16px;font-size:.95rem;color:#CFD8D2}
+  .hero-start strong{color:var(--lime);font-weight:800}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  /* Telefon: formularz na całą szerokość kolumny — na wąskim ekranie ograniczanie
+     szerokości tylko marnuje miejsce, a przycisk ma być łatwy do trafienia palcem. */
+  @media(max-width:600px){
+    .zapis,.zapis-hero,.zapis-zgoda,.zapis-hero+.zapis-zgoda,.zapis-msg,.zapis-admin{max-width:none}
+  }
+
+  /* ---------- sekcja zapisu na dole strony ---------- */
+  /* `scroll-margin-top` — bez tego kotwica `#zapis` chowa nagłówek sekcji pod
+     przyklejonym paskiem menu (77 px) */
+  .nl{border-top:1px solid var(--line);padding:70px 0;scroll-margin-top:96px}
+  .nl p strong{color:var(--lime);font-weight:800}
   .nl-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
   .nl h2{font-size:clamp(1.7rem,3vw,2.5rem);color:#fff;margin-bottom:14px}
   .nl p{color:var(--muted);max-width:420px}
-  .nl-form{display:flex;border-bottom:2px solid rgba(255,255,255,.25);transition:.3s}
-  .nl-form:focus-within{border-bottom-color:var(--lime)}
-  .nl-form input{flex:1;background:transparent;border:0;outline:none;color:#fff;font-size:1.05rem;
-    font-family:inherit;padding:18px 0}
-  .nl-form input::placeholder{color:var(--muted)}
-  .nl-form button{background:transparent;border:0;color:var(--lime);font-family:'Montserrat',sans-serif;
-    font-weight:800;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;padding:0 8px;transition:.2s}
-  .nl-form button:hover{text-shadow:0 0 18px rgba(153,230,109,.8)}
-  /* komunikat pod formularzem (zapowiedź startu / potwierdzenie zapisu) + notka RODO.
-     Adres formularza MailerLite wpisuje się w window.FOC_NEWSLETTER na górze strony. */
-  .nl .nl-msg{margin-top:14px;font-size:.95rem;color:var(--lime)}
-  .nl .nl-rodo{margin-top:12px;font-size:.78rem;color:var(--muted);line-height:1.55}
-  .nl .nl-rodo a{color:var(--lime);border-bottom:1px solid rgba(153,230,109,.4)}
+  /* Formularz i notka RODO korzystają teraz ze wspólnego komponentu `.zapis` wyżej
+     (ten sam wygląd w hero i tutaj) — dawne `.nl-form` / `.nl-msg` / `.nl-rodo` usunięte. */
 
   /* ---------- stopka ---------- */
   footer{border-top:1px solid var(--line);padding:80px 0 40px}
@@ -1067,9 +1117,16 @@
        się przy zwykłym przewijaniu (jak reszta efektów na mobile). */
     .hero-stack{height:auto}
     .hero-pin{position:static;height:auto;overflow:visible}
+    /* Hero jest wyśrodkowane w pionie. Od sierpnia 2026 mieści też zapis na listę, przez co
+       na wąskich telefonach urosło ponad wysokość ekranu i wyśrodkowanie wypychało nagłówek
+       GÓRĄ — pod przyklejone logo. Na telefonie układamy więc treść od góry i pozwalamy
+       hero urosnąć, zamiast trzymać sztywne 100vh. */
+    .hero{height:auto;min-height:100vh;align-items:flex-start;padding-top:104px;padding-bottom:48px}
     /* Na telefonie talerze stoją na dole hero po prawej, więc wskaźnik „Przewiń"
-       przesuwamy ze środka na lewą krawędź — inaczej leżałby na talerzach. */
-    .scroll-cue{left:24px;transform:none}
+       przesuwamy ze środka na lewą krawędź — inaczej leżałby na talerzach.
+       Od sierpnia 2026 hero mieści też zapis na listę i wskaźnik nachodził na zgodę
+       marketingową — na telefonie go chowamy (i tak każdy wie, że się przewija). */
+    .scroll-cue{left:24px;transform:none;display:none}
     /* talerze mniejsze, żeby trzy zmieściły się w rzędzie na telefonie */
     .talerz:nth-child(1){width:84px}
     .talerz:nth-child(2){width:96px}
@@ -1231,7 +1288,8 @@
         <li><a href="#plan">Plan</a></li>
         <li><a href="#o-mnie">O mnie</a></li>
         <li><a href="#wideo">Wideo</a></li>
-        <li><a class="nav-cta" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Aplikacja</a></li>
+        <!-- sierpień 2026: apka jest za bramką, więc menu prowadzi do zapisu, nie do „wkrótce" -->
+        <li><a class="nav-cta" href="#zapis">Zapisz się</a></li>
       </ul>
       <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
     </nav>
@@ -1287,14 +1345,37 @@
     </h1>
     <p class="lead">Plany treningowe z poradnikiem wideo do każdego ćwiczenia.
       Po polsku, konkretnie, bez ściemy — zawsze w Twoim telefonie.</p>
-    <!-- Jeden przycisk zamiast dwóch: „DOŁĄCZ" dużą czcionką + cena mniejszym drukiem.
-         Prowadzi wprost do listy planów w aplikacji — ta trasa jest otwarta dla niezalogowanych
-         (reszta apki wita ekranem logowania). Rejestracja dzieje się dopiero przy zakupie. -->
+    <!-- KAMPANIA ZAPOWIADAJĄCA (sierpień 2026): w miejscu przycisku „DOŁĄCZ / już od 79 zł"
+         stoi zapis na listę oczekujących, bo aplikacja jest za bramką do 7 września i każdy
+         przycisk zakupowy prowadziłby na ekran „wkrótce".
+         PRZYWRÓCENIE WERSJI SPRZEDAŻOWEJ 7.09: `git show sprzedaz-v1:index.html` w repo
+         `_deploy` — tam jest oryginalny przycisk i wszystkie linki do apki. -->
     <div class="hero-actions">
-      <a class="btn btn-lime btn-join" href="https://app.fitonlinecoach.com/plany" target="_blank" rel="noopener">
-        <span class="bj-main">Dołącz</span>
-        <span class="bj-sub">już od 79 zł</span>
-      </a>
+      <p class="hero-start">Rusza <strong>7 września</strong>. Zapisz się i dowiedz się pierwszy.</p>
+      <!-- Zgoda leży WEWNĄTRZ formularza i PRZED przyciskiem. Oba są istotne:
+           wewnątrz — bo `new FormData(form)` bierze tylko pola z formularza, a gdy zgoda
+           była obok, zaznaczenie zostawało w przeglądarce i nigdzie się nie zapisywało
+           (wykryte testem 2026-08-01); przed przyciskiem — bo człowiek ma ją przeczytać,
+           zanim kliknie, a nie po. -->
+      <form class="zapis zapis-hero" data-zapis novalidate>
+        <label class="sr-only" for="zapisHero">Adres e-mail</label>
+        <input id="zapisHero" type="email" name="fields[email]" placeholder="Twój adres e-mail"
+               autocomplete="email" required>
+        <label class="zapis-zgoda">
+          <!-- wartość trafia do MailerLite jako pole „Zgoda marketingowa" (`zgoda_marketingowa`)
+               — razem z datą potwierdzenia z double opt-in stanowi dowód zgody -->
+          <input type="checkbox" data-zgoda name="fields[zgoda_marketingowa]"
+                 value="tak — formularz na fitonlinecoach.com" required>
+          <span>Chcę dostawać e-maile o starcie i wskazówki treningowe. Wypiszę się jednym
+            kliknięciem — <a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
+            target="_blank" rel="noopener">polityka prywatności</a>.</span>
+        </label>
+        <button type="submit">Zapisz się →</button>
+      </form>
+      <p class="zapis-msg" data-msg hidden aria-live="polite"></p>
+      <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik
+           (uzgodnione z wątkiem maili 2026-08-01) -->
+      <p class="zapis-admin">Administrator danych: 4Spine – Tomasz Wiesner, NIP 9542704914.</p>
     </div>
   </div>
   <div class="scroll-cue">Przewiń<i></i></div>
@@ -1506,7 +1587,7 @@
                 <div class="pstat"><span class="val" id="statMinutes" data-odo="620"></span><span class="lbl" id="lblMinutes">minut</span></div>
               </div>
               <div class="price-row">
-                <a class="btn btn-lime" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">Kup plan — 79 zł</a>
+                <a class="btn btn-lime" id="planCta" href="#zapis">Zapisz się — rusza 7.09</a>
               </div>
               <span class="plan-hint">Kliknij kartę — zobacz szczegóły planu →</span>
             </div>
@@ -1529,7 +1610,7 @@
               <p class="pb-p">Dla osób, które zaczynają przygodę z treningiem siłowym albo wracają po dłuższej
                 przerwie i chcą wystartować bezpiecznie, ze zrozumieniem każdego ruchu.</p>
               <div class="price-row">
-                <a class="btn btn-lime" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">Kup plan — 79 zł</a>
+                <a class="btn btn-lime" href="#zapis">Zapisz się — rusza 7.09</a>
               </div>
               <span class="plan-hint">Kliknij kartę — wróć do planu →</span>
             </div>
@@ -1547,8 +1628,8 @@
 
     <!-- zamiast kropek karuzeli: most do opieki indywidualnej — opis produktu żyje W APLIKACJI
          (decyzja Tomka 29.07: bez osobnej sekcji na stronie, sprzedaż opieki to nie priorytet) -->
-    <a class="opieka-zajawka rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny" target="_blank" rel="noopener">Wolisz plan pisany specjalnie dla Ciebie?
-      <b>Poznaj opiekę indywidualną →</b></a>
+    <a class="opieka-zajawka rv rv4" href="#zapis">Wolisz plan pisany specjalnie dla Ciebie?
+      <b>Opieka indywidualna też rusza 7.09 →</b></a>
   </div>
 </section>
 
@@ -1638,13 +1719,13 @@
               <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice"><span>Dietetyk</span></button>
             </div>
             <div class="role-detail" id="roleDetail" aria-live="polite"></div>
-            <!-- prowadzi wprost do oferty opieki indywidualnej w aplikacji (strona sama obsługuje
-                 gościa: pokazuje ofertę, a przy zakupie prowadzi przez rejestrację) -->
-            <a class="btn btn-lime btn-join btn-care rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny" target="_blank" rel="noopener">
+            <!-- sierpień 2026: oferta opieki żyje w aplikacji, a ta jest za bramką do 7.09,
+                 więc przycisk prowadzi do zapisu. Cena zostaje — buduje wyobrażenie o produkcie.
+                 „/ mies." obowiązkowe: bez niego cena abonamentu wyglądała na jednorazową
+                 (audyt 2026-07-29). -->
+            <a class="btn btn-lime btn-join btn-care rv rv4" href="#zapis">
               <span class="bj-main">Opieka indywidualna</span>
-              <!-- „/ mies." obowiązkowe: bez niego cena abonamentu wyglądała na jednorazową
-                   (audyt 2026-07-29); pełny cennik i opis — w aplikacji -->
-              <span class="bj-sub">od 399 zł / mies.</span>
+              <span class="bj-sub">od 399 zł / mies. — rusza 7.09</span>
             </a>
           </div>
         </div>
@@ -1700,27 +1781,38 @@
   </div>
 </section>
 
-<!-- ===== NEWSLETTER ===== -->
-<section class="nl">
+<!-- ===== ZAPIS NA LISTĘ OCZEKUJĄCYCH =====
+     Kotwica `#zapis` — prowadzą do niej WSZYSTKIE przyciski na stronie na czas kampanii
+     zapowiadającej (menu, karta planu, opieka). Drugie miejsce zapisu obok hero. -->
+<section class="nl" id="zapis">
   <div class="wrap">
     <div class="nl-grid">
       <div>
-        <div class="sec-label rv">08 — Newsletter</div>
-        <h2 class="rv rv2">Darmowa dawka wiedzy na start.</h2>
-        <p class="rv rv3">Proste wskazówki treningowe i informacje o nowych planach. Zero spamu.</p>
+        <div class="sec-label rv">08 — Lista oczekujących</div>
+        <h2 class="rv rv2">Bądź pierwszy, gdy ruszamy.</h2>
+        <p class="rv rv3">Start <strong>7 września</strong>. Zapisani dowiadują się jako pierwsi
+          i dostają wskazówki treningowe jeszcze przed startem. Zero spamu — wypiszesz się
+          jednym kliknięciem.</p>
       </div>
-      <!-- Zapis do newslettera. Adres formularza MailerLite (atrybut action z osadzonego
-           formularza) wpisuje się w window.FOC_NEWSLETTER na górze strony — dopóki jest
-           pusty, wysyłka pokazuje zapowiedź startu zamiast udawać zapis (bez alert()). -->
       <div class="rv rv3">
-        <form class="nl-form" id="nlForm">
-          <input type="email" name="fields[email]" placeholder="Twój adres e-mail" required aria-label="Adres e-mail">
+        <!-- zgoda wewnątrz formularza i przed przyciskiem — powody opisane przy formularzu w hero -->
+        <form class="zapis" data-zapis novalidate>
+          <label class="sr-only" for="zapisDol">Adres e-mail</label>
+          <input id="zapisDol" type="email" name="fields[email]" placeholder="Twój adres e-mail"
+                 autocomplete="email" required>
+          <label class="zapis-zgoda">
+            <input type="checkbox" data-zgoda name="fields[zgoda_marketingowa]"
+                   value="tak — formularz na fitonlinecoach.com" required>
+            <span>Chcę dostawać e-maile o starcie i wskazówki treningowe. Wypiszę się jednym
+              kliknięciem — <a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
+              target="_blank" rel="noopener">polityka prywatności</a>.</span>
+          </label>
           <button type="submit">Zapisz się →</button>
         </form>
-        <p class="nl-msg" id="nlMsg" hidden aria-live="polite"></p>
-        <p class="nl-rodo">Zapisując się, zgadzasz się na kontakt e-mailowy zgodnie z
-          <a href="https://app.fitonlinecoach.com/polityka-prywatnosci" target="_blank" rel="noopener">polityką prywatności</a>.
-          Wypiszesz się jednym kliknięciem.</p>
+        <p class="zapis-msg" data-msg hidden aria-live="polite"></p>
+        <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik
+             (uzgodnione z wątkiem maili 2026-08-01) -->
+        <p class="zapis-admin">Administrator danych: 4Spine – Tomasz Wiesner, NIP 9542704914.</p>
       </div>
     </div>
   </div>
@@ -2537,7 +2629,8 @@
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
       img: 'assets/plan_sandbag.jpg', alt: 'Tomek w wykroku z sandbagiem w limonkowym świetle',
-      url: 'https://app.fitonlinecoach.com/plany/poczatek?kup=1', cta: 'Kup plan — 79 zł'
+      /* sierpień 2026: apka za bramką do 7.09 — przycisk prowadzi do zapisu, nie do zakupu */
+      url: '#zapis', cta: 'Zapisz się — rusza 7.09'
     }
     /* Kolejne plany dopisuj TUTAJ (tag, title, liczby, desc, feats, img, url, cta).
        Puste karty „Plan 2/3 — Wkrótce" zdjęte 2026-07-29 (audyt): odciągały od jedynego
@@ -2716,24 +2809,45 @@
   window.addEventListener('load', () => { ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); });
   setTimeout(() => { ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); }, 400);
 
-  /* ---------- newsletter ----------
-     Zamiast dawnej atrapy z alert(): dopóki w window.FOC_NEWSLETTER (góra strony) nie ma
-     adresu formularza MailerLite, wysyłka pokazuje zapowiedź startu. Po wpisaniu adresu
-     zapis leci POST-em w tle (no-cors — odpowiedzi nie da się odczytać, więc po prostu
-     potwierdzamy przyjęcie), a strona zostaje na miejscu. */
-  const nlForm = document.getElementById('nlForm');
-  const nlMsg = document.getElementById('nlMsg');
-  if (nlForm && nlMsg) {
-    const nlPokaz = tekst => { nlMsg.hidden = false; nlMsg.textContent = tekst; };
-    nlForm.addEventListener('submit', e => {
+  /* ---------- ZAPIS NA LISTĘ OCZEKUJĄCYCH ----------
+     Jeden kod dla OBU formularzy (hero + sekcja na dole) — oznaczone `data-zapis`.
+     Wysyłka leci POST-em w tle (`no-cors`, bo MailerLite nie odsyła nagłówków CORS —
+     odpowiedzi NIE DA SIĘ odczytać, więc potwierdzamy samo przyjęcie), a strona
+     zostaje na miejscu. Potwierdzenie mailem robi MailerLite (double opt-in).
+     Zgoda marketingowa jest wymagana ręcznie, bo `required` na polu wyboru wewnątrz
+     formularza z `novalidate` nie zatrzyma wysyłki samo z siebie. */
+  document.querySelectorAll('form[data-zapis]').forEach(form => {
+    const msg = form.parentElement.querySelector('[data-msg]');
+    const zgoda = form.querySelector('[data-zgoda]');   /* wewnątrz formularza — patrz komentarz w treści */
+    const pole = form.querySelector('input[type=email]');
+    const pokaz = (tekst, blad) => {
+      if (!msg) return;
+      msg.hidden = false; msg.textContent = tekst; msg.classList.toggle('blad', !!blad);
+    };
+    form.addEventListener('submit', e => {
       e.preventDefault();
+      const adres = (pole.value || '').trim();
+      if (!adres || adres.indexOf('@') < 1 || adres.indexOf('.') < 0) {
+        pokaz('Sprawdź adres e-mail — coś się nie zgadza.', true); pole.focus(); return;
+      }
+      if (zgoda && !zgoda.checked) {
+        pokaz('Zaznacz zgodę — bez niej nie mogę wysłać Ci ani jednego maila.', true);
+        zgoda.focus(); return;
+      }
       const akcja = ((window.FOC_NEWSLETTER || {}).action || '').trim();
-      if (!akcja) { nlPokaz('Zapis ruszy w dniu startu — wpadnij 10.08 🙂'); return; }
-      fetch(akcja, {method: 'POST', body: new FormData(nlForm), mode: 'no-cors'})
-        .then(() => { nlPokaz('Dzięki! Sprawdź skrzynkę — potwierdź zapis.'); nlForm.reset(); })
-        .catch(() => nlPokaz('Nie udało się wysłać — spróbuj jeszcze raz za chwilę.'));
+      if (!akcja) { pokaz('Zapisy ruszają lada dzień — wpadnij za chwilę 🙂'); return; }
+      pokaz('Wysyłam…');
+      fetch(akcja, {method: 'POST', body: new FormData(form), mode: 'no-cors'})
+        .then(() => {
+          /* Treść uzgodniona z wątkiem maili (2026-08-01): musi WPROST mówić, że trzeba kliknąć
+             link, bo przy double opt-in ludzie inaczej piszą, że „nic nie przyszło". */
+          pokaz('Sprawdź skrzynkę — wysłałem link potwierdzający. Kliknij go, żeby zapis był '
+              + 'ważny. Zajrzyj też do spamu.');
+          form.reset(); if (zgoda) zgoda.checked = false;
+        })
+        .catch(() => pokaz('Nie udało się wysłać — spróbuj jeszcze raz za chwilę.', true));
     });
-  }
+  });
 
   /* menu mobilne */
   const burger = document.getElementById('burger');
