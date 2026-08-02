@@ -3,6 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ===== OCHRONA PRZED OSADZENIEM W CUDZEJ RAMCE (clickjacking) =====
+     Ktoś mógłby opakować naszą stronę w swoją ramkę, przykryć ją przezroczystą warstwą
+     i przechwytywać kliknięcia albo wpisywany adres e-mail.
+     Właściwym lekarstwem są nagłówki HTTP (`X-Frame-Options`, CSP `frame-ancestors`),
+     ale GitHub Pages ich NIE wysyła, a metatag CSP `frame-ancestors` jest ignorowany
+     z definicji — musi przyjść nagłówkiem. Stąd klasyczna obrona skryptem.
+     Strona startuje ukryta i odsłania się dopiero, gdy okaże się, że NIE jest w ramce;
+     gdy jest — wyskakuje na wierzch. `<noscript>` przywraca widoczność przy wyłączonym
+     skrypcie, żeby nikt nie zobaczył pustej strony.
+     Pełne rozwiązanie (prawdziwe nagłówki + HSTS) wymaga przeniesienia domeny za
+     Cloudflare albo Vercel — decyzja na PO starcie, nie na teraz. -->
+<style id="ochronaRamki">html{display:none}</style>
+<noscript><style>html{display:block}</style></noscript>
+<script>
+  (function () {
+    if (self === top) {
+      var s = document.getElementById('ochronaRamki');
+      if (s) s.parentNode.removeChild(s);
+      return;
+    }
+    /* Jesteśmy w ramce. Próbujemy wyjść na wierzch; gdyby przeglądarka na to nie
+       pozwoliła (ramka z ograniczeniami), strona ZOSTAJE ukryta — i o to chodzi. */
+    try { top.location = self.location; } catch (e) { /* zostajemy ukryci */ }
+  })();
+</script>
 <!-- ===== MARKETING: identyfikatory. Puste = nic się nie ładuje i nic nie śledzi. =====
      Wpisz tu identyfikatory dopiero, gdy założysz konta reklamowe (instrukcja u Tomka).
      Po wpisaniu choć jednego: baner zgód włącza się sam, a klik w „Kup plan" / „Załóż konto"
@@ -81,15 +106,23 @@
 
 <!-- Ikony z assets/brand (wątek grafiki) — ciemny kafel #121A16, bo na białym
      białe litery F i C monogramu znikają i zostaje samo zielone „O". -->
+<!-- Fonty ruszają od razu, a nie dopiero po przeczytaniu arkusza stylów — inaczej pierwszy
+     ekran renderuje się zapasowym krojem i podmienia w locie. `crossorigin` jest OBOWIĄZKOWE
+     przy fontach, także z własnego serwera: bez niego przeglądarka pobiera plik DRUGI RAZ. -->
+<link rel="preload" href="assets/fonts/Montserrat-VF.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Inter-VF.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon-48.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon-180.png">
 <style>
   /* Firmowe fonty marki (pliki lokalne, zmienna grubość) */
-  @font-face{font-family:'Montserrat';src:url('assets/fonts/Montserrat-VF.ttf') format('truetype');
+  /* woff2 zamiast surowego ttf: 1 621 KB -> 566 KB (66% mniej, zmierzone 2026-08-02).
+     Bez wersji zapasowej ttf — woff2 rozumie każda przeglądarka od 2016 r. (Chrome 36,
+     Firefox 39, Safari 10, Edge 14), więc fallback byłby martwym kodem i drugim żądaniem. */
+  @font-face{font-family:'Montserrat';src:url('assets/fonts/Montserrat-VF.woff2') format('woff2');
     font-weight:100 900;font-style:normal;font-display:swap}
-  @font-face{font-family:'Inter';src:url('assets/fonts/Inter-VF.ttf') format('truetype');
+  @font-face{font-family:'Inter';src:url('assets/fonts/Inter-VF.woff2') format('woff2');
     font-weight:100 900;font-style:normal;font-display:swap}
   :root{
     /* paleta marki: #99E66D (limonka) + #121A16 (ciemna zieleń) + #F7F8F9 (jasny) */
@@ -1060,7 +1093,9 @@
   .zapis-zgoda a{color:var(--lime);border-bottom:1px solid rgba(153,230,109,.4)}
   .zapis-msg{margin-top:12px;font-size:.92rem;color:var(--lime);max-width:380px;line-height:1.5}
   .zapis-msg.blad{color:#FFB4A2}
-  .zapis-admin{margin-top:10px;font-size:.7rem;line-height:1.5;color:var(--muted);opacity:.75;
+  /* BEZ `opacity` — z nią kontrast spadał do 4,02 przy wymaganych 4,5 (zmierzone 2026-08-02).
+     Sam `--muted` na tle strony daje 6,35, więc tekst jest czytelny bez zmiany koloru. */
+  .zapis-admin{margin-top:10px;font-size:.7rem;line-height:1.5;color:var(--muted);
     width:100%;max-width:380px}
   /* wariant w hero — węższy, żeby przy 1280 px nie wchodził pod telefon 3D */
   .zapis-hero{max-width:330px}
@@ -1371,6 +1406,12 @@
             target="_blank" rel="noopener">polityka prywatności</a>.</span>
         </label>
         <button type="submit">Zapisz się →</button>
+        <!-- skąd przyszedł zapis — wypełnia skrypt na dole strony -->
+        <input type="hidden" name="fields[zrodlo_zapisu]" data-zrodlo>
+        <!-- Pułapka na boty: człowiek tego nie widzi i nie wypełni, automat owszem.
+             BEZ atrybutu `name`, więc nie leci do MailerLite. -->
+        <input class="sr-only" type="text" tabindex="-1" autocomplete="off"
+               aria-hidden="true" data-pulapka>
       </form>
       <p class="zapis-msg" data-msg hidden aria-live="polite"></p>
       <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik
@@ -1762,7 +1803,9 @@
         <div class="vp-pop vp-pop-a"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</div>
         <a class="vp-pop vp-pop-b" href="https://youtube.com/playlist?list=PLEgy8VO2gIhkaWkcrwXJrCfdo338oPv4v" target="_blank" rel="noopener">
           <span class="vp-pop-ic" aria-hidden="true">▶</span>
-          <span class="vp-pop-txt"><b>80 poradników wideo</b><br>Oglądaj na YouTube</span>
+          <!-- te same klasy co w nagłówku sekcji — bez nich liczba była wpisana na sztywno
+               i rozjechałaby się z resztą strony przy pierwszym nowym filmie na playliście -->
+          <span class="vp-pop-txt"><b><span class="yt-count">80</span> <span class="yt-noun">poradników</span> wideo</b><br>Oglądaj na YouTube</span>
         </a>
       </div>
     </div>
@@ -1808,6 +1851,12 @@
               target="_blank" rel="noopener">polityka prywatności</a>.</span>
           </label>
           <button type="submit">Zapisz się →</button>
+          <!-- skąd przyszedł zapis — wypełnia skrypt na dole strony -->
+          <input type="hidden" name="fields[zrodlo_zapisu]" data-zrodlo>
+          <!-- Pułapka na boty: człowiek tego nie widzi i nie wypełni, automat owszem.
+               BEZ atrybutu `name`, więc nie leci do MailerLite. -->
+          <input class="sr-only" type="text" tabindex="-1" autocomplete="off"
+                 aria-hidden="true" data-pulapka>
         </form>
         <p class="zapis-msg" data-msg hidden aria-live="polite"></p>
         <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik
@@ -2000,6 +2049,18 @@
       if (pixelWczytany && window.fbq) fbq('track', 'InitiateCheckout');
     } catch (_) { /* pomiar nigdy nie może zepsuć kliknięcia */ }
   }, true);
+
+  /* ===== Pomiar konwersji: ZAPIS NA LISTĘ =====
+     W sierpniu to JEDYNA konwersja na stronie — apka jest za bramką, więc nasłuch wyżej
+     (kliki w linki do aplikacji) nie ma czego liczyć. Zdarzenie leci ze skryptu formularza
+     dopiero po odpowiedzi `{"success":true}` z MailerLite, czyli liczymy zapisy realne,
+     nie kliknięcia w przycisk. */
+  document.addEventListener('foc:zapis', () => {
+    try {
+      if (ga4Wczytane || adsWczytane) gtag('event', 'sign_up', {method: 'lista_oczekujacych'});
+      if (pixelWczytany && window.fbq) fbq('track', 'Lead');
+    } catch (_) { /* pomiar nigdy nie może zepsuć zapisu */ }
+  });
 
   /* Baner pojawia się TYLKO wtedy, gdy jest o co pytać — czyli gdy skonfigurowano
      choć jeden identyfikator marketingowy. Dopóki gniazda są puste, strona nie zapisuje
@@ -2811,11 +2872,22 @@
 
   /* ---------- ZAPIS NA LISTĘ OCZEKUJĄCYCH ----------
      Jeden kod dla OBU formularzy (hero + sekcja na dole) — oznaczone `data-zapis`.
-     Wysyłka leci POST-em w tle (`no-cors`, bo MailerLite nie odsyła nagłówków CORS —
-     odpowiedzi NIE DA SIĘ odczytać, więc potwierdzamy samo przyjęcie), a strona
-     zostaje na miejscu. Potwierdzenie mailem robi MailerLite (double opt-in).
+     Wysyłka leci POST-em w tle, a strona zostaje na miejscu. Odpowiedź MailerLite
+     ODCZYTUJEMY i dopiero `success:true` uznajemy za zapis — szczegóły przy `fetch` niżej.
+     Potwierdzenie mailem robi MailerLite (double opt-in).
      Zgoda marketingowa jest wymagana ręcznie, bo `required` na polu wyboru wewnątrz
      formularza z `novalidate` nie zatrzyma wysyłki samo z siebie. */
+  /* Skąd przyszedł zapis — bez tego kampania nie powie, który kanał działa.
+     `utm_source` z linku, a gdy go nie ma — domena strony, z której klient przyszedł.
+     Jedno pole zamiast pięciu (utm_medium/campaign/…): do wyboru kanału wystarczy. */
+  const zrodloZapisu = (() => {
+    const utm = new URLSearchParams(location.search).get('utm_source');
+    if (utm) return utm.slice(0, 60);
+    if (!document.referrer) return 'bezposrednio';
+    try { return new URL(document.referrer).hostname; } catch (_) { return 'nieznane'; }
+  })();
+  document.querySelectorAll('[data-zrodlo]').forEach(p => p.value = zrodloZapisu);
+
   document.querySelectorAll('form[data-zapis]').forEach(form => {
     const msg = form.parentElement.querySelector('[data-msg]');
     const zgoda = form.querySelector('[data-zgoda]');   /* wewnątrz formularza — patrz komentarz w treści */
@@ -2826,6 +2898,10 @@
     };
     form.addEventListener('submit', e => {
       e.preventDefault();
+      /* Bot wypełnił pułapkę — udajemy, że wszystko poszło dobrze i nie wysyłamy nic.
+         Automat nie dowiaduje się, że został wykryty, a lista zostaje czysta. */
+      const pulapka = form.querySelector('[data-pulapka]');
+      if (pulapka && pulapka.value) { form.reset(); return; }
       const adres = (pole.value || '').trim();
       if (!adres || adres.indexOf('@') < 1 || adres.indexOf('.') < 0) {
         pokaz('Sprawdź adres e-mail — coś się nie zgadza.', true); pole.focus(); return;
@@ -2837,15 +2913,24 @@
       const akcja = ((window.FOC_NEWSLETTER || {}).action || '').trim();
       if (!akcja) { pokaz('Zapisy ruszają lada dzień — wpadnij za chwilę 🙂'); return; }
       pokaz('Wysyłam…');
-      fetch(akcja, {method: 'POST', body: new FormData(form), mode: 'no-cors'})
-        .then(() => {
+      /* BEZ `mode:'no-cors'`. Endpoint MailerLite odsyła `access-control-allow-origin: *`
+         (sprawdzone 2026-08-02), więc odpowiedź DA SIĘ odczytać. Wcześniej `no-cors`
+         zaślepiał wynik: `fetch` kończył się sukcesem nawet przy błędzie serwera i strona
+         mówiła „sprawdź skrzynkę", choć zapis przepadał. To nie jest teoria — 1.08 ten
+         endpoint zwrócił 503 z Varnisha przy prawidłowym adresie. */
+      fetch(akcja, {method: 'POST', body: new FormData(form)})
+        .then(r => r.json())
+        .then(d => {
+          if (!d || d.success !== true) throw new Error('zapis odrzucony');
           /* Treść uzgodniona z wątkiem maili (2026-08-01): musi WPROST mówić, że trzeba kliknąć
              link, bo przy double opt-in ludzie inaczej piszą, że „nic nie przyszło". */
           pokaz('Sprawdź skrzynkę — wysłałem link potwierdzający. Kliknij go, żeby zapis był '
               + 'ważny. Zajrzyj też do spamu.');
           form.reset(); if (zgoda) zgoda.checked = false;
+          /* pomiar konwersji — obsługiwany w bloku zgód, żeby błąd pomiaru nie psuł zapisu */
+          document.dispatchEvent(new CustomEvent('foc:zapis'));
         })
-        .catch(() => pokaz('Nie udało się wysłać — spróbuj jeszcze raz za chwilę.', true));
+        .catch(() => pokaz('Nie udało się zapisać — spróbuj jeszcze raz za chwilę.', true));
     });
   });
 
