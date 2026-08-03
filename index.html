@@ -914,6 +914,9 @@
     color:var(--lime);line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums}
   .pstat .lbl{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
     color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* Na szerokim ekranie pełny podpis, na telefonie skrót — treść obu wersji wpisuje
+     skrypt (patrz tablica STATY), CSS tylko wybiera, którą widać. */
+  .pstat .lbl-krotki{display:none}
   /* odometr — cyfry przewijają się w pionie jak na liczniku */
   .odo-col{display:inline-block;height:1em;overflow:hidden}
   .odo-strip{display:flex;flex-direction:column;transition:transform 2.2s cubic-bezier(.16,1,.3,1)}
@@ -1202,8 +1205,12 @@
     .plan-stats{grid-template-columns:repeat(4,1fr);gap:2px;margin:20px 0;padding:14px 0}
     .pstat .val{font-size:1.3rem;margin-bottom:5px}
     /* podpisy liczników: minimum 11 px (audyt 2026-07-29 — odbiorca 35–55 nie może mrużyć
-       oczu); najdłuższy podpis skrócony „treningów"→„treningi", żeby wszedł też w 288 px */
-    .pstat .lbl{font-size:clamp(11px,3.8vw,13px);letter-spacing:0}
+       oczu). Na telefonie SKRÓTY (tyg / tr / ćw / min, decyzja Tomka 3.08) — pełne podpisy
+       nie mieściły się i były ucinane wielokropkiem („TYGO…"), co nie niosło informacji.
+       Skróty są krótkie, więc ucinanie w ogóle przestaje występować. */
+    .pstat .lbl{font-size:clamp(11px,3.8vw,13px);letter-spacing:.04em;text-overflow:clip}
+    .pstat .lbl-pelny{display:none}
+    .pstat .lbl-krotki{display:inline}
     .about-grid{grid-template-columns:1fr;gap:60px}
     .nl-grid{grid-template-columns:1fr;gap:40px}
     .vcar-group video{height:170px}
@@ -1556,7 +1563,9 @@
         <div class="card-inner">
           <div class="card-face card-front">
             <h3>Nie masz czasu na trening?</h3>
-            <p>3 treningi w tygodniu po ok. 50 minut — resztę zostaw życiu. Plan masz zawsze
+            <!-- 40–60 min zamiast „ok. 50": realne czasy to 40/50/55 do 45/50/55 (dział planów 3.08).
+                 „Ok. 50" zaniżało najdłuższy trening o 10 minut. -->
+            <p>3 treningi w tygodniu po 40–60 minut — resztę zostaw życiu. Plan masz zawsze
               w telefonie, a treningi wpisujesz prosto do kalendarza.</p>
             <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
           </div>
@@ -1620,15 +1629,15 @@
               </ul>
               <!-- liczniki planu — przeniesione z osobnej sekcji pod kartami wprost na kartę -->
               <div class="plan-stats">
-                <div class="pstat"><span class="val" id="statWeeks" data-odo="4"></span><span class="lbl" id="lblWeeks">tygodnie</span></div>
+                <div class="pstat"><span class="val" id="statWeeks" data-odo="4"></span><span class="lbl" id="lblWeeks"><span class="lbl-pelny">tygodnie</span><span class="lbl-krotki">tyg</span></span></div>
                 <!-- „treningi", nie „treningów" — dłuższa forma nie mieści się na 288 px (audyt W7);
                      „ćwiczeń" zamiast anglicyzmu „video" (audyt W5) -->
-                <div class="pstat"><span class="val" id="statWorkouts" data-odo="12"></span><span class="lbl" id="lblWorkouts">treningi</span></div>
-                <div class="pstat"><span class="val" id="statExercises" data-odo="50"></span><span class="lbl" id="lblExercises">ćwiczeń</span></div>
-                <div class="pstat"><span class="val" id="statMinutes" data-odo="620"></span><span class="lbl" id="lblMinutes">minut</span></div>
+                <div class="pstat"><span class="val" id="statWorkouts" data-odo="12"></span><span class="lbl" id="lblWorkouts"><span class="lbl-pelny">treningi</span><span class="lbl-krotki">tr</span></span></div>
+                <div class="pstat"><span class="val" id="statExercises" data-odo="50"></span><span class="lbl" id="lblExercises"><span class="lbl-pelny">ćwiczeń</span><span class="lbl-krotki">ćw</span></span></div>
+                <div class="pstat"><span class="val" id="statMinutes" data-odo="595"></span><span class="lbl" id="lblMinutes"><span class="lbl-pelny">minut</span><span class="lbl-krotki">min</span></span></div>
               </div>
               <div class="price-row">
-                <a class="btn btn-lime" id="planCta" href="#zapis">Zapisz się — rusza 7.09</a>
+                <a class="btn btn-lime" id="planCta" href="#zapis">Zapisz się</a>
               </div>
               <span class="plan-hint">Kliknij kartę — zobacz szczegóły planu →</span>
             </div>
@@ -1651,7 +1660,7 @@
               <p class="pb-p">Dla osób, które zaczynają przygodę z treningiem siłowym albo wracają po dłuższej
                 przerwie i chcą wystartować bezpiecznie, ze zrozumieniem każdego ruchu.</p>
               <div class="price-row">
-                <a class="btn btn-lime" href="#zapis">Zapisz się — rusza 7.09</a>
+                <a class="btn btn-lime" href="#zapis">Zapisz się</a>
               </div>
               <span class="plan-hint">Kliknij kartę — wróć do planu →</span>
             </div>
@@ -1676,7 +1685,7 @@
 
 <!-- ===== FAQ =====
      Obsługa obiekcji przed zakupem (audyt 2026-07-29). Liczby zgodne z planem w aplikacji
-     (12 treningów / 620 min ≈ 50 min na trening). Zwroty opisane zgodnie z regulaminem —
+     (12 treningów / 595 min, pojedynczy trening 40–60 min). Zwroty opisane zgodnie z regulaminem —
      ŻADNEJ obietnicy „gwarancji zwrotu" (decyzja Tomka). -->
 <section class="faq" id="faq">
   <div class="wrap">
@@ -1685,8 +1694,8 @@
     <div class="faq-list rv rv3">
       <details class="faq-item">
         <summary><span>Ile czasu zajmuje trening?</span></summary>
-        <p>Plan „Początek" to 3 treningi w tygodniu, każdy po ok. 50 minut. W sumie niecałe
-          3 godziny tygodniowo — resztę zostaw życiu.</p>
+        <p>Plan „Początek" to 3 treningi w tygodniu po 40–60 minut — w sumie niecałe
+          3 godziny tygodniowo. Cały plan to <b>595 minut</b> treningu w cztery tygodnie.</p>
       </details>
       <details class="faq-item">
         <summary><span>Nigdy nie ćwiczyłem/am — czy dam radę?</span></summary>
@@ -1696,8 +1705,16 @@
       </details>
       <details class="faq-item">
         <summary><span>Jaki sprzęt jest potrzebny?</span></summary>
-        <p>Podstawowe wyposażenie siłowni: hantle, kettlebell, drążek albo guma oporowa.
-          Bez specjalistycznych maszyn — plan zrealizujesz w każdym klubie, także osiedlowym.</p>
+        <!-- Pełna lista sprzętu wg `G:\cloude\plan-poczatek-SPRZET.md` (dział planów, 2.08).
+             Poprzednia odpowiedź („hantle, kettlebell, drążek albo guma… w każdym klubie,
+             także osiedlowym") była nieprawdziwa — plan wymaga m.in. DWÓCH jednakowych kettli
+             i piłki lekarskiej, których w małych siłowniach zwykle nie ma.
+             ⚠ SZTANGA JEST POTRZEBNA DOPIERO W 4. TYGODNIU — sprawdzone w treści planu:
+             wszystkie trzy ćwiczenia ze sztangą (`bb-floor-press`, `barbell-dl`, `bb-oh-press`)
+             siedzą w treningach `pocz-w4-b` i `pocz-w4-c`. W tygodniu 1 sztanga bywa tylko
+             ZAMIENNIKIEM niskiego drążka przy podciąganiu australijskim. -->
+        <p>Podstawowy sprzęt dostępny na siłowni: mata, gumy, sztanga, kettle, hantle i drążek.
+          Bez specjalistycznych maszyn.</p>
       </details>
       <details class="faq-item">
         <summary><span>Jak długo mam dostęp do planu?</span></summary>
@@ -2147,13 +2164,18 @@
      UWAGA: statyczny podpis w HTML to „treningi" (forma „treningów" nie mieści się na
      288 px — audyt W7); odmiana poniżej nadpisze go dopiero przy przełączaniu planów,
      które dziś jest uśpione (jeden plan) — przy powrocie karuzeli sprawdź szerokości. */
+  /* Czwarta pozycja to pełne formy (odmieniane przez liczbę), piąta — skrót na telefon.
+     Na wąskim ekranie pełne podpisy nie mieściły się i były ucinane wielokropkiem
+     („TYGO…", „TRENI…"), co nie niosło żadnej informacji (decyzja Tomka 3.08).
+     Obie wersje trafiają do znacznika, a o tym, którą widać, decyduje CSS — dzięki temu
+     podpis jest poprawny także po obróceniu telefonu, bez nasłuchiwania zmiany rozmiaru. */
   const STATY = [
-    ['statWeeks', 'weeks', 'lblWeeks', ['tydzień', 'tygodnie', 'tygodni']],
-    ['statWorkouts', 'workouts', 'lblWorkouts', ['trening', 'treningi', 'treningów']],
-    ['statExercises', 'exercises', 'lblExercises', ['ćwiczenie', 'ćwiczenia', 'ćwiczeń']],
-    ['statMinutes', 'minutes', 'lblMinutes', ['minuta', 'minuty', 'minut']]
+    ['statWeeks', 'weeks', 'lblWeeks', ['tydzień', 'tygodnie', 'tygodni'], 'tyg'],
+    ['statWorkouts', 'workouts', 'lblWorkouts', ['trening', 'treningi', 'treningów'], 'tr'],
+    ['statExercises', 'exercises', 'lblExercises', ['ćwiczenie', 'ćwiczenia', 'ćwiczeń'], 'ćw'],
+    ['statMinutes', 'minutes', 'lblMinutes', ['minuta', 'minuty', 'minut'], 'min']
   ];
-  const setPlanStats = p => STATY.forEach(([valId, pole, lblId, formy]) => {
+  const setPlanStats = p => STATY.forEach(([valId, pole, lblId, formy, skrot]) => {
     const el = document.getElementById(valId);
     if (!el) return;
     const wartosc = p[pole];
@@ -2161,7 +2183,11 @@
     runOdo(el);
     if (lblId && formy) {
       const lbl = document.getElementById(lblId);
-      if (lbl) lbl.textContent = (wartosc === null || wartosc === undefined) ? formy[2] : odmien(wartosc, formy);
+      if (!lbl) return;
+      const pelny = (wartosc === null || wartosc === undefined) ? formy[2] : odmien(wartosc, formy);
+      lbl.innerHTML = '<span class="lbl-pelny"></span><span class="lbl-krotki"></span>';
+      lbl.querySelector('.lbl-pelny').textContent = pelny;
+      lbl.querySelector('.lbl-krotki').textContent = skrot || pelny;
     }
   });
 
@@ -2685,13 +2711,19 @@
   const plans = [
     {
       tag: 'Dla początkujących', title: 'Początek',
-      weeks: 4, workouts: 12, exercises: 50, minutes: 620,   /* dane wprost z planu w aplikacji */
+      /* ⚠ `minutes` i `data-odo` przy liczniku MUSZĄ być zgodne — licznik czyta stąd,
+         więc poprawienie samego znacznika daje rozjazd po przełączeniu planu.
+         595 min = suma realnych czasów 12 treningów (komplet liczb od działu planów 3.08:
+         T1 40/50/55 · T2 40/55/60 · T3 40/50/55 · T4 45/50/55). NIE przeliczać samodzielnie. */
+      weeks: 4, workouts: 12, exercises: 50, minutes: 595,
       desc: 'Plan dla osób, które chcą wystartować z treningiem — spokojnie, bezpiecznie i ze zrozumieniem tego, co robią.',
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
       img: 'assets/plan_sandbag.jpg', alt: 'Tomek w wykroku z sandbagiem w limonkowym świetle',
       /* sierpień 2026: apka za bramką do 7.09 — przycisk prowadzi do zapisu, nie do zakupu */
-      url: '#zapis', cta: 'Zapisz się — rusza 7.09'
+      /* napis bez daty (decyzja Tomka 3.08) — data i tak stoi w zdaniu obok przycisku,
+         a „Zapisz się — rusza 7.09" zawijało się na telefonie na dwie linie */
+      url: '#zapis', cta: 'Zapisz się'
     }
     /* Kolejne plany dopisuj TUTAJ (tag, title, liczby, desc, feats, img, url, cta).
        Puste karty „Plan 2/3 — Wkrótce" zdjęte 2026-07-29 (audyt): odciągały od jedynego

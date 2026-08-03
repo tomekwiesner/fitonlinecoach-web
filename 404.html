@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nie ma takiej strony — FitOnlineCoach</title>
+<meta name="robots" content="noindex, follow">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon-180.png">
+<!-- Strona błędu 404 dla GitHub Pages — sam plik `404.html` w katalogu głównym wystarczy,
+     Pages podstawia go automatycznie. Celowo SAMODZIELNA i lekka: nie wciąga 177-kilobajtowego
+     `index.html` ani fontów, bo ktoś, kto trafił tu z literówki, ma zobaczyć drogę powrotną
+     w ułamku sekundy, a nie ładować całą stronę. Kolory marki wpisane wprost. -->
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:#0B0F0D;color:#CFD8D2;padding:32px;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6}
+  .box{max-width:460px;text-align:center}
+  img{height:64px;width:auto;margin-bottom:36px}
+  .kod{font-size:.78rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+    color:#99E66D;margin-bottom:14px}
+  h1{font-size:clamp(1.6rem,6vw,2.3rem);font-weight:800;color:#fff;margin-bottom:16px;line-height:1.2}
+  p{color:#8B968F;margin-bottom:32px}
+  a.wroc{display:inline-block;background:#99E66D;color:#0B0F0D;text-decoration:none;
+    font-weight:700;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;
+    padding:16px 34px;border-radius:2px;transition:.25s}
+  a.wroc:hover{box-shadow:0 0 34px rgba(153,230,109,.5);transform:translateY(-2px)}
+</style>
+</head>
+<body>
+  <div class="box">
+    <img src="assets/logo_stacked.png" alt="FitOnlineCoach">
+    <div class="kod">Błąd 404</div>
+    <h1>Nie ma takiej strony.</h1>
+    <p>Adres jest błędny albo strona została przeniesiona. Wróć na stronę główną — tam znajdziesz plany treningowe i zapis na listę oczekujących.</p>
+    <!-- krótki napis: „Wróć na stronę główną" zawijał się na telefonie na dwie linie,
+         a zasada Tomka mówi — napis na przycisku w jednej linii -->
+    <a class="wroc" href="/">Strona główna</a>
+  </div>
+</body>
+</html>
