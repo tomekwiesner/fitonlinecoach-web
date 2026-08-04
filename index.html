@@ -313,7 +313,11 @@
   .btn-join{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
     gap:5px;padding:16px 46px;line-height:1}
   .btn-join .bj-main{font-size:1.6rem;font-weight:900;letter-spacing:.13em;line-height:1}
-  .btn-join .bj-sub{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:lowercase;opacity:.72}
+  /* `nowrap` na dolnym wierszu: szerokość przycisku bierze się z NAJDŁUŻSZEGO wiersza,
+     a przy krótkim napisie górnym („Zapisz się") cena łamała się na dwie linie.
+     Teraz to cena wyznacza szerokość i oba wiersze zostają jednoliniowe. */
+  .btn-join .bj-sub{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:lowercase;
+    opacity:.72;white-space:nowrap}
   /* wariant mniejszy — dłuższy napis („Opieka indywidualna”) musi zmieścić się w jednej
      linii także na wąskim telefonie, dlatego mniejsza czcionka i węższe marginesy */
   .btn-care{padding:15px 30px}
@@ -1637,7 +1641,13 @@
                 <div class="pstat"><span class="val" id="statMinutes" data-odo="595"></span><span class="lbl" id="lblMinutes"><span class="lbl-pelny">minut</span><span class="lbl-krotki">min</span></span></div>
               </div>
               <div class="price-row">
-                <a class="btn btn-lime" id="planCta" href="#zapis">Zapisz się</a>
+                <!-- Ten sam układ co przycisk opieki indywidualnej: górny wiersz akcja,
+                     dolny cena i termin. Cena INFORMUJE — w sierpniu nie da się kupić,
+                     przycisk prowadzi do zapisu na listę. -->
+                <a class="btn btn-lime btn-join btn-care" id="planCta" href="#zapis">
+                  <span class="bj-main" id="planCtaGlowny">Zapisz się</span>
+                  <span class="bj-sub" id="planCtaCena">79 zł za plan — rusza 7.09</span>
+                </a>
               </div>
               <span class="plan-hint">Kliknij kartę — zobacz szczegóły planu →</span>
             </div>
@@ -1660,7 +1670,11 @@
               <p class="pb-p">Dla osób, które zaczynają przygodę z treningiem siłowym albo wracają po dłuższej
                 przerwie i chcą wystartować bezpiecznie, ze zrozumieniem każdego ruchu.</p>
               <div class="price-row">
-                <a class="btn btn-lime" href="#zapis">Zapisz się</a>
+                <!-- rewers karty — ten sam dwuwierszowy układ co na przodzie i przy opiece -->
+                <a class="btn btn-lime btn-join btn-care" href="#zapis">
+                  <span class="bj-main">Zapisz się</span>
+                  <span class="bj-sub">79 zł za plan — rusza 7.09</span>
+                </a>
               </div>
               <span class="plan-hint">Kliknij kartę — wróć do planu →</span>
             </div>
@@ -2721,9 +2735,11 @@
       price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
       img: 'assets/plan_sandbag.jpg', alt: 'Tomek w wykroku z sandbagiem w limonkowym świetle',
       /* sierpień 2026: apka za bramką do 7.09 — przycisk prowadzi do zapisu, nie do zakupu */
-      /* napis bez daty (decyzja Tomka 3.08) — data i tak stoi w zdaniu obok przycisku,
-         a „Zapisz się — rusza 7.09" zawijało się na telefonie na dwie linie */
-      url: '#zapis', cta: 'Zapisz się'
+      /* Przycisk dwuwierszowy jak przy opiece indywidualnej (decyzja Tomka 3.08):
+         `cta` = górny wiersz (akcja), `ctaCena` = dolny (cena + termin).
+         Wcześniej próba wciśnięcia obu w jedną linię („Zapisz się — rusza 7.09")
+         zawijała się na telefonie — dlatego cena ma WŁASNY wiersz, nie dopisek. */
+      url: '#zapis', cta: 'Zapisz się', ctaCena: '79 zł za plan — rusza 7.09'
     }
     /* Kolejne plany dopisuj TUTAJ (tag, title, liczby, desc, feats, img, url, cta).
        Puste karty „Plan 2/3 — Wkrótce" zdjęte 2026-07-29 (audyt): odciągały od jedynego
@@ -2738,8 +2754,12 @@
       document.getElementById('planTitle').textContent = p.title;
       document.getElementById('planDesc').textContent = p.desc;
       document.getElementById('planFeats').innerHTML = p.feats.map(f => `<li>${f}</li>`).join('');
+      /* Przycisk jest DWUWIERSZOWY — `textContent` skasowałby oba wiersze i zostawił
+         goły napis (ta sama pułapka co przy licznikach: treść żyje w znaczniku ORAZ
+         w tablicy `plans`). Ustawiamy każdy wiersz osobno. */
       const cta = document.getElementById('planCta');
-      cta.textContent = p.cta;
+      document.getElementById('planCtaGlowny').textContent = p.cta;
+      document.getElementById('planCtaCena').textContent = p.ctaCena || '';
       if (p.url) { cta.href = p.url; cta.classList.remove('disabled'); }
       else { cta.removeAttribute('href'); cta.classList.add('disabled'); }
       const img = document.getElementById('planImg');
