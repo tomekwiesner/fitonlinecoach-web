@@ -1107,8 +1107,21 @@
   /* wariant w hero — węższy, żeby przy 1280 px nie wchodził pod telefon 3D */
   .zapis-hero{max-width:330px}
   .zapis-hero+.zapis-zgoda{max-width:330px}
-  .hero-start{margin-bottom:16px;font-size:.95rem;color:#CFD8D2}
+  /* `margin-top` odsuwa „Rusza 7 września" od opisu — bez niego zdanie kleiło się
+     do akapitu wyżej i gubiło rangę zapowiedzi (decyzja Tomka 3.08) */
+  .hero-start{margin-top:22px;margin-bottom:14px;font-size:.95rem;color:#CFD8D2}
   .hero-start strong{color:var(--lime);font-weight:800}
+  /* Co dostajesz za zapis — drobny druk, myślnik w kolorze marki jak na karcie planu,
+     żeby wyliczenie należało do tej samej rodziny co lista korzyści planu. */
+  .zapis-korzysci{list-style:none;margin:0 0 18px;padding:0;max-width:380px}
+  .zapis-korzysci li{position:relative;padding-left:18px;font-size:.82rem;line-height:1.5;
+    color:var(--muted)}
+  .zapis-korzysci li+li{margin-top:3px}
+  .zapis-korzysci li::before{content:"—";position:absolute;left:0;color:var(--lime);font-weight:700}
+  .zapis-korzysci strong{color:#CFD8D2;font-weight:700}
+  /* wariant w sekcji na dole — tam jest więcej miejsca, więc czcionka jak w akapicie obok */
+  .zapis-korzysci-duze{margin:14px 0 18px;max-width:420px}
+  .zapis-korzysci-duze li{font-size:.95rem;padding-left:20px}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
     clip:rect(0,0,0,0);white-space:nowrap;border:0}
   /* Telefon: formularz na całą szerokość kolumny — na wąskim ekranie ograniczanie
@@ -1398,6 +1411,12 @@
          `_deploy` — tam jest oryginalny przycisk i wszystkie linki do apki. -->
     <div class="hero-actions">
       <p class="hero-start">Rusza <strong>7 września</strong>. Zapisz się i dowiedz się pierwszy.</p>
+      <!-- Co człowiek dostaje za zostawienie adresu. PRZED formularzem, nie po — ma to
+           przeczytać, zanim zdecyduje, czy wpisać e-mail. -->
+      <ul class="zapis-korzysci">
+        <li>cotygodniowe wskazówki treningowe</li>
+        <li>informacje o nowych planach</li>
+      </ul>
       <!-- Zgoda leży WEWNĄTRZ formularza i PRZED przyciskiem. Oba są istotne:
            wewnątrz — bo `new FormData(form)` bierze tylko pola z formularza, a gdy zgoda
            była obok, zaznaczenie zostawało w przeglądarce i nigdzie się nie zapisywało
@@ -1864,9 +1883,13 @@
       <div>
         <div class="sec-label rv">08 — Lista oczekujących</div>
         <h2 class="rv rv2">Bądź pierwszy, gdy ruszamy.</h2>
-        <p class="rv rv3">Start <strong>7 września</strong>. Zapisani dowiadują się jako pierwsi
-          i dostają wskazówki treningowe jeszcze przed startem. Zero spamu — wypiszesz się
-          jednym kliknięciem.</p>
+        <p class="rv rv3">Start <strong>7 września</strong>. Zapisani dowiadują się jako pierwsi.
+          Co dostajesz za zostawienie adresu:</p>
+        <ul class="zapis-korzysci zapis-korzysci-duze rv rv3">
+          <li>cotygodniowe wskazówki treningowe</li>
+          <li>informacje o nowych planach</li>
+        </ul>
+        <p class="rv rv3">Zero spamu — wypiszesz się jednym kliknięciem.</p>
       </div>
       <div class="rv rv3">
         <!-- zgoda wewnątrz formularza i przed przyciskiem — powody opisane przy formularzu w hero -->
