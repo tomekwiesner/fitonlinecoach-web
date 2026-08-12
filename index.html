@@ -259,24 +259,13 @@
   .hero-phone{position:absolute;left:50%;top:50%;z-index:6;pointer-events:none;
     perspective:1500px;will-change:transform;transform:translate(-50%,-50%) scale(.5)}
   .hero-phone.docked{z-index:1}
-  /* Korpus telefonu: metaliczna rama z jasnym rantem (edge light) i miękką poświatą. */
-  .hp-body{position:relative;width:300px;height:624px;border-radius:46px;
-    background:linear-gradient(145deg,#3a4640 0%,#202a25 30%,#0e1512 100%);
-    box-shadow:inset 0 0 0 1.5px rgba(200,230,210,.28), inset 0 2px 3px rgba(255,255,255,.14),
-      0 44px 100px -34px rgba(0,0,0,.92);
-    transform-style:preserve-3d;will-change:transform;transition:transform .16s ease-out}
-  /* poświata dookoła telefonu (miękka, limonkowa) */
-  .hp-body::after{content:"";position:absolute;inset:0;border-radius:46px;pointer-events:none;
-    box-shadow:0 0 46px 4px rgba(153,230,109,.30);transform:translateZ(-1px)}
-  .hp-screen{position:absolute;inset:9px;border-radius:38px;overflow:hidden;background:#0b0f0d;
-    box-shadow:inset 0 0 0 2px #05080660;transform:translateZ(1px)}
-  .hp-screen img{width:100%;height:100%;object-fit:cover;object-position:top}
-  .hp-notch{position:absolute;top:15px;left:50%;transform:translateX(-50%) translateZ(2px);width:80px;height:7px;
-    border-radius:99px;background:rgba(0,0,0,.6);z-index:3}
-  /* Grubość telefonu = ekstruzja: kilkanaście identycznych, zaokrąglonych warstw krok po kroku
-     w głąb. Bok jest przez to gładki i zaokrąglony jak korpus — bez uskoków na narożnikach
-     (płaskie ścianki zostawiały szczelinę przy rogach). Warstwy dodaje JS. */
-  .hp-ext{position:absolute;inset:0;border-radius:46px;pointer-events:none}
+  /* Telefon w hero to TEN SAM model co w sekcji „Dlaczego" (klasy .dl-*) — rozniac
+     go moze tylko rozmiar. Wszystkie liczby to model 420x854 przeskalowany o 0.72,
+     wiec proporcje korpusu, ramki i grubosci sa co do jednego takie same. */
+  .dl-body.fon-hero{--w:302px;--h:615px;--r:45px;--glab:35px;--ramka:6px;--re:38px;
+    will-change:transform;transition:transform .16s ease-out;
+    box-shadow:0 0 46px 4px rgba(153,230,109,.30), 0 40px 90px -30px rgba(0,0,0,.95)}
+  .fon-hero .dl-ekran img{width:100%;height:100%;object-fit:cover;object-position:top}
   /* cień RZUCANY przez telefon na napis — nad napisem (z5), pod telefonem gdy jest z przodu */
   .hp-cien{position:absolute;left:50%;top:50%;z-index:5;pointer-events:none;opacity:0;border-radius:50%;
     background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.92) 0%,rgba(0,0,0,.6) 46%,rgba(0,0,0,0) 78%);
@@ -1026,19 +1015,25 @@
   /* Obudowa „tytan z fazą" (wybór Tomka 2026-08-08, wariant B z trzech pokazanych).
      Efekt drogiego sprzętu bierze się z JEDNEGO detalu — jasnej fazy przy krawędzi
      ekranu — a nie z rozjaśnienia całej bryły. */
-  .dl-body{position:relative;width:420px;height:854px;border-radius:62px;
+  /* ===== JEDEN MODEL TELEFONU DLA CALEJ STRONY =====
+     Rozmiary siedza w zmiennych, wiec ten sam kod obsluguje telefon w hero,
+     w sekcji „Dlaczego" i poziomy w „Darmowej wiedzy". Zmiana proporcji to
+     zmiana czterech liczb na instancji, a nie kopia calego komponentu.
+     `--glab` MUSI zgadzac sie z GLEB w skrypcie budujacym rant. */
+  .dl-body{--w:420px;--h:854px;--r:62px;--glab:48px;--ramka:8px;--re:53px;
+    position:relative;width:var(--w);height:var(--h);border-radius:var(--r);
     background:linear-gradient(150deg,#5a615c 0%,#2f3733 52%,#1b211e 100%);
     transform-style:preserve-3d;box-shadow:0 40px 90px -30px rgba(0,0,0,.95)}
   /* warstwy boku dokłada skrypt — ten sam zabieg co w telefonie poziomym */
-  .dl-ext{position:absolute;inset:0;border-radius:62px}
+  .dl-ext{position:absolute;inset:0;border-radius:var(--r)}
   /* faza: jasna nitka tuż przy ekranie + ciemny rowek zaraz za nią */
-  .dl-body::after{content:"";position:absolute;inset:0;border-radius:62px;pointer-events:none;
+  .dl-body::after{content:"";position:absolute;inset:0;border-radius:var(--r);pointer-events:none;
     box-shadow:inset 0 0 0 2px rgba(236,246,240,.55), inset 0 0 0 4px rgba(20,26,23,.9);z-index:4}
-  .dl-notch{position:absolute;left:50%;top:15px;transform:translateX(-50%) translateZ(2px);
-    width:120px;height:10px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
+  .dl-notch{position:absolute;left:50%;top:calc(var(--ramka) + 7px);transform:translateX(-50%) translateZ(2px);
+    width:29%;height:10px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
   /* najcieńsza ramka, jaką da się zrobić bez kolizji z zaokrągleniem rogów
      (polecenie Tomka: było 11 px, potem 8, ostatecznie 6) */
-  .dl-ekran{position:absolute;inset:8px;border-radius:53px;overflow:hidden;background:#0b0f0d;
+  .dl-ekran{position:absolute;inset:var(--ramka);border-radius:var(--re);overflow:hidden;background:#0b0f0d;
     box-shadow:inset 0 0 0 3px #05080660;transform:translateZ(1px);z-index:2}
   /* przyciski boczne — włącznik po prawej, cisza i głośność po lewej.
      `translateZ` wsuwa je w bok obudowy, więc pochylają się razem z telefonem. */
@@ -1052,8 +1047,7 @@
      obraca się razem z bryłą, bo należy do tej samej przestrzeni 3D.
      `--glab` trzyma głębokość w jednym miejscu — zmiana grubości telefonu to jedna liczba
      (skrypt czyta ją i buduje z niej warstwy rantu). */
-  .dl-body{--glab:48px}
-  /* ⚠ DWIE PUŁAPKI, obie złapane na zrzutach:
+    /* ⚠ DWIE PUŁAPKI, obie złapane na zrzutach:
      (1) ZNAK OBROTU — `rotateY(θ)` przenosi lokalne +X w −Z. Element rozciągający się
          W LEWO od swojej krawędzi potrzebuje −90°, żeby pójść W GŁĄB; przy +90° wychodzi
          PRZED ekran i zamiast rantu robi się sterczący panel.
@@ -1072,14 +1066,14 @@
      końce ścianki wypadały DOKŁADNIE w miejscu, gdzie obudowa zaczyna się zakrzywiać —
      i zawisały pod nią tępym ścięciem. Odsuwamy je głębiej (130 px), czyli w prostą
      część krawędzi, i wygaszamy końce maską, żeby ścianka nie kończyła się kreską. */
-  .dl-scianka-d{left:92px;right:92px;bottom:-2px;height:var(--glab);
+  .dl-scianka-d{left:22%;right:22%;bottom:-2px;height:var(--glab);
     transform-origin:center bottom;transform:rotateX(90deg);
     background:linear-gradient(180deg,#b6c1ba 0%,#8d988f 45%,#616b66 100%);
     display:flex;align-items:center;justify-content:center;gap:34px;border-radius:5px;
     -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);
     mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}
   /* gniazdo ładowania + siatki mikrofonu i głośnika */
-  .dl-usb{width:48px;height:10px;border-radius:99px;background:#111613;
+  .dl-usb{width:11.4%;height:10px;border-radius:99px;background:#111613;
     box-shadow:inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.28)}
   .dl-dziurki{display:flex;gap:6px}
   .dl-dziurki i{width:4px;height:4px;border-radius:50%;background:#161c18;
@@ -1105,10 +1099,24 @@
      jest bryłą pełną — płaszczyzna postawiona równo z krawędzią chowa się w niej
      i znika (sprawdzone: przy 0 px nie widać nic). Wysunięcie robimy PRZED obrotem,
      bo `translateZ` po obrocie ląduje wewnątrz tej samej bryły. */
-  .dl-pw{right:-3px;top:238px;height:109px;transform-origin:right center;transform:rotateY(-90deg)}
-  .dl-mute{left:-3px;top:162px;height:34px;transform-origin:left center;transform:rotateY(90deg)}
-  .dl-v1{left:-3px;top:218px;height:70px;transform-origin:left center;transform:rotateY(90deg)}
-  .dl-v2{left:-3px;top:302px;height:70px;transform-origin:left center;transform:rotateY(90deg)}
+  /* Pozycje w PROCENTACH bryly, nie w pikselach — dzieki temu ten sam zestaw klas
+     pasuje do kazdego z trzech telefonow na stronie, bez powielania kodu.
+     Proporcje wziete z prawdziwego telefonu. */
+  .dl-pw{right:-3px;top:27.9%;height:12.8%;transform-origin:right center;transform:rotateY(-90deg)}
+  .dl-mute{left:-3px;top:19%;height:4%;transform-origin:left center;transform:rotateY(90deg)}
+  .dl-v1{left:-3px;top:25.5%;height:8.2%;transform-origin:left center;transform:rotateY(90deg)}
+  .dl-v2{left:-3px;top:35.4%;height:8.2%;transform-origin:left center;transform:rotateY(90deg)}
+  /* Telefon POZIOMY: jego bok to dolna krawedz kadru, wiec przyciski ida w rzad
+     na dole i obracaja sie wokol osi poziomej. */
+  .fon-poziomo .dl-przycisk{width:auto;height:var(--glab);left:auto;right:auto;top:auto;bottom:-3px;
+    transform-origin:center bottom;transform:rotateX(90deg)}
+  .fon-poziomo .dl-pw{left:27.9%;width:12.8%}
+  .fon-poziomo .dl-mute{left:19%;width:4%}
+  .fon-poziomo .dl-v1{left:25.5%;width:8.2%}
+  .fon-poziomo .dl-v2{left:35.4%;width:8.2%}
+  .fon-poziomo .dl-scianka-d{display:none}   /* dolna krawedz zajeta przez przyciski */
+  .fon-poziomo .dl-notch{left:calc(var(--ramka) + 7px);top:50%;
+    transform:translateY(-50%) translateZ(2px);width:10px;height:29%}
   .dl-tor{display:flex;height:100%;width:100%;
     transition:transform .55s cubic-bezier(.62,.03,.2,1)}
   .dl-tor.dl-ciagne{transition:none}
@@ -1145,8 +1153,11 @@
     opacity:0;transition:opacity .25s,border-color .25s,color .25s}
   .dl-scena:hover .dl-nav{opacity:1}
   .dl-nav:hover{border-color:var(--lime);color:var(--lime)}
-  .dl-nav-l{left:-62px}
-  .dl-nav-r{right:-62px}
+  /* Strzałki tuż przy telefonie. Pozycje liczy skrypt z REALNEGO obrysu telefonu,
+     nie ze środka sekcji — obrót 3D przesuwa bryłę o kilkanaście pikseli w bok,
+     więc liczenie od `50%` dawało strzałkę nachodzącą na telefon z jednej strony. */
+  .dl-nav-l{left:var(--nav-l,-62px)}
+  .dl-nav-r{left:var(--nav-r,auto)}
   @media(max-width:980px){
     .dl-scena{margin-top:34px}
     .dl-nav{display:none}      /* na telefonie przesuwa się palcem */
@@ -1155,18 +1166,9 @@
   .vphone-wrap{display:flex;justify-content:center;margin:0 auto 46px;perspective:1600px}
   .vphone{position:relative;transform-style:preserve-3d;will-change:transform;
     transition:transform .18s ease-out}
-  .vp-body{position:relative;width:560px;height:310px;border-radius:44px;
-    background:linear-gradient(145deg,#3a4640 0%,#202a25 30%,#0e1512 100%);
-    box-shadow:inset 0 0 0 1.5px rgba(200,230,210,.28), inset 0 2px 3px rgba(255,255,255,.14),
-      0 44px 100px -34px rgba(0,0,0,.92);
-    transform-style:preserve-3d}
-  .vp-body::after{content:"";position:absolute;inset:0;border-radius:44px;pointer-events:none;
-    box-shadow:0 0 46px 4px rgba(153,230,109,.30);transform:translateZ(-1px)}
-  .vp-ext{position:absolute;inset:0;border-radius:44px;pointer-events:none}
-  .vp-screen{position:absolute;inset:11px;border-radius:34px;overflow:hidden;background:#0b0f0d;
-    box-shadow:inset 0 0 0 2px #05080660;transform:translateZ(1px);z-index:2}
-  .vp-notch{position:absolute;left:15px;top:50%;transform:translateY(-50%) translateZ(2px);
-    width:7px;height:80px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
+  /* Telefon w „Darmowej wiedzy": ten sam model 420x854 (skala 0.655) polozony na bok. */
+  .dl-body.fon-wideo{--w:560px;--h:275px;--r:41px;--glab:31px;--ramka:5px;--re:35px;
+    box-shadow:0 0 46px 4px rgba(153,230,109,.30), 0 40px 90px -30px rgba(0,0,0,.95)}
   .vp-track{display:flex;height:100%;width:100%;transition:transform .6s cubic-bezier(.62,.03,.2,1)}
   .vp-track.vp-snap{transition:none}
   .vp-slide{flex:0 0 100%;height:100%}
@@ -1536,10 +1538,10 @@
        wąski/mocny gdy telefon się przybliża (JS steruje szerokością i mocą) -->
   <div class="hp-cien" id="hpCien" aria-hidden="true"></div>
   <div class="hero-phone" id="heroPhone" aria-hidden="true">
-    <div class="hp-body">
+    <div class="dl-body fon-hero">
       <!-- grubość telefonu: warstwy ekstruzji w głąb (dodaje JS) dają gładki, zaokrąglony bok -->
-      <span class="hp-notch"></span>
-      <div class="hp-screen"><img src="assets/screen_trening.jpg" alt=""></div>
+      <span class="dl-notch"></span>
+      <div class="dl-ekran"><img src="assets/screen_trening.jpg" alt=""></div>
     </div>
   </div>
   <div class="wrap hero-content" id="heroContent">
@@ -1959,9 +1961,9 @@
          jest jednocześnie przyciskiem na YouTube. Ekstruzję boku, klon pętli i skalę dodaje JS. -->
     <div class="vphone-wrap rv rv3">
       <div class="vphone" id="vphone">
-        <div class="vp-body">
-          <span class="vp-notch"></span>
-          <div class="vp-screen">
+        <div class="dl-body fon-poziomo fon-wideo">
+          <span class="dl-notch"></span>
+          <div class="dl-ekran">
             <div class="vp-track" id="vpTrack" aria-hidden="true">
               <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_plecy.mp4"></video></div>
               <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_licznik.mp4"></video></div>
@@ -2366,36 +2368,62 @@
   const topblok = document.getElementById('topblok');
   const talerze = [...document.querySelectorAll('.talerz')];
   const heroPhone = document.getElementById('heroPhone');
-  const hpBody = heroPhone ? heroPhone.querySelector('.hp-body') : null;
+  const hpBody = heroPhone ? heroPhone.querySelector('.dl-body') : null;
   const hpCien = document.getElementById('hpCien');
-  /* Ekstruzja korpusu telefonu: kilkanaście zaokrąglonych warstw krok po kroku w głąb daje
-     gładką ściankę boczną (bez uskoków na narożnikach, jakie robiły płaskie ścianki). */
-  if (hpBody) {
-    /* 18 warstw zamiast 40 — każda warstwa to osobna tekstura w pamięci karty,
-       a przy tej głębi i tak wypada poniżej piksela na warstwę (odchudzenie 12.08,
-       strona wywalała przeglądarkę na telefonie) */
-    const WARSTW = 18, GLEB = 46;
-    for (let i = 1; i <= WARSTW; i++) {
+  /* 18 warstw rantu — patrz komentarz przy telefonie w sekcji „Dlaczego". */
+  zbudujTelefon(hpBody, 18);
+
+  /* JEDEN budowniczy telefonu dla calej strony: rant (grubosc), przyciski i dolna
+     scianka. Wczesniej kazda sekcja miala wlasna kopie tej petli i kopie sie
+     rozjechaly — dlatego jest jedna. `warstw` to liczba warstw rantu; kazda warstwa
+     to osobna tekstura w pamieci karty, wiec to jedyna kosztowna liczba w modelu. */
+  function zbudujTelefon(body, warstw, poziomo) {
+    if (!body || body.dataset.model) return;
+    body.dataset.model = '1';
+    if (poziomo) body.classList.add('fon-poziomo');
+
+    /* Grubosc = ekstruzja: warstwy krok po kroku w glab. Bok jest przez to gladki
+       i zaokraglony jak korpus, bez uskokow na narozniach. */
+    const gleb = parseFloat(getComputedStyle(body).getPropertyValue('--glab')) || 48;
+    for (let i = 1; i <= warstw; i++) {
       const w = document.createElement('span');
-      w.className = 'hp-ext';
-      w.style.transform = `translateZ(${(-GLEB * i / WARSTW).toFixed(2)}px)`;
-      /* s: 0 = tuż za ekranem, 1 = w głębi. Metaliczny rant: mocny, JASNY połysk zaraz za ekranem
-         (wąski „hot spot", jak odbicie światła na aluminiowej ramce), szybko ciemniejący w głąb —
-         duży kontrast jasny→ciemny czyta się jako metal, nie matowy plastik. */
-      const s = i / WARSTW;
-      const polysk = Math.exp(-Math.pow((s - 0.07) / 0.15, 2));   /* wąski, mocny szczyt połysku tuż za bezelem */
-      const Lg = (12 + 44 * polysk * (1 - s * 0.5)).toFixed(1);   /* górna krawędź rantu — mocny błysk */
-      const Ld = (4 + 18 * polysk * (1 - s * 0.6)).toFixed(1);    /* dolna krawędź — ciemniej (kontrast) */
-      w.style.background = `linear-gradient(150deg,hsl(150 9% ${Lg}%) 0%,hsl(158 16% ${Ld}%) 100%)`;
-      hpBody.insertBefore(w, hpBody.firstChild);
+      w.className = 'dl-ext';
+      w.style.transform = `translateZ(${(-gleb * i / warstw).toFixed(2)}px)`;
+      /* s: 0 = tuz za ekranem, 1 = w glebi. Rant ma byc JASNY na calej glebokosci
+         (polecenie Tomka 2026-08-08: „boczek tez jasny, jak rant od przodu"),
+         z waskim blyskiem tuz przy krawedzi — to czyta sie jako metal. */
+      const s = i / warstw;
+      const polysk = Math.exp(-Math.pow((s - 0.07) / 0.15, 2));
+      const Lg = (46 + 26 * polysk - s * 12).toFixed(1);
+      const Ld = (30 + 16 * polysk - s * 10).toFixed(1);
+      w.style.background = `linear-gradient(150deg,hsl(150 5% ${Lg}%) 0%,hsl(154 7% ${Ld}%) 100%)`;
+      body.insertBefore(w, body.firstChild);
     }
+
+    /* Przyciski sa zakotwiczone do sciany bocznej i obracaja sie razem z nia. */
+    ['dl-pw', 'dl-mute', 'dl-v1', 'dl-v2'].forEach(k => {
+      const b = document.createElement('span');
+      b.className = 'dl-przycisk ' + k;
+      body.appendChild(b);
+    });
+    if (poziomo) return;   /* w poziomie dolna krawedz zajmuja przyciski */
+
+    /* Dolna scianka: gniazdo USB-C i mikrofony — widac ja, gdy telefon jest
+       przechylony przodem do gory. */
+    const scianka = document.createElement('span');
+    scianka.className = 'dl-scianka dl-scianka-d';
+    const siatka = () => {
+      const g = document.createElement('span');
+      g.className = 'dl-dziurki';
+      for (let i = 0; i < 5; i++) g.appendChild(document.createElement('i'));
+      return g;
+    };
+    const usb = document.createElement('span');
+    usb.className = 'dl-usb';
+    scianka.append(siatka(), usb, siatka());
+    body.appendChild(scianka);
   }
 
-  /* ===== Efekt 3: POZIOMY telefon 3D z auto-swajpowaniem filmów (sekcja „Darmowa wiedza") ===== */
-  /* ---------- „DLACZEGO": pionowy telefon 3D z trzema ekranami ----------
-     Zastąpił trzy odwracane kafelki. Trzy zabiegi, wszystkie sprawdzone już gdzie indziej
-     na tej stronie: metaliczny bok z warstw `translateZ` (jak telefon w hero i w „Darmowej
-     wiedzy"), obrót za kursorem oraz przesuwanie palcem z kropkami (jak karuzela planów). */
   const dlTelefon = document.getElementById('dlTelefon');
   const dlTor = document.getElementById('dlTor');
   if (dlTelefon && dlTor) {
@@ -2408,50 +2436,11 @@
     /* Metaliczny rant. CIEŃSZY niż poprzednio (było 62 px — telefon wyglądał na gruby),
        ale JAŚNIEJSZY: rant ma świecić tak samo jak ramka od przodu, więc warstwy trzymają
        wysoką jasność zamiast gasnąć w głąb. Liczba musi się zgadzać z `--glab` w stylach. */
-    /* 24 warstwy, nie 80: przy obrocie 17° glebia 48 px rzutuje sie na ~14 px ekranu,
-       wiec 24 warstwy to nadal ponizej piksela na warstwe — a KAZDA warstwa to osobna
-       tekstura w pamieci karty. 80 warstw x pelny rozmiar modelu zabijalo przegladarke
-       na telefonie (zglosil Tomek 2026-08-12). */
-    const WARSTW = 24, GLEB = 48;
-    for (let i = 1; i <= WARSTW; i++) {
-      const w = document.createElement('span');
-      w.className = 'dl-ext';
-      w.style.transform = `translateZ(${(-GLEB * i / WARSTW).toFixed(2)}px)`;
-      const s = i / WARSTW;
-      const polysk = Math.exp(-Math.pow((s - 0.07) / 0.15, 2));
-      /* Rant ma być JASNY na całej głębokości (polecenie Tomka 2026-08-08: „boczek też
-         jasny, jak rant od przodu"). Wysoka podstawa + delikatny błysk przy krawędzi,
-         zamiast gwałtownego ciemnienia w głąb. */
-      const Lg = (46 + 26 * polysk - s * 12).toFixed(1);
-      const Ld = (30 + 16 * polysk - s * 10).toFixed(1);
-      w.style.background = `linear-gradient(150deg,hsl(150 5% ${Lg}%) 0%,hsl(154 7% ${Ld}%) 100%)`;
-      dlBody.insertBefore(w, dlBody.firstChild);
-    }
-
-    /* Ścianki: prawa, lewa i dolna. Przyciski są DZIEĆMI ścianek, więc pochylają się
-       razem z nimi — bez tego leżały na płaszczyźnie ekranu i „odklejały się" od boku. */
-    const scianka = (klasa, dzieci = []) => {
-      const s = document.createElement('span');
-      s.className = 'dl-scianka ' + klasa;
-      dzieci.forEach(d => s.appendChild(d));
-      dlBody.appendChild(s);
-      return s;
-    };
-    const przycisk = klasa => {
-      const b = document.createElement('span');
-      b.className = 'dl-przycisk ' + klasa;
-      return b;
-    };
-    /* przyciski są własnymi płaszczyznami w ścianie bocznej — wprost na bryle */
-    ['dl-pw', 'dl-mute', 'dl-v1', 'dl-v2'].forEach(k => dlBody.appendChild(przycisk(k)));
-
-    const usb = document.createElement('span'); usb.className = 'dl-usb';
-    const siatka = () => {
-      const g = document.createElement('span'); g.className = 'dl-dziurki';
-      for (let i = 0; i < 5; i++) g.appendChild(document.createElement('i'));
-      return g;
-    };
-    scianka('dl-scianka-d', [siatka(), usb, siatka()]);
+    /* 24 warstwy, nie 80: przy obrocie 17 stopni glebia 48 px rzutuje sie na ~14 px
+       ekranu, wiec 24 warstwy to nadal ponizej piksela na warstwe — a KAZDA warstwa
+       to osobna tekstura w pamieci karty. 80 warstw x pelny rozmiar modelu zabijalo
+       przegladarke na telefonie (zglosil Tomek 2026-08-12). */
+    zbudujTelefon(dlBody, 24);
 
     /* skala pod szerokość i wysokość okna — telefon ma 300×610, a sekcja bywa przypięta
        na 100vh, więc bez tego na niskim laptopie wychodziłby poza ekran */
@@ -2480,8 +2469,20 @@
       /* odejmujemy luz, który zostaje pod zmniejszonym telefonem (patrz komentarz w stylach) */
       dlTelefon.style.marginBottom = `${-Math.round(BAZA_H * (1 - dlSkala))}px`;
     };
-    dlPrzelicz(); dlStosuj();
-    window.addEventListener('resize', () => { dlPrzelicz(); dlStosuj(); });
+    /* Strzałki ustawiamy po REALNYM obrysie telefonu. Osobna funkcja, wołana przy
+       zmianie rozmiaru — a NIE przy ruchu myszy: `getBoundingClientRect` wymusza
+       przeliczenie układu, więc w obsłudze kursora dławiłby płynność. */
+    const ODSTEP = 20, SZER_STRZ = 44;
+    const dlStrzalki = () => {
+      const t = dlTelefon.getBoundingClientRect();
+      const sc = dlScena.getBoundingClientRect();
+      dlScena.style.setProperty('--nav-l', `${Math.round(t.left - sc.left - SZER_STRZ - ODSTEP)}px`);
+      dlScena.style.setProperty('--nav-r', `${Math.round(t.right - sc.left + ODSTEP)}px`);
+    };
+    dlPrzelicz(); dlStosuj(); dlStrzalki();
+    window.addEventListener('resize', () => { dlPrzelicz(); dlStosuj(); dlStrzalki(); });
+    /* po dojściu fontów obrys telefonu bywa inny — ustawiamy strzałki jeszcze raz */
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(dlStrzalki);
     if (!dlRedukcja && matchMedia('(hover:hover)').matches) {
       dlTelefon.addEventListener('mousemove', ev => {
         const r = dlTelefon.getBoundingClientRect();
@@ -2535,23 +2536,8 @@
   const vpTrack = document.getElementById('vpTrack');
   if (vphone && vpTrack) {
     const reducedVP = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-    const vpBody = vphone.querySelector('.vp-body');
-    /* ekstruzja boku — identyczny metaliczny styl jak telefon w hero */
-    if (vpBody) {
-      /* 18 zamiast 36 — patrz komentarz przy telefonie w hero */
-      const WARSTW = 18, GLEB = 40;
-      for (let i = 1; i <= WARSTW; i++) {
-        const w = document.createElement('span');
-        w.className = 'vp-ext';
-        w.style.transform = `translateZ(${(-GLEB * i / WARSTW).toFixed(2)}px)`;
-        const s = i / WARSTW;
-        const polysk = Math.exp(-Math.pow((s - 0.07) / 0.15, 2));
-        const Lg = (12 + 44 * polysk * (1 - s * 0.5)).toFixed(1);
-        const Ld = (4 + 18 * polysk * (1 - s * 0.6)).toFixed(1);
-        w.style.background = `linear-gradient(150deg,hsl(150 9% ${Lg}%) 0%,hsl(158 16% ${Ld}%) 100%)`;
-        vpBody.insertBefore(w, vpBody.firstChild);
-      }
-    }
+    zbudujTelefon(vphone.querySelector('.dl-body'), 18, true);
+
     /* responsywna skala (żeby zmieścił się na telefonie) + obrót 3D za kursorem */
     const vpWrap = vphone.parentElement;
     let vpx = 0, vpy = 0, vpScale = 1;
@@ -2625,18 +2611,25 @@
     /* Na desktopie postęp z przypiętego scrolla. Na MOBILE (brak przypięcia) telefon jest
        OD RAZU zadokowany za napisami — p=1 — zamiast startować duży i zasłaniać nagłówek. */
     const przypiete = stackMode() && heroStack && heroStack.offsetHeight > window.innerHeight * 1.2;
-    const p = force != null ? force : (przypiete ? ogr(dokProgFn(), 0, 1) : 1);
+    const pSurowy = force != null ? force : (przypiete ? ogr(dokProgFn(), 0, 1) : 1);
+    /* Dokowanie kończy się na 80% przewinięcia, ostatnie 20% to WYJŚCIE: telefon
+       zjeżdża w dół i gaśnie, żeby nie było go na kolejnym ekranie (polecenie Tomka
+       2026-08-12: „napis jedzie w górę, telefon musi jechać w dół i zniknąć"). */
+    const DOK_DO = 0.80;
+    const p = ogr(pSurowy / DOK_DO, 0, 1);
+    const wyjscie = przypiete ? ogr((pSurowy - DOK_DO) / (1 - DOK_DO), 0, 1) : 0;
     dockProg = p;
     const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;   /* ease-in-out */
     /* start: telefon prawie na całą wysokość hero, lekko w PRAWO od środka */
     const sStart = Math.min((hr.height * 0.9) / 624, hr.width * 0.62 / 300);
     const xStart = hr.width * 0.05, yStart = 0;
-    /* cel: mały telefon za słowem „rozumiesz." (jego środek) */
+    /* CEL DOKOWANIA (wskazany przez Tomka 2026-08-12): wolne pole po prawej stronie,
+       PONIŻEJ hasła — a nie za słowem „rozumiesz.". Tam nic nie zasłania i telefon
+       nie wchodzi w nagłówek ani w formularz zapisu. */
     const wr = slowoRozumiesz.getBoundingClientRect();
-    /* WEB: telefon dokuje się za „rozumiesz." — trochę mniejszy i przesunięty w prawo/górę. */
-    let sDock = Math.max(wr.height * 2.95 / 624, 0.22);
-    let xDock = (wr.left + wr.width / 2) - (hr.left + hr.width / 2) + hr.width * 0.055;
-    let yDock = (wr.top + wr.height / 2) - (hr.top + hr.height / 2) - hr.height * 0.06;
+    let sDock = 0.46;
+    let xDock = hr.width * 0.26;
+    let yDock = hr.height * 0.10;
     if (!przypiete) {
       /* MOBILE: telefon zadokowany, lekko obrócony, w PRAWYM GÓRNYM rogu hero (najluźniejsze
          miejsce) i trochę mniejszy — żeby cała scena była czytelniejsza na małym ekranie. */
@@ -2645,8 +2638,10 @@
       yDock = -hr.height * 0.245;
     }
     const x = xStart + (xDock - xStart) * e;
-    const y = yStart + (yDock - yStart) * e;
+    /* wyjście: zjazd w dół o pełną wysokość hero + wygaszenie */
+    const y = yStart + (yDock - yStart) * e + hr.height * 1.05 * wyjscie;
     const s = sStart + (sDock - sStart) * e;
+    heroPhone.style.opacity = (1 - wyjscie).toFixed(3);
     heroPhone.style.transform = `translate(-50%,-50%) translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${s.toFixed(3)})`;
     tiltY = -15 * (1 - e);
     tiltX = 4 * (1 - e);
