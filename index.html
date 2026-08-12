@@ -1005,6 +1005,78 @@
   .yt p{color:#B9C4BD;max-width:520px;margin:0 auto 42px}
   .yt p .yt-count{color:var(--lime);font-weight:600}
   /* ===== Efekt 3: POZIOMY telefon 3D z auto-swajpowanymi filmami (ten sam styl co hero) ===== */
+  /* ---------- „DLACZEGO": PIONOWY TELEFON 3D Z TRZEMA EKRANAMI ----------
+     Zastąpił trzy odwracane kafelki (decyzja Tomka 2026-08-08). Treść ta sama,
+     tylko zamiast obracania — przesuwanie między ekranami.
+     Zbudowany z gotowych części: metaliczna ekstruzja i obrót za kursorem jak
+     w telefonie z „Darmowej wiedzy" (.vphone), przesuwanie palcem i kropki jak
+     w karuzeli planów. Nic nowego, inne złożenie. */
+  .dl-scena{position:relative;display:flex;flex-direction:column;align-items:center;
+    perspective:1600px;margin-top:44px}
+  /* poświata za telefonem — bez niej ciemna bryła wisi w czerni bez oprawy;
+     ten sam zabieg co przy telefonie w hero */
+  .dl-scena::before{content:"";position:absolute;top:6%;left:50%;transform:translateX(-50%);
+    width:min(620px,92%);height:70%;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse at center,rgba(153,230,109,.16) 0%,rgba(153,230,109,.05) 42%,transparent 72%)}
+  /* `transform-origin:top center` + ujemny margines: przy zmniejszaniu skalą pudełko
+     zostaje wysokie na 610 px i pod telefonem robi się martwa przestrzeń.
+     Origin u góry zbiera cały luz na dole, a margines go odejmuje (liczy skrypt). */
+  .dl-telefon{position:relative;z-index:1;transform-style:preserve-3d;will-change:transform;
+    transform-origin:top center;transition:transform .25s ease-out}
+  .dl-body{position:relative;width:300px;height:610px;border-radius:46px;
+    background:linear-gradient(150deg,#1d2723 0%,#0d1310 100%);transform-style:preserve-3d;
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.95)}
+  /* warstwy boku dokłada skrypt — ten sam zabieg co w telefonie poziomym */
+  .dl-ext{position:absolute;inset:0;border-radius:46px}
+  .dl-body::after{content:"";position:absolute;inset:0;border-radius:46px;pointer-events:none;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);z-index:4}
+  .dl-notch{position:absolute;left:50%;top:14px;transform:translateX(-50%) translateZ(2px);
+    width:86px;height:7px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
+  .dl-ekran{position:absolute;inset:11px;border-radius:36px;overflow:hidden;background:#0b0f0d;
+    box-shadow:inset 0 0 0 2px #05080660;transform:translateZ(1px);z-index:2}
+  .dl-tor{display:flex;height:100%;width:100%;
+    transition:transform .55s cubic-bezier(.62,.03,.2,1)}
+  .dl-tor.dl-ciagne{transition:none}
+  /* Zrzut i tekst mają być JEDNĄ całością, nie dwoma blokami sklejonymi kreską.
+     Zabieg: wspólne tło slajdu, zrzut ROZPŁYWA się ku dołowi (maska gradientowa),
+     a tekst wchodzi na jego zanikającą część ujemnym marginesem. Żadnej linii podziału. */
+  .dl-slajd{flex:0 0 100%;height:100%;position:relative;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,#16211c 0%,var(--graphite) 46%,#0e1512 100%);overflow:hidden}
+  .dl-foto{position:relative;flex:0 0 auto;height:58%;overflow:hidden}
+  .dl-foto img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 96%);
+    mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 96%)}
+  .dl-tresc{position:relative;z-index:2;flex:1;margin-top:-22%;padding:0 22px 26px;
+    display:flex;flex-direction:column;justify-content:flex-end}
+  /* limonkowa kreska nad hasłem — ten sam znak co przy wyliczeniach na karcie planu,
+     spina ekran w jedną kompozycję zamiast dzielić go na pół */
+  .dl-tresc h3::before{content:"";display:block;width:26px;height:2px;background:var(--lime);
+    margin-bottom:12px;border-radius:2px}
+  .dl-tresc h3{font-size:1.12rem;line-height:1.3;color:#fff;margin-bottom:9px;text-wrap:balance}
+  .dl-tresc p{font-size:.88rem;line-height:1.55;color:#B9C4BD}
+  /* kropki i podpis — ten sam język co pod karuzelą planów */
+  .dl-kropki{display:flex;justify-content:center;gap:10px;margin-top:26px}
+  .dl-kropki button{width:9px;height:9px;padding:0;border:0;border-radius:50%;cursor:pointer;
+    background:rgba(255,255,255,.22);transition:background .25s,transform .25s}
+  .dl-kropki button:hover{background:rgba(153,230,109,.6)}
+  .dl-kropki button.on{background:var(--lime);transform:scale(1.25)}
+  .dl-podpis{margin-top:10px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);opacity:.65;text-align:center}
+  /* strzałki dla myszy — na dotyku wystarcza przesuwanie */
+  .dl-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;
+    border-radius:50%;border:1px solid rgba(200,230,210,.28);background:rgba(12,18,15,.72);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:1.5rem;
+    line-height:1;cursor:pointer;display:grid;place-items:center;padding-bottom:3px;
+    opacity:0;transition:opacity .25s,border-color .25s,color .25s}
+  .dl-scena:hover .dl-nav{opacity:1}
+  .dl-nav:hover{border-color:var(--lime);color:var(--lime)}
+  .dl-nav-l{left:-62px}
+  .dl-nav-r{right:-62px}
+  @media(max-width:980px){
+    .dl-scena{margin-top:34px}
+    .dl-nav{display:none}      /* na telefonie przesuwa się palcem */
+  }
+
   .vphone-wrap{display:flex;justify-content:center;margin:0 auto 46px;perspective:1600px}
   .vphone{position:relative;transform-style:preserve-3d;will-change:transform;
     transition:transform .18s ease-out}
@@ -1540,75 +1612,49 @@
           <div class="sec-label rv">01 — Dlaczego FitOnlineCoach</div>
           <h2 class="sec-title rv rv2">Wiedza różnych specjalistów.<br>Jeden spójny plan.</h2>
         </div>
-        <div class="cards">
-      <!-- bez aria-label na karcie: etykieta zagłuszała nagłówek sprzedażowy dla czytników
-           ekranu (audyt 2026-07-29) — nazwę przycisku buduje teraz treść karty, a etykiety
-           „Powiększ ekran…" zostały na wewnętrznych podglądach urządzeń (.cb-dev) -->
-      <div class="card" role="button" tabindex="0">
-        <div class="card-inner">
-          <div class="card-face card-front">
-            <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
-            <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania i bez ryzyka kontuzji.</p>
-            <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
-          </div>
-          <div class="card-face card-back">
-            <div class="cb-dev cb-phone" aria-label="Powiększ ekran: biblioteka ćwiczeń">
-              <div class="cb-body"><span class="cb-notch"></span>
-                <div class="cb-screen"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji na telefonie: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
+        <!-- Trzy ekrany w jednym telefonie 3D zamiast trzech odwracanych kafelków
+             (decyzja Tomka 2026-08-08). Teksty BEZ ZMIAN — te same, co były na kafelkach;
+             każdy ekran łączy zrzut z aplikacji (dawny rewers) z hasłem i opisem (dawny przód). -->
+        <div class="dl-scena rv rv3">
+          <button class="dl-nav dl-nav-l" id="dlNavL" type="button" aria-label="Poprzedni ekran">‹</button>
+          <button class="dl-nav dl-nav-r" id="dlNavR" type="button" aria-label="Następny ekran">›</button>
+          <div class="dl-telefon" id="dlTelefon">
+            <div class="dl-body">
+              <span class="dl-notch"></span>
+              <div class="dl-ekran">
+                <div class="dl-tor" id="dlTor">
+                  <article class="dl-slajd">
+                    <div class="dl-foto"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
+                    <div class="dl-tresc">
+                      <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
+                      <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania i bez ryzyka kontuzji.</p>
+                    </div>
+                  </article>
+                  <article class="dl-slajd">
+                    <div class="dl-foto"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy" decoding="async"></div>
+                    <div class="dl-tresc">
+                      <h3>Masz dość anglojęzycznych tutoriali?</h3>
+                      <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
+                    </div>
+                  </article>
+                  <article class="dl-slajd">
+                    <div class="dl-foto"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
+                    <div class="dl-tresc">
+                      <h3>Nie masz czasu na trening?</h3>
+                      <p>3 treningi w tygodniu po 40–60 minut — resztę zostaw życiu. Plan masz zawsze w telefonie, a treningi wpisujesz prosto do kalendarza.</p>
+                    </div>
+                  </article>
+                </div>
               </div>
             </div>
           </div>
+          <div class="dl-kropki" id="dlKropki">
+            <button type="button" class="on" data-ekran="0" aria-label="Ekran 1 z 3"></button>
+            <button type="button" data-ekran="1" aria-label="Ekran 2 z 3"></button>
+            <button type="button" data-ekran="2" aria-label="Ekran 3 z 3"></button>
+          </div>
+          <p class="dl-podpis">Przesuń, żeby zobaczyć więcej</p>
         </div>
-      </div>
-      <div class="card" role="button" tabindex="0">
-        <div class="card-inner">
-          <div class="card-face card-front">
-            <h3>Masz dość anglojęzycznych tutoriali?</h3>
-            <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
-            <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
-          </div>
-          <div class="card-face card-back">
-            <div class="cb-dev cb-tablet cb-desk" aria-label="Powiększ ekran: opis ćwiczenia po polsku">
-              <div class="cb-body"><span class="cb-cam"></span>
-                <div class="cb-screen"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji na tablecie: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy" decoding="async"></div>
-              </div>
-            </div>
-            <!-- na telefonie ten sam ekran pokazujemy w telefonie (tablet/laptop tylko na dużym ekranie) -->
-            <div class="cb-dev cb-phone cb-mob" aria-label="Powiększ ekran: opis ćwiczenia po polsku">
-              <div class="cb-body"><span class="cb-notch"></span>
-                <div class="cb-screen"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy" decoding="async"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card" role="button" tabindex="0">
-        <div class="card-inner">
-          <div class="card-face card-front">
-            <h3>Nie masz czasu na trening?</h3>
-            <!-- 40–60 min zamiast „ok. 50": realne czasy to 40/50/55 do 45/50/55 (dział planów 3.08).
-                 „Ok. 50" zaniżało najdłuższy trening o 10 minut. -->
-            <p>3 treningi w tygodniu po 40–60 minut — resztę zostaw życiu. Plan masz zawsze
-              w telefonie, a treningi wpisujesz prosto do kalendarza.</p>
-            <span class="card-hint">Kliknij — zobacz w aplikacji →</span>
-          </div>
-          <div class="card-face card-back">
-            <div class="cb-dev cb-laptop cb-desk" aria-label="Powiększ ekran: kalendarz treningów">
-              <div class="cb-body"><span class="cb-notch-mac"></span>
-                <div class="cb-screen"><img src="assets/screen_kalendarz_laptop.jpg" alt="Ekran aplikacji na laptopie: kalendarz treningów" loading="lazy" decoding="async"></div>
-              </div>
-              <span class="cb-deck"><span class="cb-keys"></span><span class="cb-pad"></span></span>
-            </div>
-            <!-- na telefonie: ten sam kalendarz, ale w telefonie (pionowy zrzut) -->
-            <div class="cb-dev cb-phone cb-mob" aria-label="Powiększ ekran: kalendarz treningów">
-              <div class="cb-body"><span class="cb-notch"></span>
-                <div class="cb-screen"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
       </div>
     </section>
 
@@ -2268,6 +2314,100 @@
   }
 
   /* ===== Efekt 3: POZIOMY telefon 3D z auto-swajpowaniem filmów (sekcja „Darmowa wiedza") ===== */
+  /* ---------- „DLACZEGO": pionowy telefon 3D z trzema ekranami ----------
+     Zastąpił trzy odwracane kafelki. Trzy zabiegi, wszystkie sprawdzone już gdzie indziej
+     na tej stronie: metaliczny bok z warstw `translateZ` (jak telefon w hero i w „Darmowej
+     wiedzy"), obrót za kursorem oraz przesuwanie palcem z kropkami (jak karuzela planów). */
+  const dlTelefon = document.getElementById('dlTelefon');
+  const dlTor = document.getElementById('dlTor');
+  if (dlTelefon && dlTor) {
+    const dlRedukcja = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const dlBody = dlTelefon.querySelector('.dl-body');
+    const dlKropki = [...document.querySelectorAll('#dlKropki button')];
+    const dlN = dlTor.children.length;
+    let dlIdx = 0;
+
+    /* metaliczny bok — te same liczby co przy telefonie poziomym */
+    const WARSTW = 36, GLEB = 40;
+    for (let i = 1; i <= WARSTW; i++) {
+      const w = document.createElement('span');
+      w.className = 'dl-ext';
+      w.style.transform = `translateZ(${(-GLEB * i / WARSTW).toFixed(2)}px)`;
+      const s = i / WARSTW;
+      const polysk = Math.exp(-Math.pow((s - 0.07) / 0.15, 2));
+      const Lg = (12 + 44 * polysk * (1 - s * 0.5)).toFixed(1);
+      const Ld = (4 + 18 * polysk * (1 - s * 0.6)).toFixed(1);
+      w.style.background = `linear-gradient(150deg,hsl(150 9% ${Lg}%) 0%,hsl(158 16% ${Ld}%) 100%)`;
+      dlBody.insertBefore(w, dlBody.firstChild);
+    }
+
+    /* skala pod szerokość i wysokość okna — telefon ma 300×610, a sekcja bywa przypięta
+       na 100vh, więc bez tego na niskim laptopie wychodziłby poza ekran */
+    const dlScena = dlTelefon.parentElement;
+    let dlx = 0, dly = 0, dlSkala = 1;
+    const dlPrzelicz = () => {
+      const zSzer = (dlScena.clientWidth - 24) / 300;
+      const zWys = (window.innerHeight - 300) / 610;
+      dlSkala = Math.max(0.62, Math.min(1, zSzer, zWys));
+    };
+    const dlStosuj = () => {
+      const ry = -6 + dlx * 12, rx = 4 - dly * 8;
+      dlTelefon.style.transform =
+        `scale(${dlSkala.toFixed(3)}) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`;
+      /* odejmujemy luz, który zostaje pod zmniejszonym telefonem (patrz komentarz w stylach) */
+      dlTelefon.style.marginBottom = `${-Math.round(610 * (1 - dlSkala))}px`;
+    };
+    dlPrzelicz(); dlStosuj();
+    window.addEventListener('resize', () => { dlPrzelicz(); dlStosuj(); });
+    if (!dlRedukcja && matchMedia('(hover:hover)').matches) {
+      dlTelefon.addEventListener('mousemove', ev => {
+        const r = dlTelefon.getBoundingClientRect();
+        dlx = (ev.clientX - r.left) / r.width - 0.5;
+        dly = (ev.clientY - r.top) / r.height - 0.5;
+        dlStosuj();
+      });
+      dlTelefon.addEventListener('mouseleave', () => { dlx = 0; dly = 0; dlStosuj(); });
+    }
+
+    const dlPokaz = i => {
+      dlIdx = (i + dlN) % dlN;
+      dlTor.style.transform = `translateX(${-dlIdx * 100}%)`;
+      dlKropki.forEach((k, n) => k.classList.toggle('on', n === dlIdx));
+    };
+    dlKropki.forEach(k => k.addEventListener('click', () => dlPokaz(+k.dataset.ekran)));
+    const nl = document.getElementById('dlNavL'), nr = document.getElementById('dlNavR');
+    if (nl) nl.addEventListener('click', () => dlPokaz(dlIdx - 1));
+    if (nr) nr.addEventListener('click', () => dlPokaz(dlIdx + 1));
+
+    /* przesuwanie palcem i myszą. `touch-action:pan-y` na ekranie zostawia pionowe
+       przewijanie strony, a przechwytuje poziome — bez tego na telefonie nie dałoby się
+       przewinąć strony palcem po ekranie telefonu 3D. */
+    const dlEkran = dlTelefon.querySelector('.dl-ekran');
+    dlEkran.style.touchAction = 'pan-y';
+    let x0 = null, dx = 0;
+    dlEkran.addEventListener('pointerdown', e => {
+      x0 = e.clientX; dx = 0;
+      dlTor.classList.add('dl-ciagne');
+      dlEkran.setPointerCapture(e.pointerId);
+    });
+    dlEkran.addEventListener('pointermove', e => {
+      if (x0 === null) return;
+      dx = e.clientX - x0;
+      const proc = dx / dlEkran.clientWidth * 100;
+      dlTor.style.transform = `translateX(${-dlIdx * 100 + proc}%)`;
+    });
+    const dlKoniec = () => {
+      if (x0 === null) return;
+      dlTor.classList.remove('dl-ciagne');
+      /* próg 18% szerokości — mniejszy ruch to omsknięcie, nie zamiar zmiany ekranu */
+      if (Math.abs(dx) > dlEkran.clientWidth * 0.18) dlPokaz(dlIdx + (dx < 0 ? 1 : -1));
+      else dlPokaz(dlIdx);
+      x0 = null; dx = 0;
+    };
+    dlEkran.addEventListener('pointerup', dlKoniec);
+    dlEkran.addEventListener('pointercancel', dlKoniec);
+  }
+
   const vphone = document.getElementById('vphone');
   const vpTrack = document.getElementById('vpTrack');
   if (vphone && vpTrack) {
