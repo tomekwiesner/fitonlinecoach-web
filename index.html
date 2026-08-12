@@ -1023,17 +1023,92 @@
      Origin u góry zbiera cały luz na dole, a margines go odejmuje (liczy skrypt). */
   .dl-telefon{position:relative;z-index:1;transform-style:preserve-3d;will-change:transform;
     transform-origin:top center;transition:transform .25s ease-out}
-  .dl-body{position:relative;width:300px;height:610px;border-radius:46px;
-    background:linear-gradient(150deg,#1d2723 0%,#0d1310 100%);transform-style:preserve-3d;
-    box-shadow:0 40px 90px -30px rgba(0,0,0,.95)}
+  /* Obudowa „tytan z fazą" (wybór Tomka 2026-08-08, wariant B z trzech pokazanych).
+     Efekt drogiego sprzętu bierze się z JEDNEGO detalu — jasnej fazy przy krawędzi
+     ekranu — a nie z rozjaśnienia całej bryły. */
+  .dl-body{position:relative;width:600px;height:1220px;border-radius:88px;
+    background:linear-gradient(150deg,#5a615c 0%,#2f3733 52%,#1b211e 100%);
+    transform-style:preserve-3d;box-shadow:0 40px 90px -30px rgba(0,0,0,.95)}
   /* warstwy boku dokłada skrypt — ten sam zabieg co w telefonie poziomym */
-  .dl-ext{position:absolute;inset:0;border-radius:46px}
-  .dl-body::after{content:"";position:absolute;inset:0;border-radius:46px;pointer-events:none;
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);z-index:4}
-  .dl-notch{position:absolute;left:50%;top:14px;transform:translateX(-50%) translateZ(2px);
-    width:86px;height:7px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
-  .dl-ekran{position:absolute;inset:11px;border-radius:36px;overflow:hidden;background:#0b0f0d;
-    box-shadow:inset 0 0 0 2px #05080660;transform:translateZ(1px);z-index:2}
+  .dl-ext{position:absolute;inset:0;border-radius:88px}
+  /* faza: jasna nitka tuż przy ekranie + ciemny rowek zaraz za nią */
+  .dl-body::after{content:"";position:absolute;inset:0;border-radius:88px;pointer-events:none;
+    box-shadow:inset 0 0 0 3px rgba(236,246,240,.55), inset 0 0 0 6px rgba(20,26,23,.9);z-index:4}
+  .dl-notch{position:absolute;left:50%;top:21px;transform:translateX(-50%) translateZ(3px);
+    width:172px;height:14px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
+  /* najcieńsza ramka, jaką da się zrobić bez kolizji z zaokrągleniem rogów
+     (polecenie Tomka: było 11 px, potem 8, ostatecznie 6) */
+  .dl-ekran{position:absolute;inset:11px;border-radius:76px;overflow:hidden;background:#0b0f0d;
+    box-shadow:inset 0 0 0 4px #05080660;transform:translateZ(1px);z-index:2}
+  /* przyciski boczne — włącznik po prawej, cisza i głośność po lewej.
+     `translateZ` wsuwa je w bok obudowy, więc pochylają się razem z telefonem. */
+  /* Przycisk boczny — nie płaski pasek, tylko frezowany element:
+     góra jaśniejsza (światło pada z góry), dolna krawędź podcięta cieniem,
+     wokół szczelina montażowa, a wzdłuż zewnętrznej krawędzi cienki połysk. */
+  /* ===== ŚCIANKI BOCZNE I DOLNA — prawdziwe płaszczyzny, nie naklejki =====
+     Wcześniej przyciski leżały na płaszczyźnie EKRANU i tylko były cofnięte w głąb,
+     więc przy przechyleniu telefonu nie pochylały się razem z bokiem. Teraz każda
+     ścianka to osobna płaszczyzna obrócona o 90°, zakotwiczona w swojej krawędzi:
+     obraca się razem z bryłą, bo należy do tej samej przestrzeni 3D.
+     `--glab` trzyma głębokość w jednym miejscu — zmiana grubości telefonu to jedna liczba
+     (skrypt czyta ją i buduje z niej warstwy rantu). */
+  .dl-body{--glab:68px}
+  /* ⚠ DWIE PUŁAPKI, obie złapane na zrzutach:
+     (1) ZNAK OBROTU — `rotateY(θ)` przenosi lokalne +X w −Z. Element rozciągający się
+         W LEWO od swojej krawędzi potrzebuje −90°, żeby pójść W GŁĄB; przy +90° wychodzi
+         PRZED ekran i zamiast rantu robi się sterczący panel.
+     (2) ŚCIANKA W ŚRODKU BRYŁY JEST NIEWIDOCZNA — rant zbudowany z warstw jest pełny,
+         więc płaszczyzna postawiona dokładnie na krawędzi chowa się w nim. Dlatego
+         ścianki stoją 2 px POZA obrysem: tyle wystarczy, żeby je było widać, a wciąż
+         czytają się jako część bryły. */
+  /* BEZ `backface-visibility:hidden` — po obrocie o 90° przeglądarka potrafi uznać
+     ściankę za widzianą od tyłu i wyciąć ją całkowicie */
+  .dl-scianka{position:absolute}
+  /* dolna ścianka — widać ją, bo telefon jest odchylony do tyłu */
+  /* ⚠ ZYGZAK NA DOLE — poprzednio ścianka kończyła się prostym ścięciem przy zaokrąglonych
+     rogach i na styku robił się schodek. Teraz: zaokrąglone końce + odsunięcie równe
+     promieniowi rogu, dzięki czemu ścianka wpisuje się w obrys zamiast go przecinać. */
+  /* ⚠ ARTEFAKT PRZY DOLNEJ KRAWĘDZI: przy odsunięciu równym promieniowi rogu (88 px)
+     końce ścianki wypadały DOKŁADNIE w miejscu, gdzie obudowa zaczyna się zakrzywiać —
+     i zawisały pod nią tępym ścięciem. Odsuwamy je głębiej (130 px), czyli w prostą
+     część krawędzi, i wygaszamy końce maską, żeby ścianka nie kończyła się kreską. */
+  .dl-scianka-d{left:130px;right:130px;bottom:-2px;height:var(--glab);
+    transform-origin:center bottom;transform:rotateX(90deg);
+    background:linear-gradient(180deg,#b6c1ba 0%,#8d988f 45%,#616b66 100%);
+    display:flex;align-items:center;justify-content:center;gap:48px;border-radius:7px;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}
+  /* gniazdo ładowania + siatki mikrofonu i głośnika */
+  .dl-usb{width:68px;height:14px;border-radius:99px;background:#111613;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.28)}
+  .dl-dziurki{display:flex;gap:8px}
+  .dl-dziurki i{width:6px;height:6px;border-radius:50%;background:#161c18;
+    box-shadow:inset 0 1px 1px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.22)}
+
+  /* Przyciski LEŻĄ NA ŚCIANCE — są jej dziećmi, więc dziedziczą jej obrót.
+     Szczelina w `box-shadow`, nie w osobnej warstwie: warstwa z ujemnym `z-index`
+     wewnątrz `preserve-3d` potrafi wyjść NAD przycisk (sortowanie 3D ignoruje wtedy
+     z-index) i zamiast szczeliny robi się czarny pasek — złapane na zbliżeniu. */
+  /* Przycisk SAM JEST płaszczyzną leżącą w ścianie bocznej — nie naklejką na ekranie.
+     Dzięki temu przechyla się dokładnie tak jak bok: należy do tej samej bryły. */
+  /* ⚠ BEZ `backface-visibility:hidden` — ścianka obrócona o 90° bywa widziana od tyłu
+     i przeglądarka wycina ją całkowicie. To dlatego znikał pojedynczy przycisk na
+     krawędzi zwróconej do patrzącego, choć cały czas był w kodzie. */
+  .dl-przycisk{position:absolute;width:var(--glab);border-radius:2px;
+    background:linear-gradient(90deg,#454e4a 0%,#8e9992 18%,#dfe7e3 46%,#9aa59e 74%,#4b544f 100%);
+    box-shadow:0 0 0 1px rgba(10,14,12,.75), inset 0 1px 0 rgba(255,255,255,.55),
+               inset 0 -1px 0 rgba(0,0,0,.45)}
+  /* `translateZ` PO obrocie przesuwa wzdłuż normalnej ścianki, czyli wysuwa przycisk
+     PROSTOPADLE z boku — tak jak w prawdziwym telefonie. Przesunięcie przed obrotem
+     (`left:-2px`) odsuwało go w bok ekranu i robiła się szczelina. */
+  /* ⚠ Przycisk MUSI minimalnie wystawać poza obrys (`-2px`), bo rant zbudowany z warstw
+     jest bryłą pełną — płaszczyzna postawiona równo z krawędzią chowa się w niej
+     i znika (sprawdzone: przy 0 px nie widać nic). Wysunięcie robimy PRZED obrotem,
+     bo `translateZ` po obrocie ląduje wewnątrz tej samej bryły. */
+  .dl-pw{right:-4px;top:340px;height:156px;transform-origin:right center;transform:rotateY(-90deg)}
+  .dl-mute{left:-4px;top:232px;height:49px;transform-origin:left center;transform:rotateY(90deg)}
+  .dl-v1{left:-4px;top:312px;height:100px;transform-origin:left center;transform:rotateY(90deg)}
+  .dl-v2{left:-4px;top:432px;height:100px;transform-origin:left center;transform:rotateY(90deg)}
   .dl-tor{display:flex;height:100%;width:100%;
     transition:transform .55s cubic-bezier(.62,.03,.2,1)}
   .dl-tor.dl-ciagne{transition:none}
@@ -1046,14 +1121,14 @@
   .dl-foto img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;
     -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 96%);
     mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 96%)}
-  .dl-tresc{position:relative;z-index:2;flex:1;margin-top:-22%;padding:0 22px 26px;
+  .dl-tresc{position:relative;z-index:2;flex:1;margin-top:-22%;padding:0 44px 51px;
     display:flex;flex-direction:column;justify-content:flex-end}
   /* limonkowa kreska nad hasłem — ten sam znak co przy wyliczeniach na karcie planu,
      spina ekran w jedną kompozycję zamiast dzielić go na pół */
-  .dl-tresc h3::before{content:"";display:block;width:26px;height:2px;background:var(--lime);
-    margin-bottom:12px;border-radius:2px}
-  .dl-tresc h3{font-size:1.12rem;line-height:1.3;color:#fff;margin-bottom:9px;text-wrap:balance}
-  .dl-tresc p{font-size:.88rem;line-height:1.55;color:#B9C4BD}
+  .dl-tresc h3::before{content:"";display:block;width:51px;height:4px;background:var(--lime);
+    margin-bottom:24px;border-radius:3px}
+  .dl-tresc h3{font-size:2.24rem;line-height:1.3;color:#fff;margin-bottom:19px;text-wrap:balance}
+  .dl-tresc p{font-size:1.76rem;line-height:1.55;color:#B9C4BD}
   /* kropki i podpis — ten sam język co pod karuzelą planów */
   .dl-kropki{display:flex;justify-content:center;gap:10px;margin-top:26px}
   .dl-kropki button{width:9px;height:9px;padding:0;border:0;border-radius:50%;cursor:pointer;
@@ -2327,35 +2402,76 @@
     const dlN = dlTor.children.length;
     let dlIdx = 0;
 
-    /* metaliczny bok — te same liczby co przy telefonie poziomym */
-    const WARSTW = 36, GLEB = 40;
+    /* Metaliczny rant. CIEŃSZY niż poprzednio (było 62 px — telefon wyglądał na gruby),
+       ale JAŚNIEJSZY: rant ma świecić tak samo jak ramka od przodu, więc warstwy trzymają
+       wysoką jasność zamiast gasnąć w głąb. Liczba musi się zgadzać z `--glab` w stylach. */
+    const WARSTW = 80, GLEB = 68;
     for (let i = 1; i <= WARSTW; i++) {
       const w = document.createElement('span');
       w.className = 'dl-ext';
       w.style.transform = `translateZ(${(-GLEB * i / WARSTW).toFixed(2)}px)`;
       const s = i / WARSTW;
       const polysk = Math.exp(-Math.pow((s - 0.07) / 0.15, 2));
-      const Lg = (12 + 44 * polysk * (1 - s * 0.5)).toFixed(1);
-      const Ld = (4 + 18 * polysk * (1 - s * 0.6)).toFixed(1);
-      w.style.background = `linear-gradient(150deg,hsl(150 9% ${Lg}%) 0%,hsl(158 16% ${Ld}%) 100%)`;
+      /* Rant ma być JASNY na całej głębokości (polecenie Tomka 2026-08-08: „boczek też
+         jasny, jak rant od przodu"). Wysoka podstawa + delikatny błysk przy krawędzi,
+         zamiast gwałtownego ciemnienia w głąb. */
+      const Lg = (46 + 26 * polysk - s * 12).toFixed(1);
+      const Ld = (30 + 16 * polysk - s * 10).toFixed(1);
+      w.style.background = `linear-gradient(150deg,hsl(150 5% ${Lg}%) 0%,hsl(154 7% ${Ld}%) 100%)`;
       dlBody.insertBefore(w, dlBody.firstChild);
     }
+
+    /* Ścianki: prawa, lewa i dolna. Przyciski są DZIEĆMI ścianek, więc pochylają się
+       razem z nimi — bez tego leżały na płaszczyźnie ekranu i „odklejały się" od boku. */
+    const scianka = (klasa, dzieci = []) => {
+      const s = document.createElement('span');
+      s.className = 'dl-scianka ' + klasa;
+      dzieci.forEach(d => s.appendChild(d));
+      dlBody.appendChild(s);
+      return s;
+    };
+    const przycisk = klasa => {
+      const b = document.createElement('span');
+      b.className = 'dl-przycisk ' + klasa;
+      return b;
+    };
+    /* przyciski są własnymi płaszczyznami w ścianie bocznej — wprost na bryle */
+    ['dl-pw', 'dl-mute', 'dl-v1', 'dl-v2'].forEach(k => dlBody.appendChild(przycisk(k)));
+
+    const usb = document.createElement('span'); usb.className = 'dl-usb';
+    const siatka = () => {
+      const g = document.createElement('span'); g.className = 'dl-dziurki';
+      for (let i = 0; i < 5; i++) g.appendChild(document.createElement('i'));
+      return g;
+    };
+    scianka('dl-scianka-d', [siatka(), usb, siatka()]);
 
     /* skala pod szerokość i wysokość okna — telefon ma 300×610, a sekcja bywa przypięta
        na 100vh, więc bez tego na niskim laptopie wychodziłby poza ekran */
     const dlScena = dlTelefon.parentElement;
     let dlx = 0, dly = 0, dlSkala = 1;
+    /* Model jest budowany w DUŻEJ skali (420×854) i dopiero zmniejszany do ekranu —
+       dzięki temu przyciski, gniazdo i faza liczone są z większej liczby pikseli
+       i nie schodzą poniżej jednego piksela (polecenie Tomka 2026-08-08). */
+    const BAZA_W = 600, BAZA_H = 1220;
     const dlPrzelicz = () => {
-      const zSzer = (dlScena.clientWidth - 24) / 300;
-      const zWys = (window.innerHeight - 300) / 610;
-      dlSkala = Math.max(0.62, Math.min(1, zSzer, zWys));
+      const zSzer = (dlScena.clientWidth - 24) / BAZA_W;
+      const zWys = (window.innerHeight - 300) / BAZA_H;
+      dlSkala = Math.max(0.30, Math.min(1, zSzer, zWys));
     };
     const dlStosuj = () => {
-      const ry = -6 + dlx * 12, rx = 4 - dly * 8;
+      /* Obrót w stronę wybraną przez Tomka (2026-08-08): widać ścianę z trzema
+         przyciskami, a z przeciwnej krawędzi wystaje końcówka pojedynczego.
+         Oba boki są widoczne dopiero od czasu usunięcia `backface-visibility:hidden`
+         z przycisków — wcześniej ten po drugiej stronie był wycinany. */
+      /* Mocniejszy odchył w obu osiach — polecenie Tomka 2026-08-12: dolny narożnik
+         po prawej ma pokazywać więcej ścianki bocznej. `rx` odsłania dolną krawędź,
+         `ry` boczną; przy 7°/13° narożnik czytał się jako płaskie ścięcie. */
+      const ry = -17 + dlx * 12, rx = 10 - dly * 8;
       dlTelefon.style.transform =
         `scale(${dlSkala.toFixed(3)}) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`;
       /* odejmujemy luz, który zostaje pod zmniejszonym telefonem (patrz komentarz w stylach) */
-      dlTelefon.style.marginBottom = `${-Math.round(610 * (1 - dlSkala))}px`;
+      dlTelefon.style.marginBottom = `${-Math.round(BAZA_H * (1 - dlSkala))}px`;
     };
     dlPrzelicz(); dlStosuj();
     window.addEventListener('resize', () => { dlPrzelicz(); dlStosuj(); });
