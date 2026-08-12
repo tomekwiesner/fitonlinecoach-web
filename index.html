@@ -1026,20 +1026,20 @@
   /* Obudowa „tytan z fazą" (wybór Tomka 2026-08-08, wariant B z trzech pokazanych).
      Efekt drogiego sprzętu bierze się z JEDNEGO detalu — jasnej fazy przy krawędzi
      ekranu — a nie z rozjaśnienia całej bryły. */
-  .dl-body{position:relative;width:600px;height:1220px;border-radius:88px;
+  .dl-body{position:relative;width:420px;height:854px;border-radius:62px;
     background:linear-gradient(150deg,#5a615c 0%,#2f3733 52%,#1b211e 100%);
     transform-style:preserve-3d;box-shadow:0 40px 90px -30px rgba(0,0,0,.95)}
   /* warstwy boku dokłada skrypt — ten sam zabieg co w telefonie poziomym */
-  .dl-ext{position:absolute;inset:0;border-radius:88px}
+  .dl-ext{position:absolute;inset:0;border-radius:62px}
   /* faza: jasna nitka tuż przy ekranie + ciemny rowek zaraz za nią */
-  .dl-body::after{content:"";position:absolute;inset:0;border-radius:88px;pointer-events:none;
-    box-shadow:inset 0 0 0 3px rgba(236,246,240,.55), inset 0 0 0 6px rgba(20,26,23,.9);z-index:4}
-  .dl-notch{position:absolute;left:50%;top:21px;transform:translateX(-50%) translateZ(3px);
-    width:172px;height:14px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
+  .dl-body::after{content:"";position:absolute;inset:0;border-radius:62px;pointer-events:none;
+    box-shadow:inset 0 0 0 2px rgba(236,246,240,.55), inset 0 0 0 4px rgba(20,26,23,.9);z-index:4}
+  .dl-notch{position:absolute;left:50%;top:15px;transform:translateX(-50%) translateZ(2px);
+    width:120px;height:10px;border-radius:99px;background:rgba(0,0,0,.55);z-index:3}
   /* najcieńsza ramka, jaką da się zrobić bez kolizji z zaokrągleniem rogów
      (polecenie Tomka: było 11 px, potem 8, ostatecznie 6) */
-  .dl-ekran{position:absolute;inset:11px;border-radius:76px;overflow:hidden;background:#0b0f0d;
-    box-shadow:inset 0 0 0 4px #05080660;transform:translateZ(1px);z-index:2}
+  .dl-ekran{position:absolute;inset:8px;border-radius:53px;overflow:hidden;background:#0b0f0d;
+    box-shadow:inset 0 0 0 3px #05080660;transform:translateZ(1px);z-index:2}
   /* przyciski boczne — włącznik po prawej, cisza i głośność po lewej.
      `translateZ` wsuwa je w bok obudowy, więc pochylają się razem z telefonem. */
   /* Przycisk boczny — nie płaski pasek, tylko frezowany element:
@@ -1052,7 +1052,7 @@
      obraca się razem z bryłą, bo należy do tej samej przestrzeni 3D.
      `--glab` trzyma głębokość w jednym miejscu — zmiana grubości telefonu to jedna liczba
      (skrypt czyta ją i buduje z niej warstwy rantu). */
-  .dl-body{--glab:68px}
+  .dl-body{--glab:48px}
   /* ⚠ DWIE PUŁAPKI, obie złapane na zrzutach:
      (1) ZNAK OBROTU — `rotateY(θ)` przenosi lokalne +X w −Z. Element rozciągający się
          W LEWO od swojej krawędzi potrzebuje −90°, żeby pójść W GŁĄB; przy +90° wychodzi
@@ -1072,17 +1072,17 @@
      końce ścianki wypadały DOKŁADNIE w miejscu, gdzie obudowa zaczyna się zakrzywiać —
      i zawisały pod nią tępym ścięciem. Odsuwamy je głębiej (130 px), czyli w prostą
      część krawędzi, i wygaszamy końce maską, żeby ścianka nie kończyła się kreską. */
-  .dl-scianka-d{left:130px;right:130px;bottom:-2px;height:var(--glab);
+  .dl-scianka-d{left:92px;right:92px;bottom:-2px;height:var(--glab);
     transform-origin:center bottom;transform:rotateX(90deg);
     background:linear-gradient(180deg,#b6c1ba 0%,#8d988f 45%,#616b66 100%);
-    display:flex;align-items:center;justify-content:center;gap:48px;border-radius:7px;
+    display:flex;align-items:center;justify-content:center;gap:34px;border-radius:5px;
     -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);
     mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}
   /* gniazdo ładowania + siatki mikrofonu i głośnika */
-  .dl-usb{width:68px;height:14px;border-radius:99px;background:#111613;
+  .dl-usb{width:48px;height:10px;border-radius:99px;background:#111613;
     box-shadow:inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.28)}
-  .dl-dziurki{display:flex;gap:8px}
-  .dl-dziurki i{width:6px;height:6px;border-radius:50%;background:#161c18;
+  .dl-dziurki{display:flex;gap:6px}
+  .dl-dziurki i{width:4px;height:4px;border-radius:50%;background:#161c18;
     box-shadow:inset 0 1px 1px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.22)}
 
   /* Przyciski LEŻĄ NA ŚCIANCE — są jej dziećmi, więc dziedziczą jej obrót.
@@ -1105,10 +1105,10 @@
      jest bryłą pełną — płaszczyzna postawiona równo z krawędzią chowa się w niej
      i znika (sprawdzone: przy 0 px nie widać nic). Wysunięcie robimy PRZED obrotem,
      bo `translateZ` po obrocie ląduje wewnątrz tej samej bryły. */
-  .dl-pw{right:-4px;top:340px;height:156px;transform-origin:right center;transform:rotateY(-90deg)}
-  .dl-mute{left:-4px;top:232px;height:49px;transform-origin:left center;transform:rotateY(90deg)}
-  .dl-v1{left:-4px;top:312px;height:100px;transform-origin:left center;transform:rotateY(90deg)}
-  .dl-v2{left:-4px;top:432px;height:100px;transform-origin:left center;transform:rotateY(90deg)}
+  .dl-pw{right:-3px;top:238px;height:109px;transform-origin:right center;transform:rotateY(-90deg)}
+  .dl-mute{left:-3px;top:162px;height:34px;transform-origin:left center;transform:rotateY(90deg)}
+  .dl-v1{left:-3px;top:218px;height:70px;transform-origin:left center;transform:rotateY(90deg)}
+  .dl-v2{left:-3px;top:302px;height:70px;transform-origin:left center;transform:rotateY(90deg)}
   .dl-tor{display:flex;height:100%;width:100%;
     transition:transform .55s cubic-bezier(.62,.03,.2,1)}
   .dl-tor.dl-ciagne{transition:none}
@@ -1121,14 +1121,14 @@
   .dl-foto img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;
     -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 96%);
     mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 96%)}
-  .dl-tresc{position:relative;z-index:2;flex:1;margin-top:-22%;padding:0 44px 51px;
+  .dl-tresc{position:relative;z-index:2;flex:1;margin-top:-22%;padding:0 31px 36px;
     display:flex;flex-direction:column;justify-content:flex-end}
   /* limonkowa kreska nad hasłem — ten sam znak co przy wyliczeniach na karcie planu,
      spina ekran w jedną kompozycję zamiast dzielić go na pół */
-  .dl-tresc h3::before{content:"";display:block;width:51px;height:4px;background:var(--lime);
-    margin-bottom:24px;border-radius:3px}
-  .dl-tresc h3{font-size:2.24rem;line-height:1.3;color:#fff;margin-bottom:19px;text-wrap:balance}
-  .dl-tresc p{font-size:1.76rem;line-height:1.55;color:#B9C4BD}
+  .dl-tresc h3::before{content:"";display:block;width:36px;height:3px;background:var(--lime);
+    margin-bottom:17px;border-radius:2px}
+  .dl-tresc h3{font-size:1.57rem;line-height:1.3;color:#fff;margin-bottom:13px;text-wrap:balance}
+  .dl-tresc p{font-size:1.23rem;line-height:1.55;color:#B9C4BD}
   /* kropki i podpis — ten sam język co pod karuzelą planów */
   .dl-kropki{display:flex;justify-content:center;gap:10px;margin-top:26px}
   .dl-kropki button{width:9px;height:9px;padding:0;border:0;border-radius:50%;cursor:pointer;
@@ -2371,7 +2371,10 @@
   /* Ekstruzja korpusu telefonu: kilkanaście zaokrąglonych warstw krok po kroku w głąb daje
      gładką ściankę boczną (bez uskoków na narożnikach, jakie robiły płaskie ścianki). */
   if (hpBody) {
-    const WARSTW = 40, GLEB = 46;                     /* grubszy telefon (głębiej) + więcej warstw = gładki bok */
+    /* 18 warstw zamiast 40 — każda warstwa to osobna tekstura w pamięci karty,
+       a przy tej głębi i tak wypada poniżej piksela na warstwę (odchudzenie 12.08,
+       strona wywalała przeglądarkę na telefonie) */
+    const WARSTW = 18, GLEB = 46;
     for (let i = 1; i <= WARSTW; i++) {
       const w = document.createElement('span');
       w.className = 'hp-ext';
@@ -2405,7 +2408,11 @@
     /* Metaliczny rant. CIEŃSZY niż poprzednio (było 62 px — telefon wyglądał na gruby),
        ale JAŚNIEJSZY: rant ma świecić tak samo jak ramka od przodu, więc warstwy trzymają
        wysoką jasność zamiast gasnąć w głąb. Liczba musi się zgadzać z `--glab` w stylach. */
-    const WARSTW = 80, GLEB = 68;
+    /* 24 warstwy, nie 80: przy obrocie 17° glebia 48 px rzutuje sie na ~14 px ekranu,
+       wiec 24 warstwy to nadal ponizej piksela na warstwe — a KAZDA warstwa to osobna
+       tekstura w pamieci karty. 80 warstw x pelny rozmiar modelu zabijalo przegladarke
+       na telefonie (zglosil Tomek 2026-08-12). */
+    const WARSTW = 24, GLEB = 48;
     for (let i = 1; i <= WARSTW; i++) {
       const w = document.createElement('span');
       w.className = 'dl-ext';
@@ -2453,11 +2460,11 @@
     /* Model jest budowany w DUŻEJ skali (420×854) i dopiero zmniejszany do ekranu —
        dzięki temu przyciski, gniazdo i faza liczone są z większej liczby pikseli
        i nie schodzą poniżej jednego piksela (polecenie Tomka 2026-08-08). */
-    const BAZA_W = 600, BAZA_H = 1220;
+    const BAZA_W = 420, BAZA_H = 854;
     const dlPrzelicz = () => {
       const zSzer = (dlScena.clientWidth - 24) / BAZA_W;
       const zWys = (window.innerHeight - 300) / BAZA_H;
-      dlSkala = Math.max(0.30, Math.min(1, zSzer, zWys));
+      dlSkala = Math.max(0.42, Math.min(1, zSzer, zWys));
     };
     const dlStosuj = () => {
       /* Obrót w stronę wybraną przez Tomka (2026-08-08): widać ścianę z trzema
@@ -2531,7 +2538,8 @@
     const vpBody = vphone.querySelector('.vp-body');
     /* ekstruzja boku — identyczny metaliczny styl jak telefon w hero */
     if (vpBody) {
-      const WARSTW = 36, GLEB = 40;
+      /* 18 zamiast 36 — patrz komentarz przy telefonie w hero */
+      const WARSTW = 18, GLEB = 40;
       for (let i = 1; i <= WARSTW; i++) {
         const w = document.createElement('span');
         w.className = 'vp-ext';
