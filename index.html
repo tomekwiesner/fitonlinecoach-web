@@ -242,10 +242,12 @@
   .burger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
 
   /* ---------- hero ---------- */
-  /* Hero przypięte na czas dokowania telefonu (desktop): wysoki „stack" daje zapas scrolla,
-     a wewnętrzny „pin" jest lepki — widok stoi na hero, dopóki telefon się nie zadokuje. */
-  .hero-stack{position:relative;height:200vh}
-  .hero-pin{position:sticky;top:0;height:100vh;overflow:hidden}
+  /* Hero przewija się NORMALNIE. Wcześniej „stack" miał 200vh, a wnętrze było lepkie,
+     więc pierwszy ekran przewijania szedł w całości na animację — widok stał w miejscu
+     i to właśnie czytało się jako „scroll nie przesuwa ekranu" (zgłosił Tomek 2026-08-12).
+     Telefon dokuje się teraz w rytm zwykłego przewijania i odjeżdża w górę razem z hero. */
+  .hero-stack{position:relative}
+  .hero-pin{position:relative;overflow:hidden}
   .hero{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;overflow:hidden}
   .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
   .hero::before{content:"";position:absolute;inset:0;z-index:1;
@@ -1026,6 +1028,14 @@
     transform-style:preserve-3d;box-shadow:0 40px 90px -30px rgba(0,0,0,.95)}
   /* warstwy boku dokłada skrypt — ten sam zabieg co w telefonie poziomym */
   .dl-ext{position:absolute;inset:0;border-radius:var(--r)}
+  /* POWIĘKSZANIE PALCAMI: przeglądarka rysuje KAŻDĄ warstwę rantu od nowa w wyższej
+     rozdzielczości, a koszt rośnie z KWADRATEM powiększenia — 60 warstw wielkości
+     całego telefonu potrafi zająć setki MB i wywalić stronę (zgłosił Tomek 2026-08-12).
+     Na czas gestu chowamy grubość: układ się nie rusza, bo wszystko to `absolute`,
+     a przez lupę i tak nikt nie ogląda ścianki bocznej. Po zejściu do skali 1 wraca. */
+  html.zoom-on .dl-ext,
+  html.zoom-on .dl-przycisk,
+  html.zoom-on .dl-scianka{display:none}
   /* faza: jasna nitka tuż przy ekranie + ciemny rowek zaraz za nią */
   .dl-body::after{content:"";position:absolute;inset:0;border-radius:var(--r);pointer-events:none;
     box-shadow:inset 0 0 0 2px rgba(236,246,240,.55), inset 0 0 0 4px rgba(20,26,23,.9);z-index:4}
@@ -1088,8 +1098,12 @@
   /* ⚠ BEZ `backface-visibility:hidden` — ścianka obrócona o 90° bywa widziana od tyłu
      i przeglądarka wycina ją całkowicie. To dlatego znikał pojedynczy przycisk na
      krawędzi zwróconej do patrzącego, choć cały czas był w kodzie. */
+  /* `--pgrad` = oś połysku. Musi biec W POPRZEK grubości przycisku, a `90deg` liczy się
+     zawsze po szerokości elementu. W pionie szerokość TO grubość, więc 90° jest dobre;
+     w poziomie grubością jest wysokość, więc tam oś trzeba obrócić — inaczej jasny stop
+     rozlewa się na całą długość guzika i robi z niego białą plamę (artefakt z 12.08). */
   .dl-przycisk{position:absolute;width:var(--glab);border-radius:2px;
-    background:linear-gradient(90deg,#454e4a 0%,#8e9992 18%,#dfe7e3 46%,#9aa59e 74%,#4b544f 100%);
+    background:linear-gradient(var(--pgrad,90deg),#454e4a 0%,#8e9992 18%,#dfe7e3 46%,#9aa59e 74%,#4b544f 100%);
     box-shadow:0 0 0 1px rgba(10,14,12,.75), inset 0 1px 0 rgba(255,255,255,.55),
                inset 0 -1px 0 rgba(0,0,0,.45)}
   /* `translateZ` PO obrocie przesuwa wzdłuż normalnej ścianki, czyli wysuwa przycisk
@@ -1108,13 +1122,26 @@
   .dl-v2{left:-3px;top:35.4%;height:8.2%;transform-origin:left center;transform:rotateY(90deg)}
   /* Telefon POZIOMY: jego bok to dolna krawedz kadru, wiec przyciski ida w rzad
      na dole i obracaja sie wokol osi poziomej. */
-  .fon-poziomo .dl-przycisk{width:auto;height:var(--glab);left:auto;right:auto;top:auto;bottom:-3px;
-    transform-origin:center bottom;transform:rotateX(90deg)}
+  /* Telefon POZIOMY leży obrócony w lewo (wcięcie jest na lewej krawędzi, a w pionie
+     jest u góry). Z tego wynika, gdzie są guziki: prawy bok pionu (włącznik) wypada
+     NA GÓRZE, lewy bok (cisza + głośność) NA DOLE, a spód z USB — na prawej krawędzi.
+     Wcześniej wszystkie cztery siedziały na dolnej krawędzi i NACHODZIŁY NA SIEBIE
+     (19–23 %, 25,5–33,7 %, 27,9–40,7 %, 35,4–43,6 %) — trzy współpłaszczyznowe
+     prostokąty w przestrzeni 3D nie mają ustalonej kolejności, więc migotały przy
+     ruchu i pokazywały biały pasek. To był artefakt zgłoszony 2026-08-12. */
+  /* Wszystkie guziki są na DALSZEJ krawędzi — telefon leży bokiem z przyciskami
+     odwróconym od patrzącego, więc obudowa je zasłania, dokładnie jak w prawdziwym
+     telefonie położonym w tę stronę. Na bliższej krawędzi wychodziły spod obrysu
+     jako jasne odpryski (porównanie dwóch wariantów, 2026-08-12).
+     `--pgrad:0deg`, bo przy zawiasie u góry kierunek głębokości jest odwrotny. */
+  .fon-poziomo .dl-przycisk{--pgrad:0deg;
+    width:auto;height:var(--glab);left:auto;right:auto;bottom:auto;top:-1px;
+    transform-origin:center top;transform:rotateX(-90deg)}
   .fon-poziomo .dl-pw{left:27.9%;width:12.8%}
   .fon-poziomo .dl-mute{left:19%;width:4%}
   .fon-poziomo .dl-v1{left:25.5%;width:8.2%}
   .fon-poziomo .dl-v2{left:35.4%;width:8.2%}
-  .fon-poziomo .dl-scianka-d{display:none}   /* dolna krawedz zajeta przez przyciski */
+  .fon-poziomo .dl-scianka-d{display:none}   /* spód z USB wypada na prawej krawędzi, poza kadrem */
   .fon-poziomo .dl-notch{left:calc(var(--ramka) + 7px);top:50%;
     transform:translateY(-50%) translateZ(2px);width:10px;height:29%}
   .dl-tor{display:flex;height:100%;width:100%;
@@ -2379,6 +2406,10 @@
      to osobna tekstura w pamieci karty, wiec to jedyna kosztowna liczba w modelu. */
   function zbudujTelefon(body, warstw, poziomo) {
     if (!body || body.dataset.model) return;
+    /* Na ekranie dotykowym telefon jest zmniejszony do ok. połowy, więc głębia rzutuje
+       się na kilka pikseli — 8 warstw to nadal ponad warstwa na piksel, a pamięci
+       tekstur schodzi trzykrotnie. To bufor bezpieczeństwa przed powiększaniem. */
+    if (matchMedia('(pointer:coarse)').matches) warstw = Math.min(warstw, 8);
     body.dataset.model = '1';
     if (poziomo) body.classList.add('fon-poziomo');
 
@@ -2424,10 +2455,16 @@
     body.appendChild(scianka);
   }
 
+  /* Zdarzenie leci JESZCZE W TRAKCIE gestu, a kosztowne przerysowanie przeglądarka
+     robi dopiero po nim (dlatego obraz podczas rozsuwania jest rozmyty) — zdążamy
+     zdjąć warstwy, zanim trzeba je narysować w nowej skali. */
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', () => {
+    document.documentElement.classList.toggle('zoom-on', window.visualViewport.scale > 1.05);
+  });
+
   const dlTelefon = document.getElementById('dlTelefon');
   const dlTor = document.getElementById('dlTor');
   if (dlTelefon && dlTor) {
-    const dlRedukcja = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     const dlBody = dlTelefon.querySelector('.dl-body');
     const dlKropki = [...document.querySelectorAll('#dlKropki button')];
     const dlN = dlTor.children.length;
@@ -2445,7 +2482,7 @@
     /* skala pod szerokość i wysokość okna — telefon ma 300×610, a sekcja bywa przypięta
        na 100vh, więc bez tego na niskim laptopie wychodziłby poza ekran */
     const dlScena = dlTelefon.parentElement;
-    let dlx = 0, dly = 0, dlSkala = 1;
+    let dlSkala = 1;
     /* Model jest budowany w DUŻEJ skali (420×854) i dopiero zmniejszany do ekranu —
        dzięki temu przyciski, gniazdo i faza liczone są z większej liczby pikseli
        i nie schodzą poniżej jednego piksela (polecenie Tomka 2026-08-08). */
@@ -2460,12 +2497,12 @@
          przyciskami, a z przeciwnej krawędzi wystaje końcówka pojedynczego.
          Oba boki są widoczne dopiero od czasu usunięcia `backface-visibility:hidden`
          z przycisków — wcześniej ten po drugiej stronie był wycinany. */
-      /* Mocniejszy odchył w obu osiach — polecenie Tomka 2026-08-12: dolny narożnik
-         po prawej ma pokazywać więcej ścianki bocznej. `rx` odsłania dolną krawędź,
-         `ry` boczną; przy 7°/13° narożnik czytał się jako płaskie ścięcie. */
-      const ry = -17 + dlx * 12, rx = 10 - dly * 8;
+      /* Kąt STAŁY — telefon nie obraca się już za kursorem (polecenie Tomka 2026-08-12).
+         Liczby są dokładnie tym, co wcześniej było kątem spoczynkowym: `rx` odsłania
+         dolną krawędź, `ry` boczną; przy mniejszych wartościach dolny narożnik czytał
+         się jako płaskie ścięcie, a nie jako grubość telefonu. */
       dlTelefon.style.transform =
-        `scale(${dlSkala.toFixed(3)}) rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`;
+        `scale(${dlSkala.toFixed(3)}) rotateY(-17deg) rotateX(10deg)`;
       /* odejmujemy luz, który zostaje pod zmniejszonym telefonem (patrz komentarz w stylach) */
       dlTelefon.style.marginBottom = `${-Math.round(BAZA_H * (1 - dlSkala))}px`;
     };
@@ -2483,25 +2520,45 @@
     window.addEventListener('resize', () => { dlPrzelicz(); dlStosuj(); dlStrzalki(); });
     /* po dojściu fontów obrys telefonu bywa inny — ustawiamy strzałki jeszcze raz */
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(dlStrzalki);
-    if (!dlRedukcja && matchMedia('(hover:hover)').matches) {
-      dlTelefon.addEventListener('mousemove', ev => {
-        const r = dlTelefon.getBoundingClientRect();
-        dlx = (ev.clientX - r.left) / r.width - 0.5;
-        dly = (ev.clientY - r.top) / r.height - 0.5;
-        dlStosuj();
-      });
-      dlTelefon.addEventListener('mouseleave', () => { dlx = 0; dly = 0; dlStosuj(); });
-    }
+    /* ===== KARUZELA ZAPĘTLONA W OBIE STRONY =====
+       Wcześniej numer ekranu i pozycja taśmy to była jedna liczba, przycinana modulo
+       ZANIM ruszyła animacja — dlatego ruch z trzeciego ekranu „dalej" przejeżdżał
+       z powrotem przez ekrany 2 i 1 zamiast iść w tę samą stronę.
+       Teraz na taśmie stoją kopie skrajnych ekranów: [k3][1][2][3][k1]. Ruch idzie
+       ZAWSZE w stronę gestu, także za brzeg, a po dojechaniu na kopię przeskakujemy
+       bez animacji na bliźniaczy prawdziwy ekran — obraz jest ten sam, więc przeskoku
+       nie widać. Ten sam zabieg działa niżej na filmach w telefonie poziomym.
+       Kopiujemy EKRANY, nie bryłę 3D — warstw rantu dalej jest tyle samo. */
+    const dlKlon = el => { const k = el.cloneNode(true); k.setAttribute('aria-hidden', 'true'); return k; };
+    dlTor.insertBefore(dlKlon(dlTor.lastElementChild), dlTor.firstElementChild);
+    dlTor.appendChild(dlKlon(dlTor.children[1]));
+    /* pozycja na taśmie: 0 = kopia ostatniego, 1..dlN = prawdziwe, dlN+1 = kopia pierwszego */
+    let dlPoz = 1;
+    const dlUstaw = p => { dlPoz = p; dlTor.style.transform = `translateX(${-p * 100}%)`; };
+    const dlDomknij = () => {                    /* stoimy na kopii? cicho wróć na bliźniaka */
+      if (dlPoz >= 1 && dlPoz <= dlN) return;
+      dlTor.classList.add('dl-ciagne');          /* ta sama klasa co przy przesuwaniu palcem */
+      dlUstaw(dlIdx + 1);
+      void dlTor.offsetWidth;                    /* wymuszony przeliczenie: przeskok bez animacji */
+      dlTor.classList.remove('dl-ciagne');
+    };
+    dlTor.addEventListener('transitionend', e => {
+      if (e.target === dlTor && e.propertyName === 'transform') dlDomknij();
+    });
+    dlUstaw(1);                                  /* start na pierwszym prawdziwym ekranie */
 
-    const dlPokaz = i => {
-      dlIdx = (i + dlN) % dlN;
-      dlTor.style.transform = `translateX(${-dlIdx * 100}%)`;
+    /* `krok` (±1) = ruch w stronę gestu, wolno wyjechać na kopię;
+       bez `krok` = skok wprost pod numer ekranu (kropki). */
+    const dlPokaz = (i, krok) => {
+      dlDomknij();
+      dlIdx = ((krok ? dlIdx + krok : i) + dlN) % dlN;
+      dlUstaw(krok ? dlPoz + krok : dlIdx + 1);
       dlKropki.forEach((k, n) => k.classList.toggle('on', n === dlIdx));
     };
     dlKropki.forEach(k => k.addEventListener('click', () => dlPokaz(+k.dataset.ekran)));
     const nl = document.getElementById('dlNavL'), nr = document.getElementById('dlNavR');
-    if (nl) nl.addEventListener('click', () => dlPokaz(dlIdx - 1));
-    if (nr) nr.addEventListener('click', () => dlPokaz(dlIdx + 1));
+    if (nl) nl.addEventListener('click', () => dlPokaz(0, -1));
+    if (nr) nr.addEventListener('click', () => dlPokaz(0, 1));
 
     /* przesuwanie palcem i myszą. `touch-action:pan-y` na ekranie zostawia pionowe
        przewijanie strony, a przechwytuje poziome — bez tego na telefonie nie dałoby się
@@ -2518,13 +2575,13 @@
       if (x0 === null) return;
       dx = e.clientX - x0;
       const proc = dx / dlEkran.clientWidth * 100;
-      dlTor.style.transform = `translateX(${-dlIdx * 100 + proc}%)`;
+      dlTor.style.transform = `translateX(${-dlPoz * 100 + proc}%)`;
     });
     const dlKoniec = () => {
       if (x0 === null) return;
       dlTor.classList.remove('dl-ciagne');
       /* próg 18% szerokości — mniejszy ruch to omsknięcie, nie zamiar zmiany ekranu */
-      if (Math.abs(dx) > dlEkran.clientWidth * 0.18) dlPokaz(dlIdx + (dx < 0 ? 1 : -1));
+      if (Math.abs(dx) > dlEkran.clientWidth * 0.18) dlPokaz(0, dx < 0 ? 1 : -1);
       else dlPokaz(dlIdx);
       x0 = null; dx = 0;
     };
@@ -2583,15 +2640,10 @@
   const heroStack = document.getElementById('heroStack');
   const tbWzor = document.querySelector('.tb-wzor');   /* topblok zadeklarowany wyżej */
   let dockProg = 0;   /* 0 = telefon duży na starcie, 1 = zadokowany za „rozumiesz." */
-  /* Postęp dokowania: na desktopie z przewinięcia przypiętego stacka (widok stoi na hero,
-     dopóki telefon się nie zadokuje); na mobile/redukcji — ze zwykłego scrolla. */
-  const dokProgFn = () => {
-    const vh = window.innerHeight;
-    if (stackMode() && heroStack && heroStack.offsetHeight > vh * 1.2) {
-      return (window.scrollY - heroStack.offsetTop) / Math.max(heroStack.offsetHeight - vh, 1);
-    }
-    return window.scrollY / (vh * 0.82);
-  };
+  /* Postęp dokowania liczony ze ZWYKŁEGO przewijania: telefon jest zadokowany po
+     przejechaniu 34 % wysokości okna — czyli na tyle wcześnie, żeby dało się go
+     zobaczyć w rogu, zanim hero wyjedzie w górę. To pokrętło — mniejsza liczba = szybszy dok. */
+  const dokProgFn = () => window.scrollY / (window.innerHeight * 0.34);
 
   /* Telefon 3D: na starcie duży, lekko z lewej od środka; przy przewijaniu maleje i dokuje
      się za słowem „rozumiesz.". Zwraca postęp dokowania (0..1) — steruje też talerzami. */
@@ -2608,16 +2660,12 @@
     if (!heroPhone || !hpBody || !heroEl || !slowoRozumiesz) return 0;
     const hr = heroEl.getBoundingClientRect();
     const ogr = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
-    /* Na desktopie postęp z przypiętego scrolla. Na MOBILE (brak przypięcia) telefon jest
-       OD RAZU zadokowany za napisami — p=1 — zamiast startować duży i zasłaniać nagłówek. */
-    const przypiete = stackMode() && heroStack && heroStack.offsetHeight > window.innerHeight * 1.2;
-    const pSurowy = force != null ? force : (przypiete ? ogr(dokProgFn(), 0, 1) : 1);
-    /* Dokowanie kończy się na 80% przewinięcia, ostatnie 20% to WYJŚCIE: telefon
-       zjeżdża w dół i gaśnie, żeby nie było go na kolejnym ekranie (polecenie Tomka
-       2026-08-12: „napis jedzie w górę, telefon musi jechać w dół i zniknąć"). */
-    const DOK_DO = 0.80;
-    const p = ogr(pSurowy / DOK_DO, 0, 1);
-    const wyjscie = przypiete ? ogr((pSurowy - DOK_DO) / (1 - DOK_DO), 0, 1) : 0;
+    /* Na desktopie postęp ze zwykłego przewijania. Na MOBILE telefon jest OD RAZU
+       zadokowany za napisami — p=1 — zamiast startować duży i zasłaniać nagłówek.
+       Telefonu nie gasimy: dokuje w rogu i wyjeżdża w górę razem z hero (decyzja Tomka
+       2026-08-12). Zjazd w dół i zniknięcie robi teraz telefon w sekcji „Dlaczego FOC". */
+    const plynne = stackMode();
+    const p = ogr(force != null ? force : (plynne ? dokProgFn() : 1), 0, 1);
     dockProg = p;
     const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;   /* ease-in-out */
     /* start: telefon prawie na całą wysokość hero, lekko w PRAWO od środka */
@@ -2630,7 +2678,7 @@
     let sDock = 0.46;
     let xDock = hr.width * 0.26;
     let yDock = hr.height * 0.10;
-    if (!przypiete) {
+    if (!plynne) {
       /* MOBILE: telefon zadokowany, lekko obrócony, w PRAWYM GÓRNYM rogu hero (najluźniejsze
          miejsce) i trochę mniejszy — żeby cała scena była czytelniejsza na małym ekranie. */
       sDock = 0.40;
@@ -2639,13 +2687,12 @@
     }
     const x = xStart + (xDock - xStart) * e;
     /* wyjście: zjazd w dół o pełną wysokość hero + wygaszenie */
-    const y = yStart + (yDock - yStart) * e + hr.height * 1.05 * wyjscie;
+    const y = yStart + (yDock - yStart) * e;
     const s = sStart + (sDock - sStart) * e;
-    heroPhone.style.opacity = (1 - wyjscie).toFixed(3);
     heroPhone.style.transform = `translate(-50%,-50%) translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${s.toFixed(3)})`;
     tiltY = -15 * (1 - e);
     tiltX = 4 * (1 - e);
-    if (!przypiete) { tiltY = -14; tiltX = 6; }   /* MOBILE: stały lekki obrót 3D — widać metaliczny bok */
+    if (!plynne) { tiltY = -14; tiltX = 6; }   /* MOBILE: stały lekki obrót 3D — widać metaliczny bok */
     stosujTelefon();
     /* Cień RZUCANY przez telefon na napis. Telefon jest Z PRZODU napisu przez większość
        dokowania i wtedy rzuca cień: z daleka szeroki i słaby, im bliżej — węższy i mocniejszy.
@@ -2688,7 +2735,7 @@
   const doorR = document.getElementById('doorR');
   const whyHead = document.getElementById('whyHead');
   const whyLayer = document.getElementById('whyLayer');
-  const whyCards = [...document.querySelectorAll('.why-content .card')];
+  const whyFon = document.querySelector('#whyLayer .dl-scena');
   const stepEls = [...document.querySelectorAll('[data-step]')];
   const stack2El = document.querySelector('.stack-about');
   const door2L = document.getElementById('door2L');
@@ -2796,7 +2843,7 @@
         tbWzor.style.opacity = (0.16 * f).toFixed(3);
       }
 
-      /* telefon 3D: maleje i dokuje się za „rozumiesz." (ustawia też dockProg dla talerzy) */
+      /* telefon 3D: maleje i dokuje się za „rozumiesz." */
       dokujTelefon();
 
       /* parallax względem środka ekranu */
@@ -2867,9 +2914,25 @@
         doorR.style.transform = `translateX(${e * 102}%)`;
         whyHead.style.transform = `translateY(${-e * 170}%)`;
         whyHead.style.opacity = Math.max(1 - e * 1.4, 0);
-        if (whyCards[0]) whyCards[0].style.transform = `translateX(${-e * 160}%) rotate(${-e * 6}deg)`;
-        if (whyCards[1]) { whyCards[1].style.transform = `translateY(${e * 90}%) scale(${1 - e * .2})`; whyCards[1].style.opacity = Math.max(1 - e * 1.5, 0); }
-        if (whyCards[2]) whyCards[2].style.transform = `translateX(${e * 160}%) rotate(${e * 6}deg)`;
+        /* Telefon JEDZIE W DÓŁ i znika, gdy kurtyna się otwiera — inaczej zostawał na
+           środku ekranu nad sekcją „Jak to działa" (zgłosił Tomek 2026-08-12). Trzy
+           kafelki, które animowały się tutaj wcześniej, zniknęły 8.08 razem z przebudową
+           sekcji na telefon 3D, ale skrypt dalej ich szukał — i nikt tego nie zauważył,
+           bo pusta lista nie rzuca błędu. Gaśnie SZYBCIEJ niż rozsuwają się bramy
+           (mnożnik 3.5 → telefonu nie ma już przy 29 % otwarcia), żeby nie prześwitywał
+           przez odsłoniętą treść. Styl czyścimy przy e=0, żeby wjazd w sekcję działał
+           jak dotąd (klasa .rv). Transform siedzi na SCENIE, nie na telefonie — ten
+           drugi jest co klatkę nadpisywany przez dlStosuj(). */
+        if (whyFon) {
+          const zn = Math.max(1 - e * 3.5, 0);
+          whyFon.style.transform = e ? `translateY(${(e * 34).toFixed(1)}vh)` : '';
+          whyFon.style.opacity = e ? zn.toFixed(3) : '';
+          /* Gdy telefon jest już niewidoczny, wyłączamy go z rysowania na dobre.
+             `opacity` poniżej 1 zmusza przeglądarkę do sklejania całej bryły 3D
+             (24 warstwy) w jedną powierzchnię przy KAŻDEJ klatce przewijania —
+             `visibility:hidden` zdejmuje ten koszt na całą resztę kurtyny. */
+          whyFon.style.visibility = zn === 0 ? 'hidden' : '';
+        }
         whyLayer.style.pointerEvents = e > .4 ? 'none' : '';
         /* kroki 1-2-3 zapalają się w rytmie rozsuwania kurtyny */
         stepEls[0] && stepEls[0].classList.toggle('active', e > .3);
