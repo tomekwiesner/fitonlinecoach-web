@@ -2682,6 +2682,10 @@
     const rx = tiltX - ptrY * 9;
     hpBody.style.transform = `rotateY(${ry.toFixed(1)}deg) rotateX(${rx.toFixed(1)}deg)`;
   };
+  /* Próg, po którym telefon chowa się ZA napis (i tym samym schodzi pod jego warstwę).
+     Jedna liczba dla wszystkiego, co od tego zależy — warstwa, cień na literach, cień
+     na tle. Rozjechanie tych progów było przyczyną błędu z 2026-08-13. */
+  const ZA_NAPISEM = 0.72;
   const dokujTelefon = (force) => {
     if (!heroPhone || !hpBody || !heroEl || !slowoRozumiesz) return 0;
     const hr = heroEl.getBoundingClientRect();
@@ -2728,8 +2732,15 @@
        dokowania i wtedy rzuca cień: z daleka szeroki i słaby, im bliżej — węższy i mocniejszy.
        Gdy pod koniec chowa się ZA napis (dok > 0.72), cień gaśnie. */
     if (hpCien) {
-      const przod = ogr((p - 0.10) / 0.55, 0, 1);    /* narasta, gdy telefon z przodu się zbliża */
-      const chowa = ogr((p - 0.76) / 0.18, 0, 1);    /* gaśnie dopiero pod sam koniec (chowa się za napis) */
+      /* Cień na literach MUSI zgasnąć do zera dokładnie w chwili, gdy telefon wchodzi
+         za napis (p = ZA_NAPISEM). Powód jest twardy: od tego momentu telefon ma niższą
+         warstwę niż cień, więc cień zacząłby się malować NA NIM — a że jest wielki
+         (983×411 px przy telefonie 173×352), zalewał go w całości. Tomek zgłosił to
+         2026-08-13 jako „telefon prawie cały znika w cieniu". Dlatego `chowa` kończy
+         się na ZA_NAPISEM, a nie później, a `przod` narasta odpowiednio szybciej,
+         żeby cień zdążył zrobić swoje, zanim zacznie gasnąć. */
+      const przod = ogr((p - 0.08) / 0.40, 0, 1);    /* narasta, gdy telefon z przodu się zbliża */
+      const chowa = ogr((p - 0.50) / (ZA_NAPISEM - 0.50), 0, 1);   /* = 1 dokładnie na ZA_NAPISEM */
       /* Cień coraz SZERSZY, im bliżej napisu — obejmuje CORAZ WIĘCEJ liter „rozumiesz.".
          Szerokość liczona OD SZEROKOŚCI SŁOWA (nie tylko od rozmiaru telefonu), żeby przy
          dokowaniu przykrywał większą część wyrazu. */
@@ -2743,13 +2754,15 @@
          literach (mocno); gdy schowa się za napis, nie znika — przechodzi POD napis
          i pada na tło, żeby telefon nie wyglądał, jakby był naklejony (polecenie
          Tomka 2026-08-13: „cień na tle również po zadokowaniu"). */
-      hpCien.style.opacity = (przod * (1 - chowa)).toFixed(2);
+      /* Bezpiecznik, nie ozdoba: gdy telefon jest za napisem, cienia nie ma ANI TROCHĘ.
+         Gdyby ktoś kiedyś przestroił krzywe wyżej, ta linia dalej broni telefonu. */
+      hpCien.style.opacity = (p >= ZA_NAPISEM ? 0 : przod * (1 - chowa)).toFixed(2);
     }
     /* Telefon zostaje NA WIERZCHU (przed napisem), rzucając cień; dopiero pod koniec
        dokowania chowa się za napis. NIE przyciemniamy przy tym samego telefonu —
        Tomek zobaczył to 2026-08-13 i odrzucił: ekran robił się mętny. Głębię niesie
        wyłącznie cień PADAJĄCY OBOK telefonu, nigdy nakładka na nim. */
-    const zaNapisem = p > 0.72;
+    const zaNapisem = p >= ZA_NAPISEM;
     heroPhone.classList.toggle('docked', zaNapisem);
     /* Cień na TLE jest przez cały czas — także po zadokowaniu, kiedy telefon stoi już
        w rogu. Bez niego wyglądał jak naklejony na tło (polecenie Tomka 2026-08-13). */
