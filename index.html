@@ -242,12 +242,15 @@
   .burger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
 
   /* ---------- hero ---------- */
-  /* Hero przewija się NORMALNIE. Wcześniej „stack" miał 200vh, a wnętrze było lepkie,
-     więc pierwszy ekran przewijania szedł w całości na animację — widok stał w miejscu
-     i to właśnie czytało się jako „scroll nie przesuwa ekranu" (zgłosił Tomek 2026-08-12).
-     Telefon dokuje się teraz w rytm zwykłego przewijania i odjeżdża w górę razem z hero. */
-  .hero-stack{position:relative}
-  .hero-pin{position:relative;overflow:hidden}
+  /* Hero stoi w miejscu DOKŁADNIE tak długo, ile trwa dokowanie telefonu, i ani chwili
+     dłużej (polecenie Tomka 2026-08-13: „najpierw strona stoi, telefon dokuje — potem
+     strona rusza"). „Stack" jest o 60vh wyższy niż okno i tyle właśnie wynosi zapas
+     przewijania na animację; skrypt rozciąga dokowanie na całą tę drogę, więc telefon
+     ląduje w rogu w tej samej chwili, w której lepkość puszcza i strona rusza.
+     Wcześniej zapas wynosił 100vh, a dokowanie kończyło się na 80 % — stąd martwy
+     kawałek przewijania na końcu. */
+  .hero-stack{position:relative;height:160vh}
+  .hero-pin{position:sticky;top:0;height:100vh;overflow:hidden}
   .hero{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;overflow:hidden}
   .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
   .hero::before{content:"";position:absolute;inset:0;z-index:1;
@@ -268,6 +271,14 @@
     will-change:transform;transition:transform .16s ease-out;
     box-shadow:0 0 46px 4px rgba(153,230,109,.30), 0 40px 90px -30px rgba(0,0,0,.95)}
   .fon-hero .dl-ekran img{width:100%;height:100%;object-fit:cover;object-position:top}
+  /* Cień, który wielkie litery „rozumiesz." rzucają NA telefon, gdy ten schowa się za
+     napis. Bez tego telefon leży za literami, ale wygląda, jakby nic nad nim nie stało —
+     a to właśnie ten cień mówi oku, co jest z przodu, a co z tyłu (polecenie Tomka
+     2026-08-13). Krycie ustawia skrypt w rytm chowania się telefonu. */
+  .hp-mrok{position:absolute;left:0;right:0;top:0;height:56%;
+    border-radius:var(--r) var(--r) 16px 16px;pointer-events:none;opacity:0;z-index:5;
+    transform:translateZ(3px);
+    background:linear-gradient(180deg,rgba(3,6,4,.80) 0%,rgba(3,6,4,.64) 44%,rgba(3,6,4,.18) 82%,rgba(3,6,4,0) 100%)}
   /* cień RZUCANY przez telefon na napis — nad napisem (z5), pod telefonem gdy jest z przodu */
   .hp-cien{position:absolute;left:50%;top:50%;z-index:5;pointer-events:none;opacity:0;border-radius:50%;
     background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.92) 0%,rgba(0,0,0,.6) 46%,rgba(0,0,0,0) 78%);
@@ -1569,6 +1580,7 @@
       <!-- grubość telefonu: warstwy ekstruzji w głąb (dodaje JS) dają gładki, zaokrąglony bok -->
       <span class="dl-notch"></span>
       <div class="dl-ekran"><img src="assets/screen_trening.jpg" alt=""></div>
+      <span class="hp-mrok"></span>
     </div>
   </div>
   <div class="wrap hero-content" id="heroContent">
@@ -2397,6 +2409,7 @@
   const heroPhone = document.getElementById('heroPhone');
   const hpBody = heroPhone ? heroPhone.querySelector('.dl-body') : null;
   const hpCien = document.getElementById('hpCien');
+  const hpMrok = heroPhone ? heroPhone.querySelector('.hp-mrok') : null;
   /* 18 warstw rantu — patrz komentarz przy telefonie w sekcji „Dlaczego". */
   zbudujTelefon(hpBody, 18);
 
@@ -2606,13 +2619,17 @@
     vpPrzelicz(); vpStosuj();
     window.addEventListener('resize', () => { vpPrzelicz(); vpStosuj(); });
     if (!reducedVP) {
-      vphone.addEventListener('mousemove', ev => {
-        const r = vphone.getBoundingClientRect();
+      /* Obrót prowadzi ruch myszy po CAŁEJ sekcji, nie tylko nad samym telefonem
+         (polecenie Tomka 2026-08-13). Odchylenie liczymy od środka sekcji, więc
+         telefon „patrzy" za kursorem także wtedy, gdy ten jest daleko od niego. */
+      const vpSekcja = vphone.closest('section') || vpWrap;
+      vpSekcja.addEventListener('mousemove', ev => {
+        const r = vpSekcja.getBoundingClientRect();
         vpx = ((ev.clientX - r.left) / r.width - 0.5) * 2;
         vpy = ((ev.clientY - r.top) / r.height - 0.5) * 2;
         vpStosuj();
       });
-      vphone.addEventListener('mouseleave', () => { vpx = 0; vpy = 0; vpStosuj(); });
+      vpSekcja.addEventListener('mouseleave', () => { vpx = 0; vpy = 0; vpStosuj(); });
     }
     /* auto-swajp: klon 1. slajdu na końcu = płynna, jednokierunkowa pętla */
     const vpN = vpTrack.children.length;
@@ -2640,10 +2657,16 @@
   const heroStack = document.getElementById('heroStack');
   const tbWzor = document.querySelector('.tb-wzor');   /* topblok zadeklarowany wyżej */
   let dockProg = 0;   /* 0 = telefon duży na starcie, 1 = zadokowany za „rozumiesz." */
-  /* Postęp dokowania liczony ze ZWYKŁEGO przewijania: telefon jest zadokowany po
-     przejechaniu 34 % wysokości okna — czyli na tyle wcześnie, żeby dało się go
-     zobaczyć w rogu, zanim hero wyjedzie w górę. To pokrętło — mniejsza liczba = szybszy dok. */
-  const dokProgFn = () => window.scrollY / (window.innerHeight * 0.34);
+  /* Postęp dokowania rozciągnięty na CAŁY zapas przypięcia: 0 na początku hero,
+     1 w chwili, gdy lepkość puszcza. Dzięki temu telefon dokuje się dokładnie wtedy,
+     gdy strona zaczyna się przesuwać — bez martwego kawałka przewijania na końcu. */
+  const dokProgFn = () => {
+    const vh = window.innerHeight;
+    if (heroStack && heroStack.offsetHeight > vh * 1.2) {
+      return (window.scrollY - heroStack.offsetTop) / Math.max(heroStack.offsetHeight - vh, 1);
+    }
+    return window.scrollY / (vh * 0.34);
+  };
 
   /* Telefon 3D: na starcie duży, lekko z lewej od środka; przy przewijaniu maleje i dokuje
      się za słowem „rozumiesz.". Zwraca postęp dokowania (0..1) — steruje też talerzami. */
@@ -2664,7 +2687,7 @@
        zadokowany za napisami — p=1 — zamiast startować duży i zasłaniać nagłówek.
        Telefonu nie gasimy: dokuje w rogu i wyjeżdża w górę razem z hero (decyzja Tomka
        2026-08-12). Zjazd w dół i zniknięcie robi teraz telefon w sekcji „Dlaczego FOC". */
-    const plynne = stackMode();
+    const plynne = stackMode() && heroStack && heroStack.offsetHeight > window.innerHeight * 1.2;
     const p = ogr(force != null ? force : (plynne ? dokProgFn() : 1), 0, 1);
     dockProg = p;
     const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;   /* ease-in-out */
@@ -2677,7 +2700,11 @@
     const wr = slowoRozumiesz.getBoundingClientRect();
     let sDock = 0.46;
     let xDock = hr.width * 0.26;
-    let yDock = hr.height * 0.10;
+    /* Telefon kończy dokowanie ZA końcówką słowa „rozumiesz.": jego górna część chowa
+       się za literami (stąd `.docked` z-index 1), a reszta stoi w wolnym polu po prawej.
+       Wcześniej lądował całkiem PONIŻEJ napisu i nic go nie zasłaniało — a to właśnie
+       zasłonięcie mówi oku, że telefon jest z tyłu (polecenie Tomka 2026-08-13). */
+    let yDock = -hr.height * 0.01;
     if (!plynne) {
       /* MOBILE: telefon zadokowany, lekko obrócony, w PRAWYM GÓRNYM rogu hero (najluźniejsze
          miejsce) i trochę mniejszy — żeby cała scena była czytelniejsza na małym ekranie. */
@@ -2712,8 +2739,11 @@
       hpCien.style.opacity = (przod * (1 - chowa) * 0.92).toFixed(2);
     }
     /* Telefon zostaje NA WIERZCHU (przed napisem), rzucając cień; dopiero pod koniec
-       dokowania chowa się za napis. */
-    heroPhone.classList.toggle('docked', p > 0.72);
+       dokowania chowa się za napis. Wtedy role się odwracają: cień rzucany na napis
+       gaśnie, a na GÓRNEJ POŁOWIE telefonu pojawia się cień od liter. */
+    const zaNapisem = p > 0.72;
+    heroPhone.classList.toggle('docked', zaNapisem);
+    if (hpMrok) hpMrok.style.opacity = (ogr((p - 0.70) / 0.16, 0, 1) * 0.92).toFixed(2);
     return p;
   };
   if (heroEl) {
@@ -2924,14 +2954,16 @@
            jak dotąd (klasa .rv). Transform siedzi na SCENIE, nie na telefonie — ten
            drugi jest co klatkę nadpisywany przez dlStosuj(). */
         if (whyFon) {
-          const zn = Math.max(1 - e * 3.5, 0);
-          whyFon.style.transform = e ? `translateY(${(e * 34).toFixed(1)}vh)` : '';
-          whyFon.style.opacity = e ? zn.toFixed(3) : '';
-          /* Gdy telefon jest już niewidoczny, wyłączamy go z rysowania na dobre.
-             `opacity` poniżej 1 zmusza przeglądarkę do sklejania całej bryły 3D
-             (24 warstwy) w jedną powierzchnię przy KAŻDEJ klatce przewijania —
-             `visibility:hidden` zdejmuje ten koszt na całą resztę kurtyny. */
-          whyFon.style.visibility = zn === 0 ? 'hidden' : '';
+          /* Telefon OPUSZCZA EKRAN tak samo jak napis „jeden spójny plan" — napis
+             w górę, telefon w dół, w tym samym rytmie (polecenie Tomka 2026-08-13).
+             Nie gasimy go po drodze: znika dlatego, że wyjeżdża poza dolną krawędź
+             (warstwa kurtyny ma `overflow:hidden`), a nie dlatego, że staje się
+             przezroczysty. 95vh wystarczy, żeby zszedł z ekranu w całości. */
+          whyFon.style.transform = e ? `translateY(${(e * 95).toFixed(1)}vh)` : '';
+          whyFon.style.opacity = '';
+          /* Gdy jest już poza ekranem, wyłączamy go z rysowania — 24 warstwy rantu
+             nie muszą się przeliczać przez resztę kurtyny. */
+          whyFon.style.visibility = e >= 0.995 ? 'hidden' : '';
         }
         whyLayer.style.pointerEvents = e > .4 ? 'none' : '';
         /* kroki 1-2-3 zapalają się w rytmie rozsuwania kurtyny */
