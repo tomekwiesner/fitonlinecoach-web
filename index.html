@@ -271,14 +271,6 @@
     will-change:transform;transition:transform .16s ease-out;
     box-shadow:0 0 46px 4px rgba(153,230,109,.30), 0 40px 90px -30px rgba(0,0,0,.95)}
   .fon-hero .dl-ekran img{width:100%;height:100%;object-fit:cover;object-position:top}
-  /* Cień, który wielkie litery „rozumiesz." rzucają NA telefon, gdy ten schowa się za
-     napis. Bez tego telefon leży za literami, ale wygląda, jakby nic nad nim nie stało —
-     a to właśnie ten cień mówi oku, co jest z przodu, a co z tyłu (polecenie Tomka
-     2026-08-13). Krycie ustawia skrypt w rytm chowania się telefonu. */
-  .hp-mrok{position:absolute;left:0;right:0;top:0;height:56%;
-    border-radius:var(--r) var(--r) 16px 16px;pointer-events:none;opacity:0;z-index:5;
-    transform:translateZ(3px);
-    background:linear-gradient(180deg,rgba(3,6,4,.80) 0%,rgba(3,6,4,.64) 44%,rgba(3,6,4,.18) 82%,rgba(3,6,4,0) 100%)}
   /* cień RZUCANY przez telefon na napis — nad napisem (z5), pod telefonem gdy jest z przodu */
   .hp-cien{position:absolute;left:50%;top:50%;z-index:5;pointer-events:none;opacity:0;border-radius:50%;
     background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,1) 0%,rgba(0,0,0,.88) 34%,rgba(0,0,0,.52) 62%,rgba(0,0,0,0) 84%);
@@ -289,10 +281,13 @@
      jeden element nie może być w dwóch warstwach naraz, a przełączanie warstwy w locie
      powodowało, że cień na literach gasł skokowo. */
   .hero-phone::before{content:"";position:absolute;left:50%;top:50%;z-index:-1;
-    width:172%;height:116%;transform:translate(-50%,-44%);border-radius:50%;
+    /* PRZESUNIĘTY W PRAWO I W DÓŁ, nie wyśrodkowany: to cień RZUCANY, a nie poświata
+       dookoła. Światło pada z lewej (tak samo jak połysk na rancie telefonu), więc cień
+       kładzie się po prawej stronie bryły — miejsce wskazał Tomek 2026-08-13. */
+    width:238%;height:132%;transform:translate(-34%,-42%);border-radius:50%;
     pointer-events:none;opacity:var(--cien-tlo,0);
-    background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.95) 0%,rgba(0,0,0,.66) 44%,rgba(0,0,0,.28) 66%,rgba(0,0,0,0) 82%);
-    filter:blur(22px)}
+    background:radial-gradient(ellipse 50% 50% at 56% 52%,rgba(0,0,0,.98) 0%,rgba(0,0,0,.86) 30%,rgba(0,0,0,.58) 52%,rgba(0,0,0,.22) 72%,rgba(0,0,0,0) 88%);
+    filter:blur(30px)}
   .hero .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.78rem;font-weight:600;
     letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:28px;
     opacity:0;animation:fadeUp .8s .2s forwards}
@@ -1590,7 +1585,6 @@
       <!-- grubość telefonu: warstwy ekstruzji w głąb (dodaje JS) dają gładki, zaokrąglony bok -->
       <span class="dl-notch"></span>
       <div class="dl-ekran"><img src="assets/screen_trening.jpg" alt=""></div>
-      <span class="hp-mrok"></span>
     </div>
   </div>
   <div class="wrap hero-content" id="heroContent">
@@ -2419,7 +2413,6 @@
   const heroPhone = document.getElementById('heroPhone');
   const hpBody = heroPhone ? heroPhone.querySelector('.dl-body') : null;
   const hpCien = document.getElementById('hpCien');
-  const hpMrok = heroPhone ? heroPhone.querySelector('.hp-mrok') : null;
   /* 18 warstw rantu — patrz komentarz przy telefonie w sekcji „Dlaczego". */
   zbudujTelefon(hpBody, 18);
 
@@ -2753,14 +2746,14 @@
       hpCien.style.opacity = (przod * (1 - chowa)).toFixed(2);
     }
     /* Telefon zostaje NA WIERZCHU (przed napisem), rzucając cień; dopiero pod koniec
-       dokowania chowa się za napis. Wtedy role się odwracają: cień rzucany na napis
-       gaśnie, a na GÓRNEJ POŁOWIE telefonu pojawia się cień od liter. */
+       dokowania chowa się za napis. NIE przyciemniamy przy tym samego telefonu —
+       Tomek zobaczył to 2026-08-13 i odrzucił: ekran robił się mętny. Głębię niesie
+       wyłącznie cień PADAJĄCY OBOK telefonu, nigdy nakładka na nim. */
     const zaNapisem = p > 0.72;
     heroPhone.classList.toggle('docked', zaNapisem);
     /* Cień na TLE jest przez cały czas — także po zadokowaniu, kiedy telefon stoi już
        w rogu. Bez niego wyglądał jak naklejony na tło (polecenie Tomka 2026-08-13). */
     heroPhone.style.setProperty('--cien-tlo', (0.58 + 0.34 * ogr((p - 0.55) / 0.35, 0, 1)).toFixed(2));
-    if (hpMrok) hpMrok.style.opacity = (ogr((p - 0.70) / 0.16, 0, 1) * 0.92).toFixed(2);
     return p;
   };
   if (heroEl) {
