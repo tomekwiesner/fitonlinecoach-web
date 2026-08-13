@@ -3222,15 +3222,14 @@
     /* Krążenie po orbicie: karty rozstawione co 360/N wokół osi; kąt rośnie z czasem.
        „Głębia" = cos(kąta): przód (=1) największy i ostry, tył (=-1) mały, przygaszony, rozmyty. */
     function startOrbit() {
-      cancelAnimationFrame(orbitRAF);
+      cancelAnimationFrame(orbitRAF); orbitRAF = 0;
       const stage = grid.parentElement;
       const cards = [...grid.children];
       const N = cards.length;
       if (!N) return;
-      let last = performance.now();
-      const tick = now => {
-        const dt = Math.min((now - last) / 1000, 0.05); last = now;
-        if (!orbitPaused && !reducedOrbit) orbitT += dt * 0.34;   /* prędkość krążenia */
+      /* jeden kadr = rozstawienie kart wg bieżącego kąta orbitT. Wołane w pętli (ruch)
+         ORAZ raz statycznie, gdy ruch wyłączony („ogranicz ruch") albo karuzela poza ekranem. */
+      const rysuj = () => {
         /* promień elipsy: na szerokim ekranie karty rozstawione; na wąskim WIĘKSZY promień, żeby
            przednia była na środku, a sąsiednie schodziły na brzegi (peek) — bez nakładania. */
         const a = stage.clientWidth > 640 ? Math.min(stage.clientWidth * 0.34, 330) : stage.clientWidth * 0.72;
@@ -3247,9 +3246,23 @@
           c.style.zIndex = String(Math.round((depth + 1) * 100));
           c.style.filter = depth < 0.25 ? `blur(${((0.25 - depth) * 2.4).toFixed(1)}px)` : 'none';
         });
+      };
+      let last = performance.now();
+      const tick = now => {
+        const dt = Math.min((now - last) / 1000, 0.05); last = now;
+        if (!orbitPaused) orbitT += dt * 0.34;                   /* prędkość krążenia */
+        rysuj();
         orbitRAF = requestAnimationFrame(tick);
       };
-      orbitRAF = requestAnimationFrame(tick);
+      rysuj();                          /* zawsze ustaw karty raz — także zanim (i czy w ogóle) ruszy pętla */
+      if (reducedOrbit) return;         /* „ogranicz ruch": zostaje statyczny kadr, pętli nie startujemy */
+      /* Pętla chodzi TYLKO gdy karuzela jest na ekranie — poza widokiem zatrzymujemy rAF, żeby nie
+         zużywać baterii i nie szarpać na telefonie. Obserwator odpala się z bieżącym stanem po observe(). */
+      const bieg = widoczna => {
+        if (widoczna) { if (!orbitRAF) { last = performance.now(); orbitRAF = requestAnimationFrame(tick); } }
+        else { cancelAnimationFrame(orbitRAF); orbitRAF = 0; }
+      };
+      new IntersectionObserver(([e]) => bieg(e.isIntersecting)).observe(stage);
       /* Pauza: na desktopie (hover) — najechanie pauzuje, zjechanie wznawia. Na DOTYKU (mobile)
          hover „się zawiesza" (mouseleave nie przychodzi) i karuzela zostawała zatrzymana na stałe —
          dlatego na dotyku pauzujemy TYLKO na czas dotknięcia i wznawiamy po puszczeniu palca. */
