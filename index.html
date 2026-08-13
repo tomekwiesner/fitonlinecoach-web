@@ -281,8 +281,18 @@
     background:linear-gradient(180deg,rgba(3,6,4,.80) 0%,rgba(3,6,4,.64) 44%,rgba(3,6,4,.18) 82%,rgba(3,6,4,0) 100%)}
   /* cień RZUCANY przez telefon na napis — nad napisem (z5), pod telefonem gdy jest z przodu */
   .hp-cien{position:absolute;left:50%;top:50%;z-index:5;pointer-events:none;opacity:0;border-radius:50%;
-    background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.92) 0%,rgba(0,0,0,.6) 46%,rgba(0,0,0,0) 78%);
-    filter:blur(6px);will-change:transform,opacity}
+    background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,1) 0%,rgba(0,0,0,.88) 34%,rgba(0,0,0,.52) 62%,rgba(0,0,0,0) 84%);
+    filter:blur(7px);will-change:transform,opacity}
+  /* Cień rzucany na TŁO — osobny od tego, który pada na litery. Jest dzieckiem telefonu,
+     więc jedzie i skaluje się razem z nim, i NIE ZNIKA po zadokowaniu (polecenie Tomka
+     2026-08-13). Osobny element, bo tamten cień musi leżeć NAD napisem, a ten POD nim —
+     jeden element nie może być w dwóch warstwach naraz, a przełączanie warstwy w locie
+     powodowało, że cień na literach gasł skokowo. */
+  .hero-phone::before{content:"";position:absolute;left:50%;top:50%;z-index:-1;
+    width:172%;height:116%;transform:translate(-50%,-44%);border-radius:50%;
+    pointer-events:none;opacity:var(--cien-tlo,0);
+    background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.95) 0%,rgba(0,0,0,.66) 44%,rgba(0,0,0,.28) 66%,rgba(0,0,0,0) 82%);
+    filter:blur(22px)}
   .hero .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.78rem;font-weight:600;
     letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:28px;
     opacity:0;animation:fadeUp .8s .2s forwards}
@@ -2736,13 +2746,20 @@
       hpCien.style.height = Math.round(wys) + 'px';
       hpCien.style.transform =
         `translate(-50%,-50%) translate(${Math.round(x)}px, ${Math.round(y + 30 * s)}px)`;
-      hpCien.style.opacity = (przod * (1 - chowa) * 0.92).toFixed(2);
+      /* Dwie role tego samego cienia: dopóki telefon jest z przodu, kładzie się na
+         literach (mocno); gdy schowa się za napis, nie znika — przechodzi POD napis
+         i pada na tło, żeby telefon nie wyglądał, jakby był naklejony (polecenie
+         Tomka 2026-08-13: „cień na tle również po zadokowaniu"). */
+      hpCien.style.opacity = (przod * (1 - chowa)).toFixed(2);
     }
     /* Telefon zostaje NA WIERZCHU (przed napisem), rzucając cień; dopiero pod koniec
        dokowania chowa się za napis. Wtedy role się odwracają: cień rzucany na napis
        gaśnie, a na GÓRNEJ POŁOWIE telefonu pojawia się cień od liter. */
     const zaNapisem = p > 0.72;
     heroPhone.classList.toggle('docked', zaNapisem);
+    /* Cień na TLE jest przez cały czas — także po zadokowaniu, kiedy telefon stoi już
+       w rogu. Bez niego wyglądał jak naklejony na tło (polecenie Tomka 2026-08-13). */
+    heroPhone.style.setProperty('--cien-tlo', (0.58 + 0.34 * ogr((p - 0.55) / 0.35, 0, 1)).toFixed(2));
     if (hpMrok) hpMrok.style.opacity = (ogr((p - 0.70) / 0.16, 0, 1) * 0.92).toFixed(2);
     return p;
   };
