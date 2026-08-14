@@ -3063,11 +3063,19 @@
              Nie gasimy go po drodze: znika dlatego, że wyjeżdża poza dolną krawędź
              (warstwa kurtyny ma `overflow:hidden`), a nie dlatego, że staje się
              przezroczysty. 95vh wystarczy, żeby zszedł z ekranu w całości. */
-          whyFon.style.transform = e ? `translateY(${(e * 95).toFixed(1)}vh)` : '';
+          /* WŁASNE, SZYBSZE TEMPO. Napis i telefon ruszają razem, ale napis ma do
+             przejechania ~300 px i po drodze gaśnie, a telefon musi zejść z całego
+             ekranu (95vh). Przy wspólnym postępie napisu już dawno nie było, kurtyna
+             stała otworem, a telefon dopiero w jednej trzeciej drogi — Tomek zgłosił to
+             2026-08-13 jako „telefon za późno reaguje". Dlatego telefon ma własny
+             postęp: pełne wyjście osiąga przy 55 % otwarcia kurtyny, czyli schodzi
+             z ekranu ZANIM widać, co jest pod spodem. */
+          const eFon = Math.min(e / 0.55, 1);
+          whyFon.style.transform = e ? `translateY(${(eFon * 95).toFixed(1)}vh)` : '';
           whyFon.style.opacity = '';
           /* Gdy jest już poza ekranem, wyłączamy go z rysowania — 24 warstwy rantu
              nie muszą się przeliczać przez resztę kurtyny. */
-          whyFon.style.visibility = e >= 0.995 ? 'hidden' : '';
+          whyFon.style.visibility = eFon >= 0.995 ? 'hidden' : '';
         }
         whyLayer.style.pointerEvents = e > .4 ? 'none' : '';
         /* kroki 1-2-3 zapalają się w rytmie rozsuwania kurtyny */
