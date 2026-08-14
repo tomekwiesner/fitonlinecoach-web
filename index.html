@@ -1414,6 +1414,33 @@
        GÓRĄ — pod przyklejone logo. Na telefonie układamy więc treść od góry i pozwalamy
        hero urosnąć, zamiast trzymać sztywne 100vh. */
     .hero{height:auto;min-height:100vh;align-items:flex-start;padding-top:104px;padding-bottom:48px}
+    /* `svh` to wysokosc ekranu LICZONA Z WIDOCZNYM paskiem przegladarki. Zwykle `vh` udaje,
+       ze paska nie ma, wiec hero bylo wyzsze niz to, co klient naprawde widzi. Stara wartosc
+       zostaje linijke wyzej dla przegladarek, ktore `svh` nie znaja. */
+    .hero{min-height:100svh}
+
+    /* ---- PIERWSZY EKRAN SKROCONY O 82 px (polecenie Tomka 2026-08-14) ----
+       Przycisk „Zapisz sie" konczyl sie na 792 px, a widoczna wysokosc telefonu to 553-819 px
+       — czyli na wszystkich telefonach procz najwiekszego trzeba bylo przewijac, zeby go
+       zobaczyc. Sciagamy WYLACZNIE odstepy: zadne zdanie nie znika i nic nie zmienia miejsca
+       w kolejnosci. Dwa punkty korzysci zostaja PRZED formularzem — komentarz przy nich
+       (linia ~1650) mowi wprost, ze klient ma je przeczytac, zanim zdecyduje sie wpisac adres.
+       Liczby: padding 104->86, pod naglowkiem 28->16, pod akapitem 40->22, nad „Rusza" 22->10,
+       pod „Rusza" 14->8, pod korzysciami 18->10, nad zgoda 14->10, nad przyciskiem 16->12. */
+    .hero{padding-top:86px}
+    .hero .eyebrow{margin-bottom:12px}   /* bylo 28 — ostatnie 16 px do Androida sredniego */
+    .hero h1{margin-bottom:10px}
+    .hero p.lead{margin-bottom:18px}
+    .hero-start{margin-top:10px;margin-bottom:8px}
+    .zapis-korzysci{margin-bottom:10px}
+    .zapis-zgoda{margin-top:10px}
+    .zapis button{margin-top:12px}
+    /* Telefon jest WYSRODKOWANY w pionie w hero (`top:50%`), a tekst plynie od gory —
+       wiec skrocenie tresci o 108 px podnioslo tekst o 108 px, a grafike tylko o 28 px
+       i akapit wszedl pod nia glebiej niz wczesniej (zmierzone: nachodzenie 112x32 -> 112x56 px).
+       Podnosimy grafike o brakujace 24 px MARGINESEM, a nie `top` ani `transform`:
+       transform jest co klatke nadpisywany przez skrypt modelu 3D, wiec zmiana tam by zginela. */
+    .hero-phone{margin-top:-24px}
     /* Na telefonie talerze stoją na dole hero po prawej, więc wskaźnik „Przewiń"
        przesuwamy ze środka na lewą krawędź — inaczej leżałby na talerzach.
        Od sierpnia 2026 hero mieści też zapis na listę i wskaźnik nachodził na zgodę
@@ -2962,10 +2989,26 @@
       if (heroPinned) {
         heroContent.style.transform = 'none';
         heroContent.style.opacity = '1';
+      } else if (!stackMode()) {
+        /* TELEFON — ZERO PARALLAXU I ZERO ZANIKANIA (zgloszone przez Tomka 2026-08-14).
+           Ten efekt zostal po starym projekcie i na telefonie dziala PRZECIWKO klientowi.
+           Przycisk „Zapisz sie" startuje ponizej krawedzi ekranu na kazdym telefonie
+           procz najwiekszych (iPhone 14/15: brakuje 62 px, maly telefon: 191 px). Zeby go
+           dosiegnac, trzeba przewinac — a przewijanie robilo dwie rzeczy naraz: spychalo
+           przycisk W DOL o 0,35 px na kazdy przewiniety piksel (czyli uciekal przed palcem,
+           zblizajac sie tylko o 65 px na 100 px przewiniecia) i wygaszalo cala tresc.
+           Efekt: przycisk stawal sie widoczny dokladnie wtedy, gdy stawal sie niewidoczny
+           (przy 400 px przewiniecia krycie = 0,00), a pod palcem byl juz ruchomy pasek,
+           ktory lezy warstwe wyzej (.marquee ma z-index:3, .hero-content 2).
+           Na duzym telefonie tego nie widac, bo wystarczy przewinac ~60 px i przycisk jest
+           jeszcze prawie nieprzezroczysty — stad „u mnie dziala".
+           Osobna galaz zamiast warunku przy `y < vh`, bo styl trzeba tez WYCZYSCIC: bez tego
+           po obroceniu telefonu albo zmianie rozmiaru okna zostawal wpisany stary, przezroczysty. */
+        heroContent.style.transform = 'none';
+        heroContent.style.opacity = '1';
       } else if (y < vh) {
         heroContent.style.transform = `translateY(${y * .35}px)`;
         heroContent.style.opacity = Math.max(1 - y / (vh * .72), 0);
-        if (heroVideo) heroVideo.style.transform = `scale(${1 + y / vh * .12})`;
       }
 
       /* pepitka jest przypięta do ekranu (fixed) — pokazujemy ją tylko, gdy blok górny
