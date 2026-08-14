@@ -3071,6 +3071,14 @@
              postęp: pełne wyjście osiąga przy 55 % otwarcia kurtyny, czyli schodzi
              z ekranu ZANIM widać, co jest pod spodem. */
           const eFon = Math.min(e / 0.55, 1);
+          /* PRZEJSCIE CSS WYLACZONE NA CZAS PRZEWIJANIA. Siatka ma klase .rv (wjazd
+             sekcji), a ta niesie `transition: transform .9s` + `.rv3` dokłada 0,24 s
+             opoznienia. Pozycje ustawiamy co klatke, wiec przegladarka DOJEZDZALA do
+             kazdej z nich przez sekunde: telefon zdawal sie stac i doskakiwal dopiero
+             po zatrzymaniu przewijania (zglosil Tomek 2026-08-14). Bramy nie maja .rv
+             i dlatego zawsze chodzily plynnie. Czyscimy przy e=0, zeby wjazd sekcji
+             dalej dzialal jak dotad. */
+          whyFon.style.transition = e ? 'none' : '';
           whyFon.style.transform = e ? `translateY(${(eFon * 95).toFixed(1)}vh)` : '';
           whyFon.style.opacity = '';
           /* Gdy jest już poza ekranem, wyłączamy go z rysowania — 24 warstwy rantu
