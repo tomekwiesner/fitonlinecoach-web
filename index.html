@@ -1163,15 +1163,18 @@
   .dl-tor{display:flex;height:100%;width:100%;
     transition:transform .55s cubic-bezier(.62,.03,.2,1)}
   .dl-tor.dl-ciagne{transition:none}
-  /* Zrzut i tekst mają być JEDNĄ całością, nie dwoma blokami sklejonymi kreską.
-     Zabieg: wspólne tło slajdu, zrzut ROZPŁYWA się ku dołowi (maska gradientowa),
-     a tekst wchodzi na jego zanikającą część ujemnym marginesem. Żadnej linii podziału. */
+  /* W ekranie telefonu został SAM ZRZUT — opisy wyszły obok telefonu (polecenie Tomka
+     2026-08-13). Dlatego znikła maska wygaszająca dół: nie ma już czego pod nią chować,
+     a wygaszony dół czytał się jako obcięty ekran. */
   .dl-slajd{flex:0 0 100%;height:100%;position:relative;display:flex;flex-direction:column;
     background:linear-gradient(180deg,#16211c 0%,var(--graphite) 46%,#0e1512 100%);overflow:hidden}
-  .dl-foto{position:relative;flex:0 0 auto;height:58%;overflow:hidden}
+  .dl-foto{position:relative;flex:1 1 auto;height:100%;overflow:hidden}
+  /* `pointer-events:none` NA ZRZUCIE, nie na kontenerze: zrzut wypełnia teraz cały ekran,
+     więc przeciąganie myszą zaczyna się ZAWSZE na obrazku — a przeglądarka odpala wtedy
+     własne przeciąganie obrazka, przerywa strumień wskaźnika (`pointercancel`) i karuzela
+     stoi w miejscu. Wcześniej nie było tego widać, bo dolne 42 % ekranu zajmował tekst. */
   .dl-foto img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;
-    -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 96%);
-    mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 96%)}
+    pointer-events:none}
   .dl-tresc{position:relative;z-index:2;flex:1;margin-top:-22%;padding:0 31px 36px;
     display:flex;flex-direction:column;justify-content:flex-end}
   /* limonkowa kreska nad hasłem — ten sam znak co przy wyliczeniach na karcie planu,
@@ -1205,6 +1208,48 @@
     .dl-scena{margin-top:34px}
     .dl-nav{display:none}      /* na telefonie przesuwa się palcem */
   }
+
+  /* ---------- WARIANT A: „SPOKOJNY PODZIAŁ" (2026-08-13) ----------
+     Tytuł idzie przez CAŁĄ szerokość kontenera, pod nim dwie kolumny: telefon po lewej
+     (44 %), kolumna tekstu po prawej, wyśrodkowana w pionie względem telefonu.
+     Opisy wyszły ze środka telefonu — w slajdzie został sam zrzut na całym ekranie.
+     Żadnych nowych ozdób: kreska, kropki i strzałki to te same elementy co wcześniej. */
+  #whyLayer .sec-title{max-width:none}
+  /* `<br>` ZOSTAJE: tytuł ma się łamać po zdaniu — „Wiedza różnych specjalistów.”
+     / „Jeden spójny plan.” Bez tego zawijał się w środku drugiego zdania
+     („… JEDEN / SPÓJNY PLAN.”). Polecenie Tomka 2026-08-13: dwa wersy. */
+  #whyLayer .dl-scena{position:relative}   /* układ odniesienia dla strzałek przy telefonie */
+  .wa-grid{display:grid;grid-template-columns:44% 1fr;gap:clamp(24px,4vw,60px);
+    align-items:center;margin-top:44px}
+  /* Telefon ma w UKŁADZIE pełne 420 px (zmniejsza go dopiero `transform`, a ten nie zmienia
+     zajmowanego miejsca). Bez `min-width:0` kolumna siatki rozpycha się do tych 420 px
+     i na telefonie cała strona jedzie w bok — zmierzone: scrollWidth 452 przy oknie 375. */
+  .wa-grid > *{min-width:0}
+  #whyLayer .dl-scena{margin-top:0}       /* odstęp trzyma teraz siatka */
+  .wa-txt{max-width:460px}
+  /* Trzy opisy leżą JEDEN NA DRUGIM w tej samej komórce siatki: wysokość kolumny bierze
+     się z najwyższego, więc przy zmianie ekranu kropki i strzałki nie podskakują. */
+  .wa-teksty{display:grid}
+  .wa-teksty .dl-tresc{grid-area:1/1;margin-top:0;padding:0;display:block;
+    opacity:0;transform:translateY(12px);pointer-events:none;
+    transition:opacity .38s ease,transform .38s ease}
+  .wa-teksty .dl-tresc.on{opacity:1;transform:none;pointer-events:auto}
+  /* poza telefonem tekst nie jest już zmniejszany skalą bryły — stąd inne rozmiary */
+  .wa-teksty h3{font-size:clamp(1.5rem,2.3vw,2.05rem);margin-bottom:16px}
+  .wa-teksty p{font-size:1.05rem;line-height:1.62}
+  /* kropki i strzałki w jednym rzędzie pod opisem */
+  .wa-ster{display:flex;align-items:center;gap:12px;margin-top:32px}
+  .wa-ster .dl-kropki{margin-top:0;justify-content:flex-start}
+  #whyLayer .dl-podpis{text-align:left;margin-top:14px}
+  @media(max-width:980px){
+    .wa-grid{grid-template-columns:1fr;gap:26px;margin-top:30px}
+    .wa-txt{max-width:none}
+    #whyLayer .dl-podpis{text-align:center}
+    .wa-teksty h3{font-size:clamp(1.35rem,5.4vw,1.7rem)}
+    .wa-teksty p{font-size:1rem}
+    .wa-ster{justify-content:center;margin-top:22px}
+  }
+  @media(prefers-reduced-motion:reduce){.wa-teksty .dl-tresc{transition:none}}
 
   .vphone-wrap{display:flex;justify-content:center;margin:0 auto 46px;perspective:1600px}
   .vphone{position:relative;transform-style:preserve-3d;will-change:transform;
@@ -1730,12 +1775,21 @@
       <div class="wrap why-content">
       <div class="why-head" id="whyHead">
           <div class="sec-label rv">01 — Dlaczego FitOnlineCoach</div>
-          <h2 class="sec-title rv rv2">Wiedza różnych specjalistów.<br>Jeden spójny plan.</h2>
+          <!-- spacja przed <br> jest konieczna: na dużym ekranie łamanie jest ukryte
+               (tytuł idzie przez całą szerokość), a bez niej wychodzi „specjalistów.Jeden" -->
+          <h2 class="sec-title rv rv2">Wiedza różnych specjalistów. <br>Jeden spójny plan.</h2>
         </div>
         <!-- Trzy ekrany w jednym telefonie 3D zamiast trzech odwracanych kafelków
              (decyzja Tomka 2026-08-08). Teksty BEZ ZMIAN — te same, co były na kafelkach;
              każdy ekran łączy zrzut z aplikacji (dawny rewers) z hasłem i opisem (dawny przód). -->
-        <div class="dl-scena rv rv3">
+        <!-- WARIANT A: telefon po lewej, opisy w kolumnie po prawej. Opisy (.dl-tresc)
+             wyprowadzone POZA telefon — w slajdzie został sam zrzut na pełnym ekranie.
+             Cała siatka jedzie w dół razem z kurtyną (skrypt: whyFon). -->
+        <div class="wa-grid rv rv3">
+        <div class="dl-scena">
+          <!-- Strzałki wiszą przy TELEFONIE, po obu jego bokach — tak jak przed przebudową
+               (polecenie Tomka 2026-08-13). Pozycje liczy `dlStrzalki()` z rzeczywistego
+               obrysu bryły, bo obrót 3D przesuwa ją o kilkanaście pikseli w bok. -->
           <button class="dl-nav dl-nav-l" id="dlNavL" type="button" aria-label="Poprzedni ekran">‹</button>
           <button class="dl-nav dl-nav-r" id="dlNavR" type="button" aria-label="Następny ekran">›</button>
           <div class="dl-telefon" id="dlTelefon">
@@ -1745,35 +1799,44 @@
                 <div class="dl-tor" id="dlTor">
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
-                    <div class="dl-tresc">
-                      <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
-                      <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania i bez ryzyka kontuzji.</p>
-                    </div>
                   </article>
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy" decoding="async"></div>
-                    <div class="dl-tresc">
-                      <h3>Masz dość anglojęzycznych tutoriali?</h3>
-                      <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
-                    </div>
                   </article>
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
-                    <div class="dl-tresc">
-                      <h3>Nie masz czasu na trening?</h3>
-                      <p>3 treningi w tygodniu po 40–60 minut — resztę zostaw życiu. Plan masz zawsze w telefonie, a treningi wpisujesz prosto do kalendarza.</p>
-                    </div>
                   </article>
                 </div>
               </div>
             </div>
           </div>
-          <div class="dl-kropki" id="dlKropki">
-            <button type="button" class="on" data-ekran="0" aria-label="Ekran 1 z 3"></button>
-            <button type="button" data-ekran="1" aria-label="Ekran 2 z 3"></button>
-            <button type="button" data-ekran="2" aria-label="Ekran 3 z 3"></button>
+        </div>
+        <div class="wa-txt">
+          <div class="wa-teksty" id="dlTeksty">
+            <div class="dl-tresc on">
+              <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
+              <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania i bez ryzyka kontuzji.</p>
+            </div>
+            <div class="dl-tresc">
+              <h3>Masz dość anglojęzycznych tutoriali?</h3>
+              <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
+            </div>
+            <div class="dl-tresc">
+              <h3>Nie masz czasu na trening?</h3>
+              <p>3 treningi w tygodniu po 40–60 minut — resztę zostaw życiu. Plan masz zawsze w telefonie, a treningi wpisujesz prosto do kalendarza.</p>
+            </div>
           </div>
+          <div class="wa-ster">
+            <div class="dl-kropki" id="dlKropki">
+              <button type="button" class="on" data-ekran="0" aria-label="Ekran 1 z 3"></button>
+              <button type="button" data-ekran="1" aria-label="Ekran 2 z 3"></button>
+              <button type="button" data-ekran="2" aria-label="Ekran 3 z 3"></button>
+            </div>
+          </div>
+          <!-- podpis wędruje pod sterowanie: pod telefonem nie ma już na niego miejsca
+               (przy pełnej wysokości ekranu nachodził na dolną krawędź obudowy) -->
           <p class="dl-podpis">Przesuń, żeby zobaczyć więcej</p>
+        </div>
         </div>
       </div>
     </section>
@@ -2483,6 +2546,8 @@
   if (dlTelefon && dlTor) {
     const dlBody = dlTelefon.querySelector('.dl-body');
     const dlKropki = [...document.querySelectorAll('#dlKropki button')];
+    /* opisy stoją OBOK telefonu (wariant A) — przełączają się w tym samym rytmie co kropki */
+    const dlTeksty = [...document.querySelectorAll('#dlTeksty .dl-tresc')];
     const dlN = dlTor.children.length;
     let dlIdx = 0;
 
@@ -2536,6 +2601,19 @@
     window.addEventListener('resize', () => { dlPrzelicz(); dlStosuj(); dlStrzalki(); });
     /* po dojściu fontów obrys telefonu bywa inny — ustawiamy strzałki jeszcze raz */
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(dlStrzalki);
+    /* ⚠ I JESZCZE RAZ PO WEJŚCIU SEKCJI W KADR. Siatka ma klasę `.rv` (pojawianie się przy
+       przewijaniu): zanim wjedzie w ekran, jest przesunięta, więc obrys telefonu policzony
+       przy starcie strony jest NIEAKTUALNY — strzałki stały wtedy 30 px obok telefonu aż do
+       pierwszej zmiany rozmiaru okna (zmierzone 2026-08-13). Obserwator odpala się raz. */
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver(([w]) => {
+        if (!w.isIntersecting) return;
+        dlStrzalki();
+        setTimeout(dlStrzalki, 900);   /* po animacji pojawiania się */
+        obs.disconnect();
+      }, { threshold: 0.2 });
+      obs.observe(dlScena);
+    }
     /* ===== KARUZELA ZAPĘTLONA W OBIE STRONY =====
        Wcześniej numer ekranu i pozycja taśmy to była jedna liczba, przycinana modulo
        ZANIM ruszyła animacja — dlatego ruch z trzeciego ekranu „dalej" przejeżdżał
@@ -2570,6 +2648,7 @@
       dlIdx = ((krok ? dlIdx + krok : i) + dlN) % dlN;
       dlUstaw(krok ? dlPoz + krok : dlIdx + 1);
       dlKropki.forEach((k, n) => k.classList.toggle('on', n === dlIdx));
+      dlTeksty.forEach((t, n) => t.classList.toggle('on', n === dlIdx));
     };
     dlKropki.forEach(k => k.addEventListener('click', () => dlPokaz(+k.dataset.ekran)));
     const nl = document.getElementById('dlNavL'), nr = document.getElementById('dlNavR');
@@ -2788,7 +2867,9 @@
   const doorR = document.getElementById('doorR');
   const whyHead = document.getElementById('whyHead');
   const whyLayer = document.getElementById('whyLayer');
-  const whyFon = document.querySelector('#whyLayer .dl-scena');
+  /* Wariant A: kurtyna opuszcza CAŁĄ siatkę (telefon + kolumna tekstu), nie samą scenę —
+     inaczej opisy zostawałyby na ekranie nad sekcją „Jak to działa". */
+  const whyFon = document.querySelector('#whyLayer .wa-grid');
   const stepEls = [...document.querySelectorAll('[data-step]')];
   const stack2El = document.querySelector('.stack-about');
   const door2L = document.getElementById('door2L');
