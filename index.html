@@ -186,8 +186,13 @@
   .gperr{width:100%;color:#ff8a8a;font-size:.82rem;letter-spacing:.06em;margin-top:4px}
 
   /* ---------- baner zgód na ciasteczka ---------- */
+  /* `max-height` + własne przewijanie: po rozwinięciu „Ustawień" baner był WYŻSZY niż ekran
+     telefonu (zmierzone: 784 px przy oknie 640 = 122 %) i nagłówek „COOKIES" razem z linkiem
+     do polityki wyjeżdżał ponad kadr — klient nie widział, na co się zgadza. Baner jest
+     przyklejony do ekranu, więc przewijanie strony pod spodem nic nie dawało. */
   .cc{position:fixed;left:0;right:0;bottom:0;z-index:1100;background:var(--graphite);
     border-top:1px solid var(--line);padding:22px 24px;display:none;
+    max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
     box-shadow:0 -18px 50px rgba(0,0,0,.5)}
   .cc.show{display:block;animation:fadeUp .45s forwards}
   .cc-in{max-width:1240px;margin:0 auto;display:flex;gap:26px;align-items:center;flex-wrap:wrap}
@@ -1281,6 +1286,13 @@
   .vp-pop-txt{font-size:.9rem;font-weight:600;line-height:1.25;color:#dfeede}
   @media(prefers-reduced-motion:reduce){.vp-track{transition:none}}
 
+  /* Drobny druk: nota zdrowotna pod planem i nota o opiniach. Wyciszony szary,
+     wyśrodkowany, szerokość ograniczona do ~62 znaków, żeby dało się to przeczytać. */
+  .zdrowie-nota,.rev-nota{max-width:620px;margin:26px auto 0;text-align:center;
+    font-size:.78rem;line-height:1.65;color:var(--muted)}
+  .rev-nota{margin:14px auto 0}
+  @media(max-width:640px){.zdrowie-nota,.rev-nota{font-size:.74rem;margin-top:20px;padding:0 4px}}
+
   /* ---------- opinie klientów ---------- */
   .reviews{border-top:1px solid var(--line);padding:64px 0}
   /* Efekt 4: karuzela opinii KRĄŻĄCA PO ORBICIE — karty jadą po elipsie, przednia największa
@@ -1969,6 +1981,17 @@
          (decyzja Tomka 29.07: bez osobnej sekcji na stronie, sprzedaż opieki to nie priorytet) -->
     <a class="opieka-zajawka rv rv4" href="#zapis">Wolisz plan pisany specjalnie dla Ciebie?
       <b>Opieka indywidualna też rusza 7.09 →</b></a>
+
+    <!-- NOTA ZDROWOTNA. Treść SŁOWO W SŁOWO taka sama jak komponent `HealthNote`
+         w aplikacji (fitonlinecoach-app/src/components/ui.tsx) — jeśli ktoś zmienia jedno,
+         musi zmienić drugie, inaczej strona i apka mówią klientowi co innego.
+         Stoi POD kartą planu, a nie w niej: karta się obraca i ma ograniczoną wysokość,
+         a to zdanie ma być widoczne BEZ klikania. Do tej pory istniało wyłącznie w zwiniętym
+         FAQ — cały tekst widoczny bez kliknięcia (4981 znaków) nie zawierał ani słowa
+         o konsultacji, przeciwwskazaniach czy ciąży (audyt 2026-08-14). W FAQ zostaje. -->
+    <p class="zdrowie-nota rv rv4">Przed rozpoczęciem treningów warto skonsultować się z lekarzem,
+      fizjoterapeutą lub trenerem — zwłaszcza przy chorobach przewlekłych, kontuzjach, w ciąży
+      lub po długiej przerwie od ruchu.</p>
   </div>
 </section>
 
@@ -2123,6 +2146,10 @@
   <div class="wrap">
     <div class="sec-label rv" style="justify-content:center">07 — Opinie</div>
     <h2 class="sec-title rv rv2" style="text-align:center;margin-left:auto;margin-right:auto">Co mówią osoby,<br>które <span style="color:var(--lime)">już trenują</span>.</h2>
+    <!-- Wymóg z przepisów o opiniach konsumenckich (tzw. Omnibus): trzeba napisać, CZY i JAK
+         sprawdzamy opinie. Treść podyktowana przez Tomka 2026-08-14. Zdanie zobowiązuje —
+         publikujemy wyłącznie opinie prawdziwych użytkowników aplikacji. -->
+    <p class="rev-nota rv rv2">Opinie są sprawdzane i pochodzą od prawdziwych użytkowników aplikacji.</p>
     <!-- Karuzela po orbicie: karty (buduje je renderOpinie z danych) krążą po elipsie; JS pozycjonuje. -->
     <div class="orbit-stage rv rv3">
       <div class="orbit" id="revGrid"></div>
@@ -2228,35 +2255,39 @@
 <div class="cc" id="cc" role="dialog" aria-live="polite" aria-label="Zgoda na pliki cookies">
   <div class="cc-in">
     <div class="cc-txt">
-      <b>Ciasteczka i prywatność</b>
-      <p>Używamy plików niezbędnych, żeby strona działała. Za Twoją zgodą chcemy też mierzyć
-        ruch i skuteczność reklam na Instagramie i w Google. Bez zgody nic takiego się nie uruchamia.
+      <!-- Teksty skrócone do minimum (polecenie Tomka 2026-08-14): 583 -> 352 znaki, 40 % mniej.
+           Świadomie ZOSTAJE „Na Twoim urządzeniu zapisujemy pliki" — zgoda dotyczy dostępu do
+           pamięci urządzenia, a samo „używamy plików" można przeczytać jako „mamy pliki na
+           serwerze". Zdanie jest prawdziwe od pierwszego kliknięcia: baner zapisuje ciasteczko
+           `foc_consent` z zapamiętanym wyborem (linia ~2302), niezależnie od Pixela. -->
+      <b>Ciasteczka</b>
+      <p>Na Twoim urządzeniu zapisujemy pliki niezbędne do działania strony.
+        Statystyki i reklamy — tylko za zgodą.
         Szczegóły w <a href="https://app.fitonlinecoach.com/polityka-prywatnosci" target="_blank" rel="noopener">polityce prywatności</a>.</p>
     </div>
     <div class="cc-btns">
-      <button class="cc-btn primary" id="ccAll" type="button">Akceptuję wszystkie</button>
+      <button class="cc-btn primary" id="ccAll" type="button">Zgadzam się</button>
       <button class="cc-btn" id="ccNec" type="button">Tylko niezbędne</button>
       <button class="cc-link" id="ccSettings" type="button">Ustawienia</button>
     </div>
     <div class="cc-opts" id="ccOpts">
       <div class="cc-opt locked">
         <input type="checkbox" id="ccNecCb" checked disabled>
-        <label for="ccNecCb"><b>Niezbędne (zawsze aktywne)</b>
-          <span>Potrzebne, żeby strona i logowanie działały. Nie służą do śledzenia.</span></label>
+        <label for="ccNecCb"><b>Niezbędne</b>
+          <span>Zawsze włączone, bez nich strona nie działa.</span></label>
       </div>
       <div class="cc-opt">
         <input type="checkbox" id="ccAnaCb">
         <label for="ccAnaCb"><b>Statystyki</b>
-          <span>Anonimowe dane o tym, które sekcje oglądasz — żeby wiedzieć, co poprawić.</span></label>
+          <span>Które sekcje oglądasz — żeby je poprawić.</span></label>
       </div>
       <div class="cc-opt">
         <input type="checkbox" id="ccMktCb">
-        <label for="ccMktCb"><b>Marketing</b>
-          <span>Pozwala dopasować reklamy na Instagramie i w Google oraz nie pokazywać ich osobom,
-            które już kupiły plan.</span></label>
+        <label for="ccMktCb"><b>Reklamy</b>
+          <span>Dopasowane do Ciebie na Instagramie i w Google.</span></label>
       </div>
       <div class="cc-btns">
-        <button class="cc-btn primary" id="ccSave" type="button">Zapisz wybór</button>
+        <button class="cc-btn primary" id="ccSave" type="button">Zapisz</button>
       </div>
     </div>
   </div>
