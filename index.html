@@ -820,7 +820,6 @@
     align-items:start;height:100%}
   .plan-back h3{font-size:1.5rem;color:#fff;margin-bottom:16px}
   .plan-back .pb-h{margin-top:30px}
-  .plan-back .pb-p{color:var(--muted);margin-bottom:30px;max-width:430px}
   .plan-back .plan-feats{margin-bottom:0}
   .plan-screens{display:flex;gap:14px;justify-content:center;align-items:center}
   .plan-screens img{width:31%;border-radius:14px;border:1px solid rgba(255,255,255,.16);
@@ -909,7 +908,6 @@
     #plan .plan-back-grid{padding:26px 44px;gap:34px}
     #plan .plan-back h3{font-size:1.3rem;margin-bottom:10px}
     #plan .plan-back .pb-h{margin-top:18px}
-    #plan .plan-back .pb-p{font-size:.88rem;line-height:1.5;margin-bottom:16px}
     #plan .plan-screens{gap:12px}
 
     /* kropki i podpis pod kartą */
@@ -1953,9 +1951,19 @@
                 <li>Kalendarz treningów dopasowany do Twojego tygodnia</li>
                 <li>Zapis wyników i sugerowane obciążenia</li>
               </ul>
-              <h3 class="pb-h">Dla kogo?</h3>
-              <p class="pb-p">Dla osób, które zaczynają przygodę z treningiem siłowym albo wracają po dłuższej
-                przerwie i chcą wystartować bezpiecznie, ze zrozumieniem każdego ruchu.</p>
+              <!-- LISTA SPRZĘTU. Nie edytować tutaj — treść wpisuje skrypt
+                   `python G:\cloude\synchronizuj-tresci.py` ze wspólnego źródła
+                   `G:\cloude\TRESCI-WSPOLNE.md`, żeby strona i aplikacja nie mogły
+                   powiedzieć klientowi czegoś innego. Ta sama lista stoi w apce
+                   w sekcji „Czego potrzebujesz" na stronie planu. -->
+              <h3 class="pb-h">Czego potrzebujesz?</h3>
+              <ul class="plan-feats plan-sprzet"><!--TRESC:sprzet-poczatek-->
+                <li>Sprzęt cardio — rower, bieżnia albo wioślarz</li>
+                <li>Drążek do podciągania oraz niski drążek lub kółka</li>
+                <li>Dwa jednakowe kettlebelle i para hantli</li>
+                <li>Sztanga z obciążeniem i stojakiem</li>
+                <li>Skrzynia lub ławka, guma oporowa (powerband), piłka lekarska, skakanka</li>
+              <!--/TRESC--></ul>
               <div class="price-row">
                 <!-- rewers karty — ten sam dwuwierszowy układ co na przodzie i przy opiece -->
                 <a class="btn btn-lime btn-join btn-care" href="#zapis">
@@ -2015,16 +2023,18 @@
       </details>
       <details class="faq-item">
         <summary><span>Jaki sprzęt jest potrzebny?</span></summary>
-        <!-- Pełna lista sprzętu wg `G:\cloude\plan-poczatek-SPRZET.md` (dział planów, 2.08).
-             Poprzednia odpowiedź („hantle, kettlebell, drążek albo guma… w każdym klubie,
-             także osiedlowym") była nieprawdziwa — plan wymaga m.in. DWÓCH jednakowych kettli
-             i piłki lekarskiej, których w małych siłowniach zwykle nie ma.
-             ⚠ SZTANGA JEST POTRZEBNA DOPIERO W 4. TYGODNIU — sprawdzone w treści planu:
-             wszystkie trzy ćwiczenia ze sztangą (`bb-floor-press`, `barbell-dl`, `bb-oh-press`)
-             siedzą w treningach `pocz-w4-b` i `pocz-w4-c`. W tygodniu 1 sztanga bywa tylko
-             ZAMIENNIKIEM niskiego drążka przy podciąganiu australijskim. -->
-        <p>Podstawowy sprzęt dostępny na siłowni: mata, gumy, sztanga, kettle, hantle i drążek.
-          Bez specjalistycznych maszyn.</p>
+        <!-- ⚠ TA ODPOWIEDŹ MA BYĆ OGÓLNA — dotyczy WSZYSTKICH planów, także tych, których
+             jeszcze nie ma (decyzja Tomka 2026-08-14). NIE wpisywać tu listy sprzętu
+             konkretnego planu: przy dwóch planach lista przestaje być prawdziwa, a przy
+             pięciu nie da się jej utrzymać. Dokładny sprzęt każdego planu leży w aplikacji,
+             w sekcji „Czego potrzebujesz" na stronie planu — widoczny PRZED zakupem
+             (`fitonlinecoach-app/src/lib/data.ts`, pole `equipment`).
+             Poprzednia wersja wymieniała „mata, gumy, sztanga, kettle, hantle i drążek"
+             i była nieprawdziwa: brakowało m.in. DWÓCH jednakowych kettli, sprzętu cardio,
+             skrzyni i piłki lekarskiej, a „mata" w planie w ogóle nie występuje. -->
+        <p>To zależy od planu. Jedne robisz na siłowni i wymagają więcej sprzętu, inne zrobisz
+          w domu, praktycznie bez niczego. Przy każdym planie znajdziesz dokładną listę tego,
+          co będzie potrzebne — zobaczysz ją, zanim kupisz.</p>
       </details>
       <details class="faq-item">
         <summary><span>Jak długo mam dostęp do planu?</span></summary>
