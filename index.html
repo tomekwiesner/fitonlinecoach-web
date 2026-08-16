@@ -821,6 +821,13 @@
   .plan-back h3{font-size:1.5rem;color:#fff;margin-bottom:16px}
   .plan-back .pb-h{margin-top:30px}
   .plan-back .plan-feats{margin-bottom:0}
+  /* Prawa kolumna tyłu karty: zrzuty, pod nimi przycisk. `margin-top` OBNIŻA zrzuty
+     względem tekstu po lewej — bez tego wisiały równo z górną krawędzią karty. */
+  .plan-back-right{display:flex;flex-direction:column;gap:30px;margin-top:58px}
+  /* przycisk pod zrzutami ma stać w ICH osi — bez tego `price-row` rozciąga się na całą
+     szerokość kolumny i guzik ląduje przy krawędzi (zmierzone: 133 px od środka) */
+  .plan-back-right .price-row{justify-content:center}
+  .plan-back-right .plan-hint{text-align:center}
   .plan-screens{display:flex;gap:14px;justify-content:center;align-items:center}
   .plan-screens img{width:31%;border-radius:14px;border:1px solid rgba(255,255,255,.16);
     box-shadow:0 16px 44px rgba(0,0,0,.55)}
@@ -1513,6 +1520,15 @@
     .peek-r{transform:translateX(19vw) scale(.5) rotateY(-15deg)}
     .pnav{display:none}
     .plan-back-grid{grid-template-columns:1fr;gap:32px;padding:36px 24px}
+    /* jedna kolumna: przycisk i podpis WRACAJĄ przed zrzuty, żeby nie leżeć na samym
+       dole bardzo wysokiej karty; zrzutów nie ma już czego obniżać */
+    .plan-back-right{margin-top:0;gap:20px}
+    /* na telefonie zostaje do lewej, tak jak było */
+    .plan-back-right .price-row{justify-content:flex-start}
+    .plan-back-right .plan-hint{text-align:left}
+    .plan-back-right .price-row{order:0}
+    .plan-back-right .plan-hint{order:1}
+    .plan-back-right .plan-screens{order:2}
     .nav-links{position:fixed;inset:0;background:rgba(7,9,8,.97);flex-direction:column;
       justify-content:center;gap:34px;display:none}
     .nav-links.open{display:flex}
@@ -1966,6 +1982,19 @@
                 <li>Sztanga z obciążeniem i stojakiem</li>
                 <li>Skrzynia lub ławka, guma oporowa (powerband), piłka lekarska, skakanka</li>
               <!--/TRESC--></ul>
+            </div>
+            <!-- PRAWA KOLUMNA: zrzuty z aplikacji, a POD NIMI przycisk zakupu
+                 (polecenie Tomka 2026-08-16). Przycisk siedzi tutaj, a nie w lewej kolumnie
+                 z tekstem — na komputerze domyka prawą stronę karty zamiast wisieć pod listą
+                 sprzętu. NA TELEFONIE kolumny zlewają się w jedną, więc kolejność odwracamy
+                 stylami (`order`): przycisk i podpis PRZED zrzutami. Bez tego przycisk
+                 wylądowałby na samym dole bardzo wysokiej karty. -->
+            <div class="plan-back-right">
+              <div class="plan-screens" aria-label="Prawdziwe ekrany z aplikacji">
+                <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async">
+                <img src="assets/screen_trening.jpg" alt="Ekran aplikacji: dzisiejszy trening" loading="lazy" decoding="async">
+                <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async">
+              </div>
               <div class="price-row">
                 <!-- rewers karty — ten sam dwuwierszowy układ co na przodzie i przy opiece -->
                 <a class="btn btn-lime btn-join btn-care" href="#zapis">
@@ -1974,11 +2003,6 @@
                 </a>
               </div>
               <span class="plan-hint">Kliknij kartę — wróć do planu →</span>
-            </div>
-            <div class="plan-screens" aria-label="Prawdziwe ekrany z aplikacji">
-              <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async">
-              <img src="assets/screen_trening.jpg" alt="Ekran aplikacji: dzisiejszy trening" loading="lazy" decoding="async">
-              <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async">
             </div>
           </div>
         </div>
