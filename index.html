@@ -308,6 +308,13 @@
   }
   .hero h1 .w{display:inline-block;opacity:0;transform:translateY(40px);animation:wordUp .7s forwards}
   .hero h1 .outline{color:var(--lime)}
+  /* Niewidoczna przeszkoda, ktora tekst OPLYWA (polecenie Tomka 2026-08-16).
+     Telefon jest ustawiony bezwzglednie, wiec sam z siebie nie odpycha tekstu —
+     dlatego w akapicie stoi pusty, oplywany blok o jego szerokosci i wysokosci.
+     Tylko na telefonie: na komputerze akapit i tak konczy sie przed telefonem.
+     Zmierzone: telefon zachodzi na akapit na 97-121 px szerokosci (ok. 30 % ekranu)
+     i 21-75 px wysokosci, przy wierszu 28 px. */
+  .lead-omin{display:none}
   .hero p.lead{max-width:480px;color:#B9C4BD;font-size:1.08rem;margin-bottom:40px;
     opacity:0;animation:fadeUp .8s 1.15s forwards}
   /* od sierpnia 2026 mieści zapis na listę (akapit + pole + zgoda + komunikat),
@@ -1449,7 +1456,10 @@
     .hero{padding-top:86px}
     .hero .eyebrow{margin-bottom:12px}   /* bylo 28 — ostatnie 16 px do Androida sredniego */
     .hero h1{margin-bottom:10px}
-    .hero p.lead{margin-bottom:18px}
+    /* akapit nizej, ale BEZ spychania przycisku zapisu: ile dokladamy u gory,
+       tyle zabieramy u dolu (na iPhonie 13 mini zostaje tylko 22 px zapasu) */
+    .hero p.lead{margin-top:22px;margin-bottom:0}
+    .lead-omin{display:block;float:right;width:40%;height:88px}
     .hero-start{margin-top:10px;margin-bottom:8px}
     .zapis-korzysci{margin-bottom:10px}
     .zapis-zgoda{margin-top:10px}
@@ -1694,7 +1704,7 @@
       <span class="w" style="animation-delay:.55s">który</span>
       <span class="w outline" style="animation-delay:.75s">rozumiesz.</span>
     </h1>
-    <p class="lead">Plany treningowe z poradnikiem wideo do każdego ćwiczenia.
+    <p class="lead"><span class="lead-omin" aria-hidden="true"></span>Plany treningowe z poradnikiem wideo do każdego ćwiczenia.
       Po polsku, konkretnie, bez ściemy — zawsze w Twoim telefonie.</p>
     <!-- KAMPANIA ZAPOWIADAJĄCA (sierpień 2026): w miejscu przycisku „DOŁĄCZ / już od 79 zł"
          stoi zapis na listę oczekujących, bo aplikacja jest za bramką do 7 września i każdy
@@ -1705,13 +1715,12 @@
       <!-- Bezosobowo — bez form zależnych od płci (zasada Tomka, egzekwowana 2026-08-16).
            Piszemy o zdarzeniu i następnym kroku, nie o czytelniku. NIE wracać do „pierwszy"
            ani do ukośników typu „pierwszy/a" — to ta sama usterka w innej formie. -->
-      <p class="hero-start">Rusza <strong>7 września</strong>. Zapisz się — dam znać, gdy ruszamy.</p>
-      <!-- Co człowiek dostaje za zostawienie adresu. PRZED formularzem, nie po — ma to
-           przeczytać, zanim zdecyduje, czy wpisać e-mail. -->
-      <ul class="zapis-korzysci">
-        <li>cotygodniowe wskazówki treningowe</li>
-        <li>informacje o nowych planach</li>
-      </ul>
+      <!-- Krótko i od razu pole na e-mail (polecenie Tomka 2026-08-16) — odzyskane miejsce
+           idzie na tekst wyżej. Lista „co dostajesz za adres" USUNIETA STĄD świadomie:
+           to samo mówi zgoda pod polem („e-maile o starcie i wskazówki treningowe"),
+           więc informacja nie ginie, a pierwszy ekran robi się krótszy. Pełna lista
+           korzyści została w dolnej sekcji zapisu (`zapis-korzysci-duze`). -->
+      <p class="hero-start">Ruszamy <strong>7 września</strong>. Zapisz się!</p>
       <!-- Zgoda leży WEWNĄTRZ formularza i PRZED przyciskiem. Oba są istotne:
            wewnątrz — bo `new FormData(form)` bierze tylko pola z formularza, a gdy zgoda
            była obok, zaznaczenie zostawało w przeglądarce i nigdzie się nie zapisywało
@@ -1726,8 +1735,12 @@
                — razem z datą potwierdzenia z double opt-in stanowi dowód zgody -->
           <input type="checkbox" data-zgoda name="fields[zgoda_marketingowa]"
                  value="tak — formularz na fitonlinecoach.com" required>
-          <span>Chcę dostawać e-maile o starcie i wskazówki treningowe. Wypiszę się jednym
-            kliknięciem — <a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
+          <!-- Skrócone (polecenie Tomka 2026-08-16). MUSZĄ zostać trzy rzeczy: na co jest
+               zgoda, prawo do wycofania i odnośnik do polityki. „Wskazówki treningowe"
+               zostają — od kiedy lista korzyści zniknęła z hero, to JEDYNE miejsce, które
+               mówi klientowi, co dostanie za adres. -->
+          <span>Chcę e-maile od FitOnlineCoach. Rezygnacja —
+            <a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
             target="_blank" rel="noopener">polityka prywatności</a>.</span>
         </label>
         <button type="submit">Zapisz się →</button>
@@ -2894,7 +2907,24 @@
          miejsce) i trochę mniejszy — żeby cała scena była czytelniejsza na małym ekranie. */
       sDock = 0.40;
       xDock = hr.width * 0.28;
-      yDock = -hr.height * 0.245;
+      /* TELEFON ZACZYNA SIĘ POD NAPISEM „TRENING — DIETA — FIZJOTERAPIA" (polecenie Tomka
+         2026-08-16). Wcześniej stała `-hr.height * 0.245` podnosiła go o ułamek wysokości
+         hero, a nadtytuł stoi w STAŁEJ odległości od góry — więc na każdym telefonie
+         wychodziło co innego: telefon sięgał od 22 do 89 px NAD nadtytuł, momentami pod
+         samo logo. Liczymy więc od nadtytułu, nie od środka: górna krawędź telefonu ląduje
+         12 px pod nim, niezależnie od wysokości ekranu i od tego, czy nadtytuł łamie się
+         na dwa wiersze (łamie się poniżej 400 px). */
+      const nadtytul = heroEl.querySelector('.eyebrow');
+      if (nadtytul) {
+        const ebDol = nadtytul.getBoundingClientRect().bottom - hr.top;
+        /* wysokość MIERZONA, nie wyliczona: obrót 3D (tiltX/tiltY) powiększa bryłę
+           ponad `--h * skala`, przez co wyliczona wartość stawiała telefon za wysoko
+           (przy 320 px o 24 px). Pierwsza klatka używa wartości zapasowej. */
+        const wysTelefonu = heroPhone.getBoundingClientRect().height || 615 * sDock;
+        yDock = ebDol + 28 + wysTelefonu / 2 - hr.height / 2;   /* 28 px: 12 px odstepu + 16 px na reszte po obrocie 3D, zmierzone */
+      } else {
+        yDock = -hr.height * 0.245;
+      }
     }
     const x = xStart + (xDock - xStart) * e;
     /* wyjście: zjazd w dół o pełną wysokość hero + wygaszenie */
