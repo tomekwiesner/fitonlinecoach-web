@@ -408,6 +408,16 @@
   /* Nakładka na cały ekran (fixed): talerze są odczepione od przewijania i przypięcia hero
      — JS ustawia ich pozycję w układzie EKRANU, więc wychodzą spod zadokowanego telefonu. */
   .talerze{position:fixed;left:0;top:0;width:100%;height:100%;z-index:3;pointer-events:none}
+  /* PRZY „OGRANICZ RUCH" TALERZE ZNIKAJĄ. Skrypt przewijania kończy pracę wcześniej
+     (`if (reduced) return;`), zanim dojdzie do ich rozstawiania — więc zostawały
+     w domyślnym `left:0;top:0`, czyli wszystkie trzy jeden na drugim NA LOGO.
+     Zmierzone: przy czterech pozycjach przewijania identyczne [0,0].
+     Robimy to stylami, a nie w skrypcie, bo `reduced` odczytujemy raz przy wczytaniu —
+     łatka w kodzie nie zadziałałaby, gdyby ktoś zmienił ustawienie w trakcie.
+     Reguła dotyczy WYŁĄCZNIE nakładki w hero: talerz w sekcji „O mnie" to osobne
+     elementy `.talerz-roll` i `.talerz-cien`, które przy ograniczonym ruchu są
+     ustawiane poprawnie przez `rollRysuj`. */
+  @media(prefers-reduced-motion:reduce){.talerze{display:none}}
   .talerz{position:absolute;left:0;top:0;height:auto;will-change:transform,opacity;
     filter:drop-shadow(0 24px 30px rgba(0,0,0,.6))}
   /* Szerokości; pozycję startową (rząd tuż pod nagłówkiem, na wspólnej „podłodze")
