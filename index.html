@@ -2173,10 +2173,10 @@
           <span class="dl-notch"></span>
           <div class="dl-ekran">
             <div class="vp-track" id="vpTrack" aria-hidden="true">
-              <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_plecy.mp4"></video></div>
-              <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_licznik.mp4"></video></div>
-              <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_hollow.mp4"></video></div>
-              <div class="vp-slide"><video muted loop autoplay playsinline preload="none" src="assets/cwiczenie_counter.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_plecy.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_licznik.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_hollow.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_counter.mp4"></video></div>
             </div>
           </div>
         </div>
@@ -2828,10 +2828,12 @@
     const vpN = vpTrack.children.length;
     vpTrack.appendChild(vpTrack.children[0].cloneNode(true));
     let vpIdx = 0;
+    let vpPoZmianie = () => {};          /* podmieniane niżej na `vpGraj` */
     const vpDalej = () => {
       vpIdx++;
       vpTrack.classList.remove('vp-snap');
       vpTrack.style.transform = `translateX(${-vpIdx * 100}%)`;
+      vpPoZmianie();
     };
     vpTrack.addEventListener('transitionend', () => {
       if (vpIdx >= vpN) {                 /* dojechaliśmy do klonu → cichy powrót na start */
@@ -2840,9 +2842,48 @@
         vpTrack.style.transform = 'translateX(0%)';
         void vpTrack.offsetWidth;         /* wymuś reflow, żeby snap nie animował */
         vpTrack.classList.remove('vp-snap');
+        vpPoZmianie();
       }
     });
     if (!reducedVP) setInterval(vpDalej, 3800);   /* każdy film ~3,2 s + 0,6 s swajp */
+
+    /* ===== FILMY WCZYTUJĄ SIĘ DOPIERO PRZY DOJEŻDŻANIU DO SEKCJI =====
+       Wcześniej znaczniki miały `autoplay` obok `preload="none"` — i `autoplay` wygrywał,
+       więc przeglądarka ściągała CZTERY filmy (877 KB, 44 % wagi wejścia) już przy wejściu
+       na stronę, choć sekcja leży ok. 10 ekranów niżej. Zmierzone: po zdjęciu `autoplay`
+       waga wejścia spada z 1974 KB do 1094 KB.
+
+       ⚠ Samo zdjęcie `autoplay` ZABIJA filmy — w całym pliku nie było ani jednego `play()`.
+       Dlatego dwa etapy, żeby klient nie czekał na wczytanie:
+       1. 1200 px PRZED sekcją zaczynamy wczytywać (`preload="auto"` + `load()`),
+       2. dopiero gdy sekcja wchodzi w kadr — odtwarzamy, i to TYLKO widoczny slajd.
+       Obserwatorzy stoją TUTAJ, po `cloneNode` wyżej — inaczej piąty, sklonowany film
+       nigdy by nie ruszył. */
+    const vpFilmy = () => [...vpTrack.querySelectorAll('video')];
+    const vpCel = vphone.closest('section') || vpWrap;
+
+    new IntersectionObserver((wpisy, obs) => {
+      if (!wpisy.some(w => w.isIntersecting)) return;
+      vpFilmy().forEach(v => { v.preload = 'auto'; v.load(); });
+      obs.disconnect();                    /* wczytujemy raz, nie przy każdym przewinięciu */
+    }, { rootMargin: '1200px 0px' }).observe(vpCel);
+
+    let vpWidac = false;
+    const vpGraj = () => {
+      vpFilmy().forEach((v, i) => {
+        /* dokładnie jeden film naraz — porównanie przez resztę z dzielenia sprawiało,
+           że przy pierwszym slajdzie grał też jego klon z końca pętli (dwa dekodowania
+           tego samego pliku). `vpIdx` przechodzi 0..vpN, a klon ma indeks vpN. */
+        const biezacy = i === vpIdx;
+        if (vpWidac && biezacy) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+        else v.pause();
+      });
+    };
+    new IntersectionObserver(wpisy => {
+      vpWidac = wpisy.some(w => w.isIntersecting);
+      vpGraj();
+    }, { rootMargin: '200px 0px' }).observe(vpCel);
+    vpPoZmianie = vpGraj;
   }
 
   const slowoRozumiesz = document.querySelector('.hero h1 .outline');
