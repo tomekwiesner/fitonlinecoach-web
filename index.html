@@ -3711,16 +3711,44 @@
     });
   });
 
-  /* menu mobilne */
+  /* ===== MENU MOBILNE =====
+     Zmierzone przed poprawką: po otwarciu menu ŻADEN z ośmiu kolejnych Tabów nie wchodził
+     do menu. Wszystkie lądowały POD ZASŁONĄ — w polu e-mail, w zgodzie, w linku do polityki
+     i na przycisku „Zapisz się". Ktoś, kto obsługuje stronę klawiaturą albo czytnikiem ekranu,
+     pisał więc adres do pola, którego nie widzi. Powód jest w kolejności: hamburger stoi
+     w kodzie PO liście linków, więc Tab z niego idzie dalej, w treść strony, a menu zostaje
+     z tyłu. Escape też nie zamykał.
+
+     Naprawa: na czas otwarcia wyłączamy całą zakrytą treść właściwością `inert` (przeglądarka
+     pomija ją i dla klawiatury, i dla czytnika ekranu), przenosimy fokus na pierwszy link,
+     a po zamknięciu oddajemy go hamburgerowi. Do tego Escape zamyka, a `aria-expanded` mówi
+     czytnikowi, czy menu jest otwarte — to druga usterka z tej samej listy. */
   const burger = document.getElementById('burger');
   const nav = document.getElementById('navLinks');
-  burger.addEventListener('click', () => {
-    burger.classList.toggle('open');
-    nav.classList.toggle('open');
+  /* Zakryte przez zasłonę: cała treść strony ORAZ logo w nagłówku. Logo zostaje pod
+     zasłoną, więc bez tego dawało się na nie wejść klawiszem Tab, choć go nie widać.
+     Sam nagłówek zostaje aktywny — inaczej zniknąłby też hamburger i menu. */
+  const logo = document.querySelector('#header .logo');
+  const zakryte = () => [...document.body.children].filter(e => e.id !== 'header')
+    .concat(logo ? [logo] : []);
+  burger.setAttribute('aria-expanded', 'false');
+  burger.setAttribute('aria-controls', 'navLinks');
+
+  const ustawMenu = otwarte => {
+    burger.classList.toggle('open', otwarte);
+    nav.classList.toggle('open', otwarte);
+    burger.setAttribute('aria-expanded', String(otwarte));
+    /* `inert` nie działa na sam nagłówek — wtedy zniknąłby też hamburger i menu */
+    zakryte().forEach(e => { if (otwarte) e.setAttribute('inert', ''); else e.removeAttribute('inert'); });
+    if (otwarte) { const pierwszy = nav.querySelector('a'); if (pierwszy) pierwszy.focus(); }
+    else burger.focus();
+  };
+
+  burger.addEventListener('click', () => ustawMenu(!nav.classList.contains('open')));
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => ustawMenu(false)));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && nav.classList.contains('open')) ustawMenu(false);
   });
-  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    burger.classList.remove('open'); nav.classList.remove('open');
-  }));
 })();
 </script>
 
