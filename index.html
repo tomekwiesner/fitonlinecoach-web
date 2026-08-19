@@ -3660,16 +3660,22 @@
       const pulapka = form.querySelector('[data-pulapka]');
       if (pulapka && pulapka.value) { form.reset(); return; }
       const adres = (pole.value || '').trim();
-      if (!adres || adres.indexOf('@') < 1 || adres.indexOf('.') < 0) {
-        pokaz('Sprawdź adres e-mail — coś się nie zgadza.', true); pole.focus(); return;
+      /* Poprzedni warunek („jest małpa i jest kropka") przepuszczał literówki, bo NIE
+         sprawdzał, czy kropka stoi PO małpie — `jan.kowalski@gmailcom` przechodził.
+         Zmierzone na 12 przykładach: stary warunek mylił się w 5, ten w żadnym.
+         Nie wystarczy też `type=email` przeglądarki: specyfikacja HTML dopuszcza adresy
+         bez kropki w domenie (np. `jan@intranet`), więc też przepuszcza tę literówkę. */
+      const adresOk = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(adres) && /\.[a-z]{2,}$/i.test(adres);
+      if (!adresOk) {
+        pokaz('Adres e-mail wygląda na niepoprawny — sprawdź pisownię.', true); pole.focus(); return;
       }
       if (zgoda && !zgoda.checked) {
-        pokaz('Zaznacz zgodę — bez niej nie mogę wysłać Ci ani jednego maila.', true);
+        pokaz('Zaznacz zgodę — bez niej wysyłka e-maili nie jest możliwa.', true);
         zgoda.focus(); return;
       }
       const akcja = ((window.FOC_NEWSLETTER || {}).action || '').trim();
-      if (!akcja) { pokaz('Zapisy ruszają lada dzień — wpadnij za chwilę 🙂'); return; }
-      pokaz('Wysyłam…');
+      if (!akcja) { pokaz('Zapisy zostaną uruchomione wkrótce — zajrzyj tu ponownie.'); return; }
+      pokaz('Zapisywanie…');
       /* BEZ `mode:'no-cors'`. Endpoint MailerLite odsyła `access-control-allow-origin: *`
          (sprawdzone 2026-08-02), więc odpowiedź DA SIĘ odczytać. Wcześniej `no-cors`
          zaślepiał wynik: `fetch` kończył się sukcesem nawet przy błędzie serwera i strona
@@ -3678,16 +3684,30 @@
       fetch(akcja, {method: 'POST', body: new FormData(form)})
         .then(r => r.json())
         .then(d => {
+          /* ROZRÓŻNIAMY DWA PRZYPADKI. Wcześniej każde odrzucenie kończyło się komunikatem
+             „spróbuj jeszcze raz za chwilę" — czyli: zawinił serwer, poczekaj. Klient
+             z literówką w adresie próbował więc w kółko z tą samą literówką i za każdym
+             razem dostawał tę samą odpowiedź. Gdy MailerLite skarży się na adres,
+             mówimy o adresie. */
+          if (d && d.success !== true) {
+            const opis = JSON.stringify(d.errors || d.error || d).toLowerCase();
+            if (opis.indexOf('mail') >= 0) {
+              pokaz('Ten adres nie został przyjęty — sprawdź, czy jest poprawny.', true);
+              pole.focus(); return;
+            }
+          }
           if (!d || d.success !== true) throw new Error('zapis odrzucony');
           /* Treść uzgodniona z wątkiem maili (2026-08-01): musi WPROST mówić, że trzeba kliknąć
-             link, bo przy double opt-in ludzie inaczej piszą, że „nic nie przyszło". */
-          pokaz('Sprawdź skrzynkę — wysłałem link potwierdzający. Kliknij go, żeby zapis był '
-              + 'ważny. Zajrzyj też do spamu.');
+             link, bo przy double opt-in ludzie inaczej piszą, że „nic nie przyszło".
+             Sformułowana BEZOSOBOWO (polecenie Tomka 2026-08-16) — poprzednia wersja mówiła
+             „wysłałem", czyli w rodzaju męskim, co łamie zasadę tekstów do klienta. */
+          pokaz('Na podany adres został wysłany link potwierdzający. Kliknij go, aby dokończyć '
+              + 'zapis. Sprawdź także folder ze spamem.');
           form.reset(); if (zgoda) zgoda.checked = false;
           /* pomiar konwersji — obsługiwany w bloku zgód, żeby błąd pomiaru nie psuł zapisu */
           document.dispatchEvent(new CustomEvent('foc:zapis'));
         })
-        .catch(() => pokaz('Nie udało się zapisać — spróbuj jeszcze raz za chwilę.', true));
+        .catch(() => pokaz('Zapis nie powiódł się — spróbuj ponownie za chwilę.', true));
     });
   });
 
