@@ -1221,11 +1221,20 @@
   .dl-tresc h3{font-size:1.57rem;line-height:1.3;color:#fff;margin-bottom:13px;text-wrap:balance}
   .dl-tresc p{font-size:1.23rem;line-height:1.55;color:#B9C4BD}
   /* kropki i podpis — ten sam język co pod karuzelą planów */
-  .dl-kropki{display:flex;justify-content:center;gap:10px;margin-top:26px}
-  .dl-kropki button{width:9px;height:9px;padding:0;border:0;border-radius:50%;cursor:pointer;
+  /* Cel dotyku 19x44 px zamiast kropki 9x9 px — palcem trafia sie w plame ok. 44 px,
+     wiec w kropke 9 px trafialo sie z dokladnoscia 4-6 px. Kropke rysuje ::before,
+     przycisk jest przezroczysty, wiec WYGLAD SIE NIE ZMIENIA:
+       - przyrost wysokosci (44-9=35 px) zdjety po 17,5 px z gory i z dolu,
+       - przyrost szerokosci (57-47=10 px) zdjety po 5 px z bokow — inaczej przy
+         wyrownaniu do lewej (komputer) pierwsza kropka uciekala 5 px w prawo.
+     Zmierzone 2026-08-19 na 343/390/1280 px: 12 kadrow identycznych co do piksela. */
+  .dl-kropki{display:flex;justify-content:center;gap:0;margin:8.5px -5px -17.5px}
+  .dl-kropki button{width:19px;height:44px;padding:0;border:0;background:none;cursor:pointer;
+    display:grid;place-items:center}
+  .dl-kropki button::before{content:'';width:9px;height:9px;border-radius:50%;
     background:rgba(255,255,255,.22);transition:background .25s,transform .25s}
-  .dl-kropki button:hover{background:rgba(153,230,109,.6)}
-  .dl-kropki button.on{background:var(--lime);transform:scale(1.25)}
+  .dl-kropki button:hover::before{background:rgba(153,230,109,.6)}
+  .dl-kropki button.on::before{background:var(--lime);transform:scale(1.25)}
   .dl-podpis{margin-top:10px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
     color:var(--muted);opacity:.65;text-align:center}
   /* strzałki dla myszy — na dotyku wystarcza przesuwanie */
@@ -1276,7 +1285,7 @@
   .wa-teksty p{font-size:1.05rem;line-height:1.62}
   /* kropki i strzałki w jednym rzędzie pod opisem */
   .wa-ster{display:flex;align-items:center;gap:12px;margin-top:32px}
-  .wa-ster .dl-kropki{margin-top:0;justify-content:flex-start}
+  .wa-ster .dl-kropki{margin:-17.5px -5px;justify-content:flex-start}
   #whyLayer .dl-podpis{text-align:left;margin-top:14px}
   @media(max-width:980px){
     .wa-grid{grid-template-columns:1fr;gap:26px;margin-top:30px}
@@ -1432,8 +1441,12 @@
   .socials a:hover{border-color:var(--lime);background:var(--lime)}
   .socials svg{width:19px;height:19px;fill:#CFD8D2;transition:.25s}
   .socials a:hover svg{fill:var(--black)}
-  .foot-links{display:flex;gap:28px;list-style:none;flex-wrap:wrap}
-  .foot-links a{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  /* Cel dotyku 44 px wysokosci zamiast 16 px. Wysciolka nie zmienia wygladu:
+     odstep wierszy 9,6 px i ujemne marginesy -8,5 / -9,9 px wyrownuja przyrost —
+     dobrane tak, ze wynik nie zalezy od liczby wierszy (1 na komputerze, 2 przy 390 px,
+     4 przy 343 px). Zmierzone: napisy 0,0 px przesuniecia, wysokosc stopki bez zmian. */
+  .foot-links{display:flex;column-gap:28px;row-gap:9.6px;list-style:none;flex-wrap:wrap;margin:-8.5px 0 -9.9px}
+  .foot-links a{display:block;padding:11.5px 0;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .foot-links a:hover{color:var(--lime)}
   .copy{border-top:1px solid var(--line);padding-top:28px;font-size:.8rem;color:var(--muted);
     display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
