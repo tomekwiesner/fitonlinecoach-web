@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+  <!-- ⚠ ŚCIEŻKI MUSZĄ ZACZYNAĆ SIĘ OD UKOŚNIKA. Ta strona pokazuje się pod DOWOLNYM
+       nieistniejącym adresem, także zagnieżdżonym. Przy ścieżkach względnych przeglądarka
+       szukała logo w katalogu z adresu — np. pod /plany/cos w /plany/assets/logo_stacked.png —
+       i dostawała 404, więc strona błędu sama pokazywała złamany obrazek.
+       Zmierzone 2026-08-19: /nieistnieje logo OK, /plany/nieistnieje i /a/b/nieistnieje złamane. -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nie ma takiej strony — FitOnlineCoach</title>
 <meta name="robots" content="noindex, follow">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon-180.png">
 <!-- Strona błędu 404 dla GitHub Pages — sam plik `404.html` w katalogu głównym wystarczy,
      Pages podstawia go automatycznie. Celowo SAMODZIELNA i lekka: nie wciąga 177-kilobajtowego
      `index.html` ani fontów, bo ktoś, kto trafił tu z literówki, ma zobaczyć drogę powrotną
@@ -30,7 +35,7 @@
 </head>
 <body>
   <div class="box">
-    <img src="assets/logo_stacked.png" alt="FitOnlineCoach">
+    <img src="/assets/logo_stacked.png" alt="FitOnlineCoach">
     <div class="kod">Błąd 404</div>
     <h1>Nie ma takiej strony.</h1>
     <p>Adres jest błędny albo strona została przeniesiona. Wróć na stronę główną — tam znajdziesz plany treningowe i zapis na listę oczekujących.</p>
