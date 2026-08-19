@@ -144,6 +144,12 @@
   ::-webkit-scrollbar-thumb:hover{background:var(--lime)}
   h1,h2,h3,.display{font-family:'Montserrat',sans-serif;font-weight:800;line-height:1.05;text-transform:uppercase;letter-spacing:-.01em}
   img,video{max-width:100%;display:block}
+  /* height:auto MUSI isc w parze z atrybutami width/height na obrazku. Bez tego przegladarka
+     bierze wysokosc wprost z atrybutu — tomek_hoodie.jpg urosl do 1200 px i wydluzyl strone
+     o 876 px (zmierzone 2026-08-19). Z height:auto atrybuty sluza tylko do wyliczenia
+     proporcji, czyli do tego, po co je dopisujemy: zeby miejsce bylo zarezerwowane,
+     zanim obrazek sie wczyta. */
+  img{height:auto}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
 
@@ -2155,7 +2161,7 @@
       <div class="wrap about-content">
         <div class="about-grid">
           <div class="about-visual" id="aboutPhoto">
-            <div class="frame"><img src="assets/tomek_hoodie.jpg" alt="Tomek Wiesner w bluzie FitOnlineCoach z szeroko rozłożonymi ramionami" loading="lazy" decoding="async"></div>
+            <div class="frame"><img src="assets/tomek_hoodie.jpg" alt="Tomek Wiesner w bluzie FitOnlineCoach z szeroko rozłożonymi ramionami" width="1200" height="1200" loading="lazy" decoding="async"></div>
           </div>
           <div id="aboutText">
             <div class="sec-label rv">05 — O mnie</div>
@@ -2295,7 +2301,7 @@
 <footer>
   <div class="wrap">
     <div class="foot-grid">
-      <img src="assets/logo_stacked.png" alt="FitOnlineCoach" style="height:72px;width:auto" loading="lazy" decoding="async">
+      <img src="assets/logo_stacked.png" alt="FitOnlineCoach" width="560" height="742" style="height:72px;width:auto" loading="lazy" decoding="async">
       <ul class="foot-links">
         <li><a href="#dlaczego">Dlaczego</a></li>
         <li><a href="#plan">Plan</a></li>
