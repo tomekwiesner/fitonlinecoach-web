@@ -2081,13 +2081,122 @@
   </div>
 </section>
 
+
+<!-- ===== O MNIE nad DIVIDEREM deszczu (druga kurtyna) ===== -->
+<div class="stack stack-about" id="o-mnie">
+  <div class="stack-pin">
+
+    <!-- warstwa pod spodem: przerywnik z deszczem -->
+    <section class="layer layer-under divider divider-czarny" id="hasloRegularnie">
+      <!-- Talerz wytacza się zza zdjęcia z „o mnie", przetacza się w prawo i w swoim
+           śladzie odsłania hasło; wytoczywszy się za prawą krawędź — znika. -->
+      <div class="sztangownia" id="sztangownia" aria-hidden="true">
+        <div class="talerz-cien" id="talerzCien"></div>
+        <div class="talerz-roll" id="talerzRoll"><img src="assets/talerz_red25.webp" alt="" loading="lazy" decoding="async"></div>
+      </div>
+      <h2 id="hasloTekst">Nie musi być idealnie.<br><span>Ma być regularnie.</span></h2>
+    </section>
+
+    <!-- warstwa wierzchnia: o mnie (rozjeżdża się na boki) -->
+    <section class="layer layer-over about" id="aboutLayer">
+      <span class="door door-l" id="door2L" aria-hidden="true"></span>
+      <span class="door door-r" id="door2R" aria-hidden="true"></span>
+      <div class="wrap about-content">
+        <div class="about-grid">
+          <div class="about-visual" id="aboutPhoto">
+            <div class="frame"><img src="assets/tomek_czapka.jpg" alt="Tomek Wiesner, trener personalny FitOnlineCoach, w czapce i koszulce z logo FOC" width="1200" height="1200" loading="lazy" decoding="async"></div>
+          </div>
+          <div id="aboutText">
+            <div class="sec-label rv">04 — O mnie</div>
+            <h2 class="sec-title rv rv2">Cześć,<br>jestem Tomek.</h2>
+            <p class="rv rv3">Jako trener personalny, fizjoterapeuta i dietetyk patrzę na Twój trening
+              z trzech stron naraz — dzięki temu plan jest skuteczny, bezpieczny i możliwy do pogodzenia
+              z normalnym życiem.</p>
+            <p class="rv rv3">Od 2010 roku codziennie planuję i prowadzę treningi dla swoich klientów,
+              dlatego masz pewność, że moje plany treningowe to coś więcej niż Ctrl+C / Ctrl+V.</p>
+            <p class="rv rv3">Wierzę w złoty środek — mądry ruch, proste zasady odżywiania
+              i systematyczność, którą utrzymasz latami.</p>
+            <div class="roles rv rv4" id="roles">
+              <button class="role" type="button" data-detail="Szkolenia EXOS, EPI – NCSC, IFBB i inne"><span>Trener personalny</span></button>
+              <button class="role" type="button" data-detail="mgr fizjoterapii — AWF Katowice"><span>Fizjoterapeuta</span></button>
+              <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice"><span>Dietetyk</span></button>
+            </div>
+            <div class="role-detail" id="roleDetail" aria-live="polite"></div>
+            <!-- sierpień 2026: oferta opieki żyje w aplikacji, a ta jest za bramką do 7.09,
+                 więc przycisk prowadzi do zapisu. Cena zostaje — buduje wyobrażenie o produkcie.
+                 „/ mies." obowiązkowe: bez niego cena abonamentu wyglądała na jednorazową
+                 (audyt 2026-07-29). -->
+            <a class="btn btn-lime btn-join btn-care rv rv4" href="#zapis">
+              <span class="bj-main">Opieka indywidualna</span>
+              <span class="bj-sub">od 399 zł / mies. — rusza 7.09</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ===== YT ===== -->
+<section class="yt" id="wideo">
+  <div class="bg tlo-pozne" data-parallax="0.16"></div>
+  <div class="wrap">
+    <div class="sec-label rv" style="justify-content:center">05 — Darmowa wiedza</div>
+    <h2 class="rv rv2"><span class="yt-count">80</span> <span class="yt-adj">darmowych</span> <span class="yt-noun">poradników</span> wideo</h2>
+    <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem SAM „przewija" (swajp)
+         do kolejnego — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
+         które „wyprzedzają" telefon i dodają głębi 3D: pierwszy niesie tekst spod tytułu, drugi
+         jest jednocześnie przyciskiem na YouTube. Ekstruzję boku, klon pętli i skalę dodaje JS. -->
+    <div class="vphone-wrap rv rv3">
+      <div class="vphone" id="vphone">
+        <div class="dl-body fon-poziomo fon-wideo">
+          <span class="dl-notch"></span>
+          <div class="dl-ekran">
+            <div class="vp-track" id="vpTrack" aria-hidden="true">
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_plecy.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_licznik.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_hollow.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_counter.mp4"></video></div>
+            </div>
+          </div>
+        </div>
+        <!-- szklane pop-upy wyprzedzające telefon (więcej 3D) -->
+        <div class="vp-pop vp-pop-a"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</div>
+        <a class="vp-pop vp-pop-b" href="https://youtube.com/playlist?list=PLEgy8VO2gIhkaWkcrwXJrCfdo338oPv4v" target="_blank" rel="noopener">
+          <span class="vp-pop-ic" aria-hidden="true">▶</span>
+          <!-- te same klasy co w nagłówku sekcji — bez nich liczba była wpisana na sztywno
+               i rozjechałaby się z resztą strony przy pierwszym nowym filmie na playliście -->
+          <span class="vp-pop-txt"><b><span class="yt-count">80</span> <span class="yt-noun">poradników</span> wideo</b><br>Oglądaj na YouTube</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OPINIE (pokazuje się dopiero, gdy są zatwierdzone opinie) ===== -->
+<section class="reviews" id="opinie" hidden>
+  <div class="wrap">
+    <div class="sec-label rv" style="justify-content:center">06 — Opinie</div>
+    <h2 class="sec-title rv rv2" style="text-align:center;margin-left:auto;margin-right:auto">Co mówią osoby,<br>które <span style="color:var(--lime)">już trenują</span>.</h2>
+    <!-- Wymóg z przepisów o opiniach konsumenckich (tzw. Omnibus): trzeba napisać, CZY i JAK
+         sprawdzamy opinie. Treść podyktowana przez Tomka 2026-08-14. Zdanie zobowiązuje —
+         publikujemy wyłącznie opinie prawdziwych użytkowników aplikacji. -->
+    <p class="rev-nota rv rv2">Opinie są sprawdzane i pochodzą od prawdziwych użytkowników aplikacji.</p>
+    <!-- Karuzela po orbicie: karty (buduje je renderOpinie z danych) krążą po elipsie; JS pozycjonuje. -->
+    <div class="orbit-stage rv rv3">
+      <div class="orbit" id="revGrid"></div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== FAQ =====
      Obsługa obiekcji przed zakupem (audyt 2026-07-29). Liczby zgodne z planem w aplikacji
      (12 treningów / 595 min, pojedynczy trening 40–60 min). Zwroty opisane zgodnie z regulaminem —
      ŻADNEJ obietnicy „gwarancji zwrotu" (decyzja Tomka). -->
 <section class="faq" id="faq">
   <div class="wrap">
-    <div class="sec-label rv">04 — Częste pytania</div>
+    <div class="sec-label rv">07 — Częste pytania</div>
     <h2 class="sec-title rv rv2">Masz pytania?<br>Odpowiadam wprost.</h2>
     <div class="faq-list rv rv3">
       <details class="faq-item">
@@ -2135,114 +2244,6 @@
           jeśli masz niedawną kontuzję, leczysz się przewlekle, martwisz się swoim stanem
           zdrowia albo jesteś w ciąży. Regularne badania to część zdrowego trybu życia.</p>
       </details>
-    </div>
-  </div>
-</section>
-
-<!-- ===== O MNIE nad DIVIDEREM deszczu (druga kurtyna) ===== -->
-<div class="stack stack-about" id="o-mnie">
-  <div class="stack-pin">
-
-    <!-- warstwa pod spodem: przerywnik z deszczem -->
-    <section class="layer layer-under divider divider-czarny" id="hasloRegularnie">
-      <!-- Talerz wytacza się zza zdjęcia z „o mnie", przetacza się w prawo i w swoim
-           śladzie odsłania hasło; wytoczywszy się za prawą krawędź — znika. -->
-      <div class="sztangownia" id="sztangownia" aria-hidden="true">
-        <div class="talerz-cien" id="talerzCien"></div>
-        <div class="talerz-roll" id="talerzRoll"><img src="assets/talerz_red25.webp" alt="" loading="lazy" decoding="async"></div>
-      </div>
-      <h2 id="hasloTekst">Nie musi być idealnie.<br><span>Ma być regularnie.</span></h2>
-    </section>
-
-    <!-- warstwa wierzchnia: o mnie (rozjeżdża się na boki) -->
-    <section class="layer layer-over about" id="aboutLayer">
-      <span class="door door-l" id="door2L" aria-hidden="true"></span>
-      <span class="door door-r" id="door2R" aria-hidden="true"></span>
-      <div class="wrap about-content">
-        <div class="about-grid">
-          <div class="about-visual" id="aboutPhoto">
-            <div class="frame"><img src="assets/tomek_czapka.jpg" alt="Tomek Wiesner, trener personalny FitOnlineCoach, w czapce i koszulce z logo FOC" width="1200" height="1200" loading="lazy" decoding="async"></div>
-          </div>
-          <div id="aboutText">
-            <div class="sec-label rv">05 — O mnie</div>
-            <h2 class="sec-title rv rv2">Cześć,<br>jestem Tomek.</h2>
-            <p class="rv rv3">Jako trener personalny, fizjoterapeuta i dietetyk patrzę na Twój trening
-              z trzech stron naraz — dzięki temu plan jest skuteczny, bezpieczny i możliwy do pogodzenia
-              z normalnym życiem.</p>
-            <p class="rv rv3">Od 2010 roku codziennie planuję i prowadzę treningi dla swoich klientów,
-              dlatego masz pewność, że moje plany treningowe to coś więcej niż Ctrl+C / Ctrl+V.</p>
-            <p class="rv rv3">Wierzę w złoty środek — mądry ruch, proste zasady odżywiania
-              i systematyczność, którą utrzymasz latami.</p>
-            <div class="roles rv rv4" id="roles">
-              <button class="role" type="button" data-detail="Szkolenia EXOS, EPI – NCSC, IFBB i inne"><span>Trener personalny</span></button>
-              <button class="role" type="button" data-detail="mgr fizjoterapii — AWF Katowice"><span>Fizjoterapeuta</span></button>
-              <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice"><span>Dietetyk</span></button>
-            </div>
-            <div class="role-detail" id="roleDetail" aria-live="polite"></div>
-            <!-- sierpień 2026: oferta opieki żyje w aplikacji, a ta jest za bramką do 7.09,
-                 więc przycisk prowadzi do zapisu. Cena zostaje — buduje wyobrażenie o produkcie.
-                 „/ mies." obowiązkowe: bez niego cena abonamentu wyglądała na jednorazową
-                 (audyt 2026-07-29). -->
-            <a class="btn btn-lime btn-join btn-care rv rv4" href="#zapis">
-              <span class="bj-main">Opieka indywidualna</span>
-              <span class="bj-sub">od 399 zł / mies. — rusza 7.09</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </div>
-</div>
-
-<!-- ===== YT ===== -->
-<section class="yt" id="wideo">
-  <div class="bg tlo-pozne" data-parallax="0.16"></div>
-  <div class="wrap">
-    <div class="sec-label rv" style="justify-content:center">06 — Darmowa wiedza</div>
-    <h2 class="rv rv2"><span class="yt-count">80</span> <span class="yt-adj">darmowych</span> <span class="yt-noun">poradników</span> wideo</h2>
-    <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem SAM „przewija" (swajp)
-         do kolejnego — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
-         które „wyprzedzają" telefon i dodają głębi 3D: pierwszy niesie tekst spod tytułu, drugi
-         jest jednocześnie przyciskiem na YouTube. Ekstruzję boku, klon pętli i skalę dodaje JS. -->
-    <div class="vphone-wrap rv rv3">
-      <div class="vphone" id="vphone">
-        <div class="dl-body fon-poziomo fon-wideo">
-          <span class="dl-notch"></span>
-          <div class="dl-ekran">
-            <div class="vp-track" id="vpTrack" aria-hidden="true">
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_plecy.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_licznik.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_hollow.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_counter.mp4"></video></div>
-            </div>
-          </div>
-        </div>
-        <!-- szklane pop-upy wyprzedzające telefon (więcej 3D) -->
-        <div class="vp-pop vp-pop-a"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</div>
-        <a class="vp-pop vp-pop-b" href="https://youtube.com/playlist?list=PLEgy8VO2gIhkaWkcrwXJrCfdo338oPv4v" target="_blank" rel="noopener">
-          <span class="vp-pop-ic" aria-hidden="true">▶</span>
-          <!-- te same klasy co w nagłówku sekcji — bez nich liczba była wpisana na sztywno
-               i rozjechałaby się z resztą strony przy pierwszym nowym filmie na playliście -->
-          <span class="vp-pop-txt"><b><span class="yt-count">80</span> <span class="yt-noun">poradników</span> wideo</b><br>Oglądaj na YouTube</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== OPINIE (pokazuje się dopiero, gdy są zatwierdzone opinie) ===== -->
-<section class="reviews" id="opinie" hidden>
-  <div class="wrap">
-    <div class="sec-label rv" style="justify-content:center">07 — Opinie</div>
-    <h2 class="sec-title rv rv2" style="text-align:center;margin-left:auto;margin-right:auto">Co mówią osoby,<br>które <span style="color:var(--lime)">już trenują</span>.</h2>
-    <!-- Wymóg z przepisów o opiniach konsumenckich (tzw. Omnibus): trzeba napisać, CZY i JAK
-         sprawdzamy opinie. Treść podyktowana przez Tomka 2026-08-14. Zdanie zobowiązuje —
-         publikujemy wyłącznie opinie prawdziwych użytkowników aplikacji. -->
-    <p class="rev-nota rv rv2">Opinie są sprawdzane i pochodzą od prawdziwych użytkowników aplikacji.</p>
-    <!-- Karuzela po orbicie: karty (buduje je renderOpinie z danych) krążą po elipsie; JS pozycjonuje. -->
-    <div class="orbit-stage rv rv3">
-      <div class="orbit" id="revGrid"></div>
     </div>
   </div>
 </section>
