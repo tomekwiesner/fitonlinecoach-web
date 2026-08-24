@@ -1046,9 +1046,6 @@
 
   /* ---------- YT banner ---------- */
   .yt{position:relative;overflow:hidden;padding:84px 0;text-align:center}
-  .yt .bg{position:absolute;inset:-15% 0;background:var(--graphite) center/cover no-repeat;will-change:transform}
-  .yt .bg.wczytane{background-image:url('assets/tlo_darmowe_wideo.jpg')}
-  .yt::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--black) 0%,rgba(7,9,8,.55) 30%,rgba(7,9,8,.55) 70%,var(--black) 100%);z-index:1}
   .yt .wrap{position:relative;z-index:2}
   .yt h2{font-size:clamp(2rem,4.6vw,3.6rem);color:#fff;margin-bottom:18px}
   .yt h2 .yt-count{color:var(--lime)}
@@ -2140,7 +2137,6 @@
 
 <!-- ===== YT ===== -->
 <section class="yt" id="wideo">
-  <div class="bg tlo-pozne" data-parallax="0.16"></div>
   <div class="wrap">
     <div class="sec-label rv" style="justify-content:center">05 — Darmowa wiedza</div>
     <h2 class="rv rv2"><span class="yt-count">80</span> <span class="yt-adj">darmowych</span> <span class="yt-noun">poradników</span> wideo</h2>
