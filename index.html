@@ -1451,6 +1451,19 @@
   .foot-links{display:flex;column-gap:28px;row-gap:9.6px;list-style:none;flex-wrap:wrap;margin:-8.5px 0 -9.9px}
   .foot-links a{display:block;padding:11.5px 0;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .foot-links a:hover{color:var(--lime)}
+  /* Metryczka spolki (art. 300(11) KSH): zwinieta jedna linijka, rozwinieta krotkie
+     linijki po jednej danej. Cel dotyku w podsumowaniu ma 45 px wysokosci — te same
+     zasady co przy odnosnikach stopki. */
+  .foot-rejestr{margin:0 0 26px;max-width:760px}
+  .foot-rejestr summary{font-size:.74rem;line-height:1.75;color:var(--muted);cursor:pointer;
+    padding:12px 0;list-style:none;display:flex;align-items:center;gap:10px}
+  .foot-rejestr summary::-webkit-details-marker{display:none}
+  .foot-rejestr summary::after{content:"+";font-size:.95rem;line-height:1;color:var(--muted)}
+  .foot-rejestr[open] summary::after{content:"–"}
+  .foot-rejestr summary:hover{color:var(--text)}
+  .foot-rejestr-lista{padding-top:6px}
+  .foot-rejestr-lista p{font-size:.74rem;line-height:1.7;color:var(--muted);margin:0 0 3px}
+  .foot-rejestr-lista .fr-firma{color:var(--text);margin-bottom:7px}
   .copy{border-top:1px solid var(--line);padding-top:28px;font-size:.8rem;color:var(--muted);
     display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
@@ -1608,7 +1621,7 @@
   "@context": "https://schema.org",
   "@graph": [
     { "@type": "WebSite", "@id": "https://fitonlinecoach.com/#website", "url": "https://fitonlinecoach.com/", "name": "FitOnlineCoach", "inLanguage": "pl-PL", "publisher": { "@id": "https://fitonlinecoach.com/#org" } },
-    { "@type": "Organization", "@id": "https://fitonlinecoach.com/#org", "name": "FitOnlineCoach", "legalName": "4Spine – Tomasz Wiesner", "url": "https://fitonlinecoach.com/", "logo": "https://fitonlinecoach.com/assets/icon_512.png", "image": "https://fitonlinecoach.com/assets/og-image.jpg", "vatID": "PL9542704914", "founder": { "@id": "https://fitonlinecoach.com/#tomek" }, "sameAs": ["https://www.youtube.com/@FitOnlineCoach", "https://instagram.com/tomek.wiesner"] },
+    { "@type": "Organization", "@id": "https://fitonlinecoach.com/#org", "name": "FitOnlineCoach", "legalName": "FitOnlineCoach prosta spółka akcyjna", "url": "https://fitonlinecoach.com/", "logo": "https://fitonlinecoach.com/assets/icon_512.png", "image": "https://fitonlinecoach.com/assets/og-image.jpg", "vatID": "PL9542914095", "taxID": "9542914095", "address": { "@type": "PostalAddress", "streetAddress": "ul. Żyzna 2", "postalCode": "40-314", "addressLocality": "Katowice", "addressCountry": "PL" }, "identifier": [{ "@type": "PropertyValue", "propertyID": "KRS", "value": "0001262434" }, { "@type": "PropertyValue", "propertyID": "REGON", "value": "545549296" }], "founder": { "@id": "https://fitonlinecoach.com/#tomek" }, "sameAs": ["https://www.youtube.com/@FitOnlineCoach", "https://instagram.com/tomek.wiesner"] },
     { "@type": "Person", "@id": "https://fitonlinecoach.com/#tomek", "name": "Tomasz Wiesner", "jobTitle": "Trener personalny, fizjoterapeuta i dietetyk", "worksFor": { "@id": "https://fitonlinecoach.com/#org" }, "sameAs": ["https://www.linkedin.com/in/tomek-wiesner-70537333a/"] },
     { "@type": "Product", "name": "Plan treningowy „Początek”", "description": "4 tygodnie treningu, 3 dni w tygodniu, 12 treningów, 50 ćwiczeń z poradnikiem wideo. Dla osób zaczynających lub wracających do treningu.", "brand": { "@id": "https://fitonlinecoach.com/#org" }, "image": "https://fitonlinecoach.com/assets/plan_poczatek.jpg", "offers": { "@type": "Offer", "price": "79.00", "priceCurrency": "PLN", "availability": "https://schema.org/InStock", "url": "https://fitonlinecoach.com/" } }
   ]
@@ -1789,7 +1802,7 @@
       <p class="zapis-msg" data-msg hidden aria-live="polite"></p>
       <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik
            (uzgodnione z wątkiem maili 2026-08-01) -->
-      <p class="zapis-admin">Administrator danych: 4Spine – Tomasz Wiesner, NIP 9542704914.</p>
+      <p class="zapis-admin">Administrator danych: FitOnlineCoach prosta spółka akcyjna, ul. Żyzna 2, 40-314 Katowice, NIP 9542914095.</p>
     </div>
   </div>
   <div class="scroll-cue">Przewiń<i></i></div>
@@ -2289,7 +2302,7 @@
         <p class="zapis-msg" data-msg hidden aria-live="polite"></p>
         <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik
              (uzgodnione z wątkiem maili 2026-08-01) -->
-        <p class="zapis-admin">Administrator danych: 4Spine – Tomasz Wiesner, NIP 9542704914.</p>
+        <p class="zapis-admin">Administrator danych: FitOnlineCoach prosta spółka akcyjna, ul. Żyzna 2, 40-314 Katowice, NIP 9542914095.</p>
       </div>
     </div>
   </div>
@@ -2322,8 +2335,24 @@
         </a>
       </div>
     </div>
+    <!-- Metryczka wymagana przez art. 300(11) KSH: dla prostej spolki akcyjnej przepis
+         wymienia "informacje na stronach internetowych spolki" WPROST i zada firmy, siedziby
+         i adresu, sadu rejestrowego z numerem KRS, NIP oraz wysokosci kapitalu akcyjnego.
+         Dane wylacznie z sekcji 3a pliku FITONLINECOACH-STATUS.md — nie przepisywac z pamieci.
+         Forma: zwiniete jedna linijka, rozwiniete krotkie linijki po jednej danej
+         (wybor Tomka 2026-08-26 — wariant B rozwijajacy sie w C). -->
+    <details class="foot-rejestr">
+      <summary>FitOnlineCoach P.S.A.</summary>
+      <div class="foot-rejestr-lista">
+        <p class="fr-firma">FitOnlineCoach prosta spółka akcyjna</p>
+        <p>ul. Żyzna 2, 40-314 Katowice</p>
+        <p>KRS 0001262434 · NIP 9542914095 · REGON 545549296</p>
+        <p>Sąd Rejonowy Katowice-Wschód w Katowicach, VIII Wydział Gospodarczy KRS</p>
+        <p>Kapitał akcyjny 5 000,00 zł</p>
+      </div>
+    </details>
     <div class="copy">
-      <span>© 2026 FitOnlineCoach — Tomasz Wiesner. Wszystkie prawa zastrzeżone.</span>
+      <span>© 2026 FitOnlineCoach P.S.A. Wszystkie prawa zastrzeżone.</span>
       <span><button class="cc-link" id="ccReopen" type="button">Ustawienia cookies</button></span>
       <span>Trening · Dieta · Fizjoterapia</span>
     </div>
