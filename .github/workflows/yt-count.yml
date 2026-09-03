@@ -1,10 +1,17 @@
-name: Odswiez licznik filmow YouTube
+name: Odswiez licznik poradnikow YouTube
 
-# Raz w tygodniu (poniedzialek rano) strona sama przelicza,
-# ile filmow jest na playliscie z poradnikami, i zapisuje wynik do assets/yt.json.
+# Codziennie nad ranem strona sama przelicza, ile poradnikow jest na YouTube,
+# i zapisuje wynik do assets/yt.json. Strona czyta ten plik i odmienia tekst
+# („1 poradnik / 3 poradniki / 50 poradnikow"); przy 0 chowa cala sekcje.
+#
+# Ktora playlista? Jesli w assets/yt.json jest wpisane `playlist` (ID) — ta.
+# Jesli pole jest puste — automat szuka na kanale playlisty, ktorej tytul
+# zawiera slowo „poradnik" (wielkosc liter bez znaczenia). Brak takiej = 0.
+# Liczbe bierzemy z naglowka playlisty (pole "stats"), a nie z liczenia
+# identyfikatorow filmow — strona playlisty pokazuje tylko pierwsze 100.
 on:
   schedule:
-    - cron: '17 4 * * 1'
+    - cron: '17 4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -14,26 +21,54 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # przypiete do konkretnego commita (v4.2.2), nie do ruchomego tagu — bezpieczenstwo lancucha dostaw
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
-      - name: Policz filmy na playliscie
+      - name: Policz poradniki
         run: |
-          PLAYLIST=$(python3 -c "import json;print(json.load(open('assets/yt.json'))['playlist'])")
-          curl -sL -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
-            "https://www.youtube.com/playlist?list=$PLAYLIST" -o pl.html
-          COUNT=$(grep -oE '"videoId":"[A-Za-z0-9_-]{11}"' pl.html | sort -u | wc -l)
-          echo "Znaleziono filmow: $COUNT"
-          rm -f pl.html
-          if [ "$COUNT" -lt 1 ]; then
-            echo "Brak wyniku - zostawiam poprzednia liczbe."
-            exit 0
-          fi
-          python3 -c "import json,datetime,sys; p='assets/yt.json'; d=json.load(open(p)); d['count']=int(sys.argv[1]); d['updated']=datetime.date.today().isoformat(); json.dump(d, open(p,'w'), ensure_ascii=False, indent=2)" "$COUNT"
+          python3 - <<'PY'
+          import json, re, urllib.request, datetime, sys
+          P = 'assets/yt.json'
+          d = json.load(open(P, encoding='utf-8'))
+          UA = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120', 'Accept-Language': 'pl-PL,pl;q=0.9'}
+          def get(url):
+              return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60).read().decode('utf-8', 'ignore')
+          KANAL = d.get('channel') or 'https://www.youtube.com/@FitOnlineCoach'
+          pid = (d.get('playlist') or '').strip()
+          if not pid:
+              html = get(KANAL + '/playlists')
+              # Kazda playlista na stronie kanalu to "lockup": tytul {"content":"..."} stoi PRZED
+              # "contentId":"PL...","contentType":"LOCKUP_CONTENT_TYPE_PLAYLIST" (sprawdzone 3.09.2026).
+              for m in re.finditer(r'"contentId":"(PL[A-Za-z0-9_-]+)","contentType":"LOCKUP_CONTENT_TYPE_PLAYLIST"', html):
+                  okno = html[max(0, m.start() - 4000):m.start()]
+                  tytuly = re.findall(r'"title":\{"content":"([^"]+)"\}', okno)
+                  tytul = tytuly[-1] if tytuly else ''
+                  print('Playlista na kanale:', tytul, m.group(1))
+                  if 'poradnik' in tytul.lower():
+                      pid = m.group(1); print('Wybrana playlista z poradnikami:', tytul, pid); break
+          if not pid:
+              print('Brak playlisty z poradnikami — licznik 0.')
+              count = 0; url = KANAL
+          else:
+              html = get('https://www.youtube.com/playlist?list=' + pid)
+              m = re.search(r'"stats":\[\{"runs":\[\{"text":"([0-9][0-9 ]*)"', html)
+              if m:
+                  count = int(m.group(1).replace(' ', ''))
+              else:
+                  ids = set(re.findall(r'"videoId":"([A-Za-z0-9_-]{11})"', html))
+                  if not ids and 'playlist' not in html.lower():
+                      print('Strona playlisty nie odpowiedziala — zostawiam poprzednia liczbe.'); sys.exit(0)
+                  count = len(ids)
+              url = 'https://www.youtube.com/playlist?list=' + pid
+          print('Poradnikow:', count)
+          d.update({'count': count, 'url': url, 'playlist': pid, 'updated': datetime.date.today().isoformat()})
+          json.dump(d, open(P, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+          PY
 
       - name: Zapisz zmiane
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/yt.json
-          git diff --staged --quiet || git commit -m "Aktualizacja licznika filmow YouTube"
+          git diff --staged --quiet || git commit -m "Aktualizacja licznika poradnikow YouTube"
           git push

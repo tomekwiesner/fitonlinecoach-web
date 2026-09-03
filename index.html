@@ -39,12 +39,14 @@
     googleAdsId: '',   /* Google Ads, np. 'AW-123456789'                    */
     ga4Id: ''          /* Google Analytics 4, np. 'G-XXXXXXXXXX'            */
   };
-  /* ===== ZAPIS NA LISTĘ OCZEKUJĄCYCH: adres formularza MailerLite =====
-     Formularz „Strona www — zapis na listę oczekujących" (id 194586683979597714)
-     zapisuje do grupy „Lista oczekujących — start 7.09.2026" (id 194586674959746116).
+  /* ===== NEWSLETTER: adres formularza MailerLite =====
+     Formularz (id 194586683979597714) zapisuje do grupy id 194586674959746116. Do 3.09.2026
+     grupa nazywała się „Lista oczekujących — start 7.09.2026"; kampania przedsprzedażowa
+     została ODWOŁANA (decyzja Tomka 3.09.2026) i grupę przemianowuje Tomek w panelu MailerLite.
+     NIE zakładać nowej grupy ani formularza — zmieniłby się ten adres.
      Potwierdzenie mailem (double opt-in) jest WŁĄCZONE po stronie MailerLite.
      Sprawdzone 2026-08-01: adres odpowiada, a pole musi się nazywać `fields[email]`
-     (sam `email` zwraca „field is required"). Pusty adres = strona zapowiada start
+     (sam `email` zwraca „field is required"). Pusty adres = formularz pokazuje komunikat
      zamiast udawać zapis. */
   window.FOC_NEWSLETTER = { action: 'https://assets.mailerlite.com/jsonp/796687/forms/194586683979597714/subscribe' };
   /* Tryb zgody Google (Consent Mode v2) — MUSI być ustawiony ZANIM cokolwiek się wczyta.
@@ -62,22 +64,28 @@
      KOD PODGLĄDU zmienisz w jednym miejscu poniżej (window.FOC_PREVIEW_CODE). -->
 <script>
   window.FOC_PREVIEW_CODE = 'hussars2026';
+  /* Odblokowanie: zapamiętuje testera i zdejmuje blokadę przewijania. Jedna funkcja dla
+     obu dróg wejścia — linku ?podglad=KOD (tutaj) i formularza na ekranie „wkrótce". */
+  window.focOdblokuj = function () {
+    try { localStorage.setItem('foc_preview', '1'); } catch (e) {}
+    document.documentElement.classList.remove('gate-locked');
+  };
   (function () {
     try {
-      var KEY = 'foc_preview', url = new URL(location.href), q = url.searchParams.get('podglad'), ok = localStorage.getItem(KEY) === '1';
+      var url = new URL(location.href), q = url.searchParams.get('podglad'), ok = localStorage.getItem('foc_preview') === '1';
       if (q !== null) {
-        if (q === window.FOC_PREVIEW_CODE) { localStorage.setItem(KEY, '1'); ok = true; }
+        if (q === window.FOC_PREVIEW_CODE) ok = true;
         url.searchParams.delete('podglad');
         history.replaceState(null, '', url.pathname + url.search + url.hash);
       }
       if (ok) {
-        document.documentElement.classList.remove('gate-locked');
+        window.focOdblokuj();
         document.documentElement.setAttribute('data-preview', '1');
       }
     } catch (e) {}
   })();
 </script>
-<title>FitOnlineCoach — trening, który rozumiesz</title>
+<title>Plany treningowe online z wideo po polsku — FitOnlineCoach</title>
 <meta name="description" content="Plany treningowe z poradnikiem wideo do każdego ćwiczenia. Po polsku. Trener personalny, fizjoterapeuta i dietetyk w jednym.">
 
 <!-- ===== SEO / social (pakiet z wątku Social media FOC, zatwierdzony przez Tomka) ===== -->
@@ -151,6 +159,8 @@
      zanim obrazek sie wczyta. */
   img{height:auto}
   a{color:inherit;text-decoration:none}
+  /* fokus z klawiatury: limonkowa obwódka na każdym elemencie, do którego da się dojść Tabem */
+  :focus-visible{outline:2px solid var(--lime);outline-offset:3px}
   .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
 
 
@@ -263,9 +273,15 @@
   .hero-stack{position:relative;height:160vh}
   .hero-pin{position:sticky;top:0;height:100vh;overflow:hidden}
   .hero{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;overflow:hidden}
-  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
-  .hero::before{content:"";position:absolute;inset:0;z-index:1;
-    background:linear-gradient(180deg,rgba(7,9,8,.55) 0%,rgba(7,9,8,.25) 45%,var(--black) 100%)}
+  /* NISKIE OKNO KOMPUTERA (np. laptop z paskami przeglądarki, 1280×576): przypięte hero
+     o stałej wysokości 100vh obcinało przycisk „Dołącz" (audyt 3.09). Przypięcie wyłączamy
+     jak na telefonie; skrypt sam to wykrywa po wysokości `.hero-stack` (`plynne`).
+     Górny odstęp 88 px (pasek menu ma 76): przy 104 przycisk kończył się 2 px pod dolną krawędzią okna 576. */
+  @media(min-width:981px) and (max-height:700px){
+    .hero-stack{height:auto}
+    .hero-pin{position:static;height:auto;overflow:visible}
+    .hero{height:auto;min-height:100vh;align-items:flex-start;padding-top:88px;padding-bottom:96px}
+  }
   .hero::after{content:"";position:absolute;inset:0;z-index:1;
     background:radial-gradient(900px 500px at 20% 60%,rgba(153,230,109,.10),transparent 60%)}
   .hero-content{position:relative;z-index:2;will-change:transform,opacity}
@@ -323,8 +339,8 @@
   .lead-omin{display:none}
   .hero p.lead{max-width:480px;color:#B9C4BD;font-size:1.08rem;margin-bottom:40px;
     opacity:0;animation:fadeUp .8s 1.15s forwards}
-  /* od sierpnia 2026 mieści zapis na listę (akapit + pole + zgoda + komunikat),
-     więc układ jest PIONOWY — wcześniej był rząd przycisków obok siebie */
+  /* kolumna wyrównana do lewej: przycisk „Dołącz" bierze szerokość z treści,
+     a nie rozciąga się na całą szerokość kolumny */
   .hero-actions{display:flex;flex-direction:column;align-items:flex-start;gap:0;
     opacity:0;animation:fadeUp .8s 1.35s forwards}
   @keyframes wordUp{to{opacity:1;transform:translateY(0)}}
@@ -347,7 +363,7 @@
      linii także na wąskim telefonie, dlatego mniejsza czcionka i węższe marginesy */
   .btn-care{padding:15px 30px}
   .btn-care .bj-main{font-size:1.02rem;letter-spacing:.1em}
-  .btn-care .bj-sub{font-size:.68rem}
+  .btn-care .bj-sub{font-size:.72rem}          /* ≥ 11,5 px — cena to nie drobny druk (audyt 3.09) */
   @media(max-width:360px){
     .btn-care{padding:14px 16px}
     .btn-care .bj-main{font-size:.9rem;letter-spacing:.06em}
@@ -355,10 +371,10 @@
   @media(max-width:320px){                    /* najstarsze, wąskie telefony */
     .btn-care{padding:13px 10px}
     .btn-care .bj-main{font-size:.78rem;letter-spacing:.02em}
-    .btn-care .bj-sub{font-size:.62rem}
+    .btn-care .bj-sub{font-size:.7rem}
   }
-  .btn-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.28)}
-  .btn-ghost:hover{border-color:var(--lime);color:var(--lime)}
+  /* warunek ceny „od" pod przyciskiem opieki — drobny druk, ale nie mniejszy niż 12 px */
+  .cena-warunek{display:block;margin-top:10px;font-size:.78rem;line-height:1.5;color:var(--muted)}
   .scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:2;display:flex;
     flex-direction:column;align-items:center;gap:10px;font-size:.68rem;letter-spacing:.3em;
     text-transform:uppercase;color:var(--muted);opacity:0;animation:fadeUp 1s 1.8s forwards}
@@ -382,6 +398,9 @@
   .sec-label::after{content:"";flex:0 0 48px;height:1px;background:var(--lime);opacity:.5}
   h2.sec-title{font-size:clamp(1.9rem,4vw,3.2rem);color:#fff;margin-bottom:18px;max-width:720px}
   .sec-sub{color:var(--muted);max-width:520px;font-size:1.02rem}
+  /* wyśrodkowany nagłówek sekcji (etykieta jest flexem, tytuł ma max-width — stąd oba zestawy) */
+  .center{justify-content:center;text-align:center;margin-left:auto;margin-right:auto}
+  .lime{color:var(--lime)}
 
   /* reveal on scroll */
   .rv{opacity:0;transform:translateY(46px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
@@ -405,8 +424,6 @@
     transform:rotate(-14deg);opacity:.16;pointer-events:none;z-index:0;
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 42%);
     mask-image:linear-gradient(90deg,transparent,#000 42%)}
-  /* przyciemnienie hero było potrzebne tylko pod wideo — teraz zasłaniałoby wzór */
-  .topblok .hero::before{display:none}
   .topblok .marquee{background:transparent}
   .topblok .manifest{overflow:visible}   /* talerze muszą móc wytoczyć się poza sekcję */
 
@@ -439,190 +456,12 @@
   .manifest .mw.lit{opacity:1}
   .manifest .mw.accent{color:var(--lime)}
 
-  /* ---------- dlaczego ---------- */
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:70px}
-  /* kafelek = kontener obrotu (tło i ramka siedzą na ściankach, żeby obrót nie gryzł się z kurtyną) */
-  .card{position:relative;perspective:1400px;cursor:pointer;min-height:400px;background:transparent;
-    border:0;padding:0;overflow:visible}
-  .card-inner{position:absolute;inset:0;transform-style:preserve-3d;
-    transition:transform .8s cubic-bezier(.45,.05,.2,1)}
-  .card.flipped .card-inner{transform:rotateY(180deg)}
-  .card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-    background:var(--graphite);border:1px solid var(--line);border-radius:16px;overflow:hidden;
-    transition:background .35s,opacity .01s linear .4s}
-  .card.flipped .card-front{opacity:0}
-  .card-back{opacity:0}
-  .card.flipped .card-back{opacity:1}
-  .card-front{padding:44px 34px;display:flex;flex-direction:column}
-  .card-front::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 260px at var(--mx,50%) var(--my,0%),rgba(153,230,109,.09),transparent 65%);opacity:0;transition:.4s}
-  .card:hover .card-front{background:var(--graphite-2)}
-  .card:hover .card-front::before{opacity:1}
-  .card h3{font-size:1.2rem;color:#fff;margin-bottom:14px;line-height:1.3;position:relative}
-  .card p{color:var(--muted);font-size:.94rem;position:relative}
-  .card-hint{margin-top:auto;padding-top:20px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--lime);opacity:.75;position:relative}
-  /* --dev-h = WSPÓLNA wysokość wszystkich trzech urządzeń na kafelkach (telefon/tablet/laptop) */
-  .card-back{--dev-h:214px;transform:rotateY(180deg);background:var(--graphite-2);display:flex;
-    flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px}
-  .card-back b{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.75rem;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--lime)}
-  /* Nieaktywna strona kafelka nie może łapać kliknięć — inaczej klik „w rewers" trafiałby w awers. */
-  .card:not(.flipped) .card-back{pointer-events:none}
-  .card.flipped .card-front{pointer-events:none}
-  /* ZRZUT ZADOKOWANY W URZĄDZENIU 3D (rewers kafelka): 1 = telefon, 2 = tablet, 3 = laptop.
-     Perspektywa jest WEWNĄTRZ transformu (perspective(...)), więc działa mimo że kafelek sam jest
-     obrócony w 3D. Grubość = schodkowane cienie w prawo/dół (metaliczny bok) + miękki cień. */
-  .cb-dev{position:relative;flex:0 0 auto;cursor:zoom-in;will-change:transform;
-    transition:transform .35s cubic-bezier(.2,.7,.3,1)}
-  .cb-body{position:relative;background:linear-gradient(150deg,#3d4a43 0%,#212b26 34%,#0e1512 100%);
-    box-shadow:inset 0 0 0 1px rgba(200,230,210,.30), inset 0 1.5px 0 rgba(255,255,255,.18),
-      2px 2px 0 -0.5px #263029, 4px 4px 0 -1px #1c2521, 6px 6px 0 -1.5px #141b17,
-      8px 8px 0 -2px #0e1412, 0 26px 52px -18px rgba(0,0,0,.85),
-      0 0 34px 2px rgba(153,230,109,.18)}
-  .cb-screen{position:relative;overflow:hidden;background:#0b0f0d;box-shadow:inset 0 0 0 1.5px rgba(5,8,6,.55)}
-  .cb-screen img{display:block;max-width:none}   /* max-width:none — globalne 100% psułoby proporcje */
-  /* delikatny połysk szkła na ekranie — ukośna smuga jak odbicie światła */
-  .cb-screen::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
-    background:linear-gradient(122deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,.03) 22%,transparent 42%)}
-  /* --- TELEFON (kafelek 1) --- */
-  .cb-phone{height:var(--dev-h);transform:perspective(820px) rotateY(-10deg) rotateX(3deg)}
-  .cb-phone:hover{transform:perspective(820px) rotateY(-4deg) rotateX(1deg) scale(1.045)}
-  .cb-phone .cb-body{height:100%;padding:6px;border-radius:20px}
-  /* stałe proporcje ekranu telefonu (9:19.5) — dzięki temu telefon ma ten sam kształt
-     niezależnie od tego, jaki zrzut w nim pokazujemy */
-  .cb-phone .cb-screen{height:100%;aspect-ratio:9/19.5;border-radius:15px}
-  .cb-phone .cb-screen img{width:100%;height:100%;object-fit:cover;object-position:top}
-  /* WERSJE URZĄDZEŃ: na dużym ekranie telefon/tablet/laptop, na telefonie — same telefony */
-  .cb-mob{display:none}
-  .cb-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:42px;height:5px;
-    border-radius:99px;background:rgba(0,0,0,.62);z-index:2}
-  /* --- TABLET (kafelek 2) — proporcje najnowszego iPada Pro: ekran 4:3 (w pionie 3:4),
-         cienkie, RÓWNE ramki dookoła, duży promień narożników, kamerka na DŁUŻSZEJ krawędzi
-         (w pionie: po lewej, na środku) — tak jak w iPadzie Pro M4. --- */
-  .cb-tablet{height:var(--dev-h);transform:perspective(900px) rotateY(-9deg) rotateX(3deg)}
-  .cb-tablet:hover{transform:perspective(900px) rotateY(-4deg) rotateX(1deg) scale(1.045)}
-  .cb-tablet .cb-body{height:100%;padding:5px;border-radius:16px}
-  .cb-tablet .cb-screen{height:100%;aspect-ratio:3/4;border-radius:11px}
-  .cb-tablet .cb-screen img{width:100%;height:100%;object-fit:cover;object-position:top}
-  .cb-cam{position:absolute;left:2.5px;top:50%;transform:translateY(-50%);width:3px;height:3px;
-    border-radius:50%;background:rgba(0,0,0,.65);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.16);z-index:3}
-  /* --- LAPTOP (kafelek 3) — jak MacBook: ekran ~16:10.4 z wcięciem (notch) u góry,
-         cienkie czarne ramki, aluminiowa pokrywa i podstawa z wycięciem z przodu. --- */
-  /* laptop: sterujemy wysokością EKRANU, żeby cała bryła (pokrywa + pulpit) miała tę samą
-     wysokość co telefon i tablet; szerokość wynika z proporcji 1.54 */
-  /* margines na dole = miejsce na widoczny (skrócony perspektywą) pulpit — dzięki niemu
-     środkowanie w kafelku bierze pod uwagę całą bryłę i laptop stoi równo z telefonem/tabletem */
-  /* `perspective` (właściwość) działa na DZIECI — dzięki temu obrócony pulpit dostaje prawdziwą
-     perspektywę: przy zawiasie ma DOKŁADNIE szerokość pokrywy, a z przodu tylko wydaje się szerszy
-     (jak w prawdziwym MacBooku). `perspective()` w transformie pochyla całą bryłę. */
-  .cb-laptop{width:auto;margin-bottom:calc(var(--dev-h) * 0.155);
-    perspective:1500px;perspective-origin:50% 0%;
-    transform:perspective(1050px) rotateY(-8deg) rotateX(4deg)}
-  .cb-laptop .cb-screen{height:calc(var(--dev-h) * 0.79)}
-  .cb-laptop:hover{transform:perspective(1050px) rotateY(-3deg) rotateX(1deg) scale(1.04)}
-  /* pokrywa: cienka aluminiowa obwódka + czarne, równe ramki ekranu i minimalnie grubszy „podbródek";
-     na dole zawias — ciemniejszy pasek łączący pokrywę z pulpitem */
-  .cb-laptop .cb-body{padding:4px 4px 6px;border-radius:9px 9px 2px 2px;
-    background:linear-gradient(160deg,#55635c 0%,#39443e 26%,#1b231f 72%,#121815 100%)}
-  /* ZAWIAS: ciemna, wąska belka między pokrywą a pulpitem — w referencji to wyraźna szczelina
-     węższa od obudowy, z cieniem rzucanym na pulpit tuż pod nią. */
-  .cb-laptop .cb-body::before{content:"";position:absolute;left:11%;right:11%;bottom:-3px;height:4px;
-    border-radius:0 0 3px 3px;
-    background:linear-gradient(180deg,#050807 0%,#141b18 55%,#2b352f 100%);
-    box-shadow:0 3px 7px -2px rgba(0,0,0,.9);z-index:4}
-  .cb-laptop .cb-screen{aspect-ratio:1.54;border-radius:3px;background:#050706}
-  .cb-laptop .cb-screen img{width:100%;height:100%;object-fit:cover;object-position:top}
-  .cb-notch-mac{position:absolute;top:5px;left:50%;transform:translateX(-50%);width:13%;height:6px;
-    border-radius:0 0 4px 4px;background:#080b0a;z-index:3}
-  /* PULPIT MacBooka: prawdziwa, położona płasko klawiatura (obrót w 3D) z klawiszami i gładzikiem.
-     `preserve-3d` na obudowie pozwala pochylić pulpit względem pokrywy. */
-  .cb-laptop{transform-style:preserve-3d}
-  /* Pulpit jest POZYCJONOWANY ABSOLUTNIE (nie zajmuje miejsca w układzie) — dzięki temu wysokość
-     bryły laptopa liczy się jak sama pokrywa i wszystkie trzy urządzenia stoją w jednej linii. */
-  /* pulpit ma DOKŁADNIE szerokość pokrywy (jak w MacBooku) — rozszerzenie ku przodowi
-     robi sama perspektywa z rodzica, a nie sztuczne poszerzenie elementu */
-  .cb-deck{position:absolute;top:100%;left:0;display:block;width:100%;aspect-ratio:3.45;
-    transform-origin:top center;transform:rotateX(77deg);
-    background:linear-gradient(180deg,#4a564f 0%,#333d38 22%,#242c28 62%,#161c19 100%);
-    border-radius:0 0 16px 16px;   /* zaokrąglona przednia krawędź — jak w mockupie MacBooka */
-    box-shadow:0 24px 40px -16px rgba(0,0,0,.92), inset 0 1px 0 rgba(255,255,255,.18),
-      inset 0 -2px 0 rgba(255,255,255,.16)}   /* jasny rant przedniej krawędzi (aluminium) */
-  /* zagłębienie klawiatury + siatka klawiszy */
-  /* KLAWIATURA jak w MacBooku: czarne zagłębienie („studnia"), a w nim jasne klawisze rozdzielone
-     ciemnymi szczelinami. Dwie warstwy tła: dolna robi KOLUMNY klawiszy, górna przykrywa je
-     poziomymi szczelinami — w efekcie powstaje siatka 14 × 6 klawiszy. */
-  .cb-keys{position:absolute;left:5.5%;right:5.5%;top:8%;height:54%;border-radius:3px;
-    background-color:#080b0a;
-    background-image:
-      repeating-linear-gradient(180deg,transparent 0 13.4%,#080b0a 13.4% 16.66%),
-      repeating-linear-gradient(90deg,#1c2320 0 5.9%,#080b0a 5.9% 7.14%);
-    box-shadow:inset 0 0 0 1px rgba(0,0,0,.75), inset 0 2px 8px rgba(0,0,0,.7)}
-  /* spacja w dolnym rzędzie */
-  .cb-keys::after{content:"";position:absolute;left:33%;right:33%;bottom:1.5%;height:11.9%;
-    background:#1c2320;box-shadow:inset 0 0 0 1px rgba(0,0,0,.55)}
-  /* gładzik — duży, wyśrodkowany pod klawiaturą (proporcje jak w MacBooku) */
-  .cb-pad{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);width:31%;height:28%;
-    border-radius:4px;background:linear-gradient(180deg,#39433d,#2a332e);
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,.10), inset 0 1px 4px rgba(0,0,0,.4)}
-  /* wycięcie na palec z przodu obudowy (jak w mockupie: półokrągłe, na środku krawędzi) */
-  .cb-deck::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);
-    width:15%;height:7%;border-radius:8px 8px 0 0;
-    background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.28))}
-  @media(prefers-reduced-motion:reduce){.cb-dev{transition:none}}
 
-  /* ---------- DUŻY PODGLĄD ZRZUTU (liquid glass) ----------
-     Cała strona za spodem przygasa i rozmywa się (backdrop-filter), a zrzut siedzi w szklanej
-     ramce z odblaskiem. Klik w dowolne miejsce = zamknięcie. */
-  /* UWAGA: bez tego atrybut `hidden` NIE działa — `display:grid` niżej by go nadpisał,
-     a niewidoczna warstwa łapałaby kliknięcia na całej stronie (kursor „lupka z minusem"). */
-  .shot[hidden]{display:none}
-  .shot{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:26px 20px;
-    background:rgba(6,10,8,.58);
-    backdrop-filter:blur(20px) saturate(.85) brightness(.5);
-    -webkit-backdrop-filter:blur(20px) saturate(.85) brightness(.5);
-    opacity:0;transition:opacity .42s ease;cursor:zoom-out}
-  .shot.open{opacity:1}
-  /* Bez dodatkowej ramki/tła — na ciemnym, rozmytym tle stoi WYŁĄCZNIE urządzenie. */
-  .shot-glass{position:relative;margin:0;padding:0;background:none;border:0;box-shadow:none;
-    display:flex;align-items:center;justify-content:center;
-    opacity:0;transform:scale(.9) translateY(16px);
-    transition:opacity .4s ease, transform .52s cubic-bezier(.2,.9,.25,1)}
-  .shot.open .shot-glass{opacity:1;transform:none}
-  /* Powiększone URZĄDZENIE w szklanej ramce: duże i wyprostowane (bez przechyłu), bez reakcji
-     na najechanie — to już tylko podgląd. */
-  /* w powiększeniu urządzenie reaguje na kursor (kąty ustawia JS przez styl inline) */
-  .shot-glass .cb-dev{cursor:zoom-out;position:relative;z-index:3;transition:transform .12s ease-out}
-  .shot-glass .cb-phone{height:min(74vh,660px)}
-  .shot-glass .cb-tablet{height:min(74vh,700px)}
-  /* w powiększeniu laptop ma szerokość z okna, a wysokość ekranu wynika z proporcji
-     (jawne `auto` kasuje wyliczanie z --dev-h, które obowiązuje tylko na kafelkach) */
-  .shot-glass .cb-laptop{width:min(60vw,680px)}
-  .shot-glass .cb-laptop .cb-screen{height:auto}
-  .shot-glass .cb-phone .cb-body{padding:9px;border-radius:34px}
-  .shot-glass .cb-phone .cb-screen{border-radius:26px}
-  .shot-glass .cb-phone .cb-notch{top:16px;width:70px;height:8px}
-  .shot-glass .cb-tablet .cb-body{padding:10px;border-radius:26px}
-  .shot-glass .cb-tablet .cb-screen{border-radius:18px}
-  .shot-glass .cb-tablet .cb-cam{left:4px;width:5px;height:5px}
-  .shot-glass .cb-laptop .cb-body{padding:11px 11px 15px;border-radius:16px 16px 5px 5px}
-  .shot-glass .cb-laptop .cb-screen{border-radius:6px}
-  .shot-glass .cb-laptop .cb-notch-mac{top:11px;height:11px;border-radius:0 0 7px 7px}
-  .shot-hint{position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:.7rem;
-    letter-spacing:.18em;text-transform:uppercase;color:rgba(223,231,226,.6)}
-  /* gdy podgląd otwarty — strona pod spodem stoi (bez przewijania); gutter rezerwowany globalnie,
-     więc zablokowanie przewijania nie przesuwa treści w bok */
+  /* Miejsce na pasek przewijania rezerwowane na stałe: bramka „wkrótce" blokuje
+     przewijanie (`html.gate-locked{overflow:hidden}`), a po jej zdjęciu pasek się pojawia —
+     bez rezerwy cała treść przeskakiwałaby wtedy w bok o jego szerokość. */
   html{scrollbar-gutter:stable}
-  html.shot-open{overflow:hidden}
-  @media(max-width:640px){
-    .shot-glass{padding:12px;border-radius:26px}
-    .shot-glass::after{border-radius:26px}
-    .shot-glass img{max-height:68vh;border-radius:18px}
-    .shot-hint{bottom:18px}
-  }
-  @media(prefers-reduced-motion:reduce){
-    .shot,.shot-glass{transition:none}
-    .shot-glass{transform:none}
-  }
+
 
   /* ---------- kurtyna: „dlaczego" rozjeżdża się i odsłania „jak to działa" ---------- */
   .stack{position:relative;height:300vh}
@@ -630,7 +469,6 @@
   .stack-pin .layer{position:absolute;inset:0;display:flex;align-items:center;padding:76px 0 0}
   .layer-under{z-index:1}
   .layer-under .how-grid{align-items:center}
-  .layer-under .how-left{position:static}
   .layer-under .stp{padding:30px 0}
   .layer-over{z-index:2;background:transparent}
   .door{position:absolute;top:0;bottom:0;width:51%;background:var(--black);will-change:transform}
@@ -643,15 +481,11 @@
   #aboutPhoto,#aboutText{will-change:transform,opacity}
 
   .why-content{position:relative;z-index:2;width:100%}
-  /* karty muszą swobodnie wylatywać poza kontener, każda z własną ramką i zaokrągleniem */
-  .why-content .cards{margin-top:56px;gap:24px;background:transparent;border:0;overflow:visible}
-  .why-content .card{border:0} /* ramka jest na ściankach kafelka */
-  .why-head,.why-content .card{will-change:transform,opacity}
+  .why-head{will-change:transform,opacity}
 
   /* ---------- sticky jak to działa ---------- */
   .how{background:var(--graphite)}
   .how-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start}
-  .how-left{position:sticky;top:140px}
   .steps{display:flex;flex-direction:column}
   .stp{padding:56px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:90px 1fr;gap:28px;
     opacity:.25;transform:translateX(24px);transition:opacity .6s,transform .6s}
@@ -662,7 +496,7 @@
   .stp p{color:var(--muted);font-size:.97rem}
 
   /* ---------- PODGLĄD KROKU: mini-animacja w szklanym pop-upie ----------
-     Pokazuje się po najechaniu (lub tabulatorze) na TYTUŁ kroku. Animacje są zdefiniowane
+     Pokazuje się po najechaniu na TYTUŁ kroku. Animacje są zdefiniowane
      dopiero w stanie „widoczny", dzięki czemu za każdym razem startują od początku
      i nie chodzą w tle, gdy pop-up jest schowany. */
   .stp{position:relative}
@@ -673,7 +507,7 @@
     box-shadow:0 30px 60px -22px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.14);
     opacity:0;visibility:hidden;transform:translateY(8px) scale(.97);pointer-events:none;
     transition:opacity .28s ease, transform .32s cubic-bezier(.2,.9,.25,1), visibility .28s}
-  .stp:hover .sp-pop,.sp-tit:focus-visible ~ .sp-pop{opacity:1;visibility:visible;transform:none}
+  .stp:hover .sp-pop{opacity:1;visibility:visible;transform:none}
   .sp-scene{position:relative;height:150px;border-radius:11px;overflow:hidden;
     background:linear-gradient(160deg,#0e1512,#080b0a)}
 
@@ -803,7 +637,6 @@
      Pod spodem ciemna barwa marki, żeby przed wczytaniem nie było jasnej dziury. */
   .divider .bg{position:absolute;inset:-18% 0;background:var(--graphite) center/cover no-repeat;will-change:transform}
   .divider .bg.wczytane{background-image:url('assets/tlo_zero_sciemy.jpg')}
-  .divider .bgv{position:absolute;top:-18%;left:0;width:100%;height:136%;object-fit:cover;will-change:transform}
   .divider::before{content:"";position:absolute;inset:0;background:rgba(7,9,8,.45);z-index:1}
   .divider h2{position:relative;z-index:2;font-size:clamp(2rem,6vw,4.6rem);font-weight:900;color:#fff;
     text-align:center;text-shadow:0 6px 40px rgba(0,0,0,.6)}
@@ -813,7 +646,7 @@
   .plan-grid{display:grid;grid-template-columns:.9fr 1.1fr;border:1px solid var(--line);background:var(--graphite);
     border-radius:16px;overflow:hidden}
   .plan-visual{position:relative;overflow:hidden;min-height:420px}
-  .plan-visual img,.plan-visual video{position:absolute;inset:-12% 0;width:100%;height:124%;object-fit:cover;will-change:transform}
+  .plan-visual img{position:absolute;inset:-12% 0;width:100%;height:124%;object-fit:cover;will-change:transform}
   .plan-body{padding:34px 48px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
   /* `inline-block` — bez tego ramka rozjeżdża się, gdy dłuższy napis („Plan »Początek« od środka")
      łamie się na dwie linie na wąskiej karcie */
@@ -872,48 +705,13 @@
   /* ---------- KARTA PLANU (dawniej karuzela planów) ----------
      Do startu sprzedajemy jeden plan, więc karuzela pustych kart „Wkrótce" zeszła
      ze strony (audyt 2026-07-29) — odciągała od jedynego kupowalnego produktu,
-     a jej rewers pokazywał zły plan. Style .pnav / .pdots / .pslide-peek zostają
-     na powrót karuzeli, gdy pojawi się drugi plan (HTML i JS — patrz historia gita). */
+     a jej rewers pokazywał zły plan. Jej HTML, JS i style (.pnav / .pdots / .pslide-peek)
+     są w historii gita — wrócą razem z drugim planem. */
   .plan-slider{position:relative;perspective:1600px;touch-action:pan-y;margin-top:70px}
   .plan-slider .plan-flip{position:relative;z-index:3;will-change:transform}
-  .plan-slider.przeciagam .plan-flip-inner{transition:none}
-  /* Banery stojące z tyłu — CAŁE karty, nie skrawki: taki sam kształt jak główny baner,
-     tylko mniejsze, odsunięte na boki, przechylone i przyciemnione, jakby stały w oddali.
-     Przy zamkniętej karcie główny baner je zasłania; widać je w pełni, gdy się obraca. */
-  .pslide-peek{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:16px;z-index:1;
-    background:var(--graphite-2);background-size:cover;background-position:center;
-    border:1px solid var(--line);box-shadow:0 30px 60px -20px rgba(0,0,0,.95);
-    transition:transform .45s cubic-bezier(.2,.9,.25,1),opacity .35s;pointer-events:none}
-  /* odsunięcie liczone od SZEROKOŚCI OKNA (vw), nie karty — dzięki temu cała karta z tyłu
-     mieści się w kadrze na każdym ekranie, zamiast wychodzić poza krawędź */
-  .peek-l{transform:translateX(-17vw) scale(.52) rotateY(16deg)}
-  .peek-r{transform:translateX(17vw) scale(.52) rotateY(-16deg)}
-  /* lekkie zacienienie — karta ma być widoczna w całości, tylko „dalej" i ciemniej niż główna */
-  .pslide-peek::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    background:rgba(9,14,11,.58)}
-  .peek-l::after{background:linear-gradient(to left,rgba(9,14,11,.42) 0%,rgba(9,14,11,.72) 100%)}
-  .peek-r::after{background:linear-gradient(to right,rgba(9,14,11,.42) 0%,rgba(9,14,11,.72) 100%)}
-  /* strzałki — dla myszy; na dotyku i tak działa przesuwanie */
-  .pnav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;
-    border-radius:50%;border:1px solid rgba(200,230,210,.28);background:rgba(12,18,15,.72);
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-size:1.5rem;
-    line-height:1;cursor:pointer;display:grid;place-items:center;padding-bottom:3px;
-    opacity:0;transition:opacity .25s,border-color .25s,color .25s}
-  .plan-slider:hover .pnav{opacity:1}
-  .pnav:hover{border-color:var(--lime);color:var(--lime)}
-  .pnav-l{left:-20px}
-  .pnav-r{right:-20px}
-  /* kropki — który plan z ilu */
-  .pdots{display:flex;justify-content:center;gap:10px;margin-top:14px}
-  .pdots button{width:9px;height:9px;padding:0;border:0;border-radius:50%;cursor:pointer;
-    background:rgba(255,255,255,.22);transition:background .25s,transform .25s}
-  .pdots button:hover{background:rgba(153,230,109,.6)}
-  .pdots button.on{background:var(--lime);transform:scale(1.25)}
-  .pswipe-hint{display:block;text-align:center;margin-top:7px;font-size:.7rem;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--muted);opacity:.65}
 
   /* ---------- KOMPAKTOWA SEKCJA PLANÓW (tylko duże ekrany) ----------
-     Cały blok — etykieta „03", tytuł, karta, kropki i podpis — ma się zmieścić na jednym ekranie
+     Cały blok — etykieta „03", tytuł i karta — ma się zmieścić na jednym ekranie
      laptopa 16" (ok. 1500×720 px), bez przewijania. Przed zmianą blok miał 891 px, a mieści się
      ok. 660 px pod przyklejonym paskiem menu.
      UWAGA: o wysokości karty decyduje jej TYŁ, nie przód — obie ścianki leżą w tej samej
@@ -948,10 +746,6 @@
     #plan .plan-back h3{font-size:1.3rem;margin-bottom:10px}
     #plan .plan-back .pb-h{margin-top:18px}
     #plan .plan-screens{gap:12px}
-
-    /* kropki i podpis pod kartą */
-    #plan .pdots{margin-top:12px}
-    #plan .pswipe-hint{margin-top:6px}
   }
 
   /* ---------- liczniki planu ----------
@@ -1049,8 +843,6 @@
   .yt .wrap{position:relative;z-index:2}
   .yt h2{font-size:clamp(2rem,4.6vw,3.6rem);color:#fff;margin-bottom:18px}
   .yt h2 .yt-count{color:var(--lime)}
-  .yt p{color:#B9C4BD;max-width:520px;margin:0 auto 42px}
-  .yt p .yt-count{color:var(--lime);font-weight:600}
   /* ===== Efekt 3: POZIOMY telefon 3D z auto-swajpowanymi filmami (ten sam styl co hero) ===== */
   /* ---------- „DLACZEGO": PIONOWY TELEFON 3D Z TRZEMA EKRANAMI ----------
      Zastąpił trzy odwracane kafelki (decyzja Tomka 2026-08-08). Treść ta sama,
@@ -1215,14 +1007,13 @@
      stoi w miejscu. Wcześniej nie było tego widać, bo dolne 42 % ekranu zajmował tekst. */
   .dl-foto img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;
     pointer-events:none}
-  .dl-tresc{position:relative;z-index:2;flex:1;margin-top:-22%;padding:0 31px 36px;
-    display:flex;flex-direction:column;justify-content:flex-end}
   /* limonkowa kreska nad hasłem — ten sam znak co przy wyliczeniach na karcie planu,
-     spina ekran w jedną kompozycję zamiast dzielić go na pół */
+     spina ekran w jedną kompozycję zamiast dzielić go na pół.
+     Rozmiary pisma są przy `.wa-teksty` niżej (opisy stoją obok telefonu, nie w nim). */
   .dl-tresc h3::before{content:"";display:block;width:36px;height:3px;background:var(--lime);
     margin-bottom:17px;border-radius:2px}
-  .dl-tresc h3{font-size:1.57rem;line-height:1.3;color:#fff;margin-bottom:13px;text-wrap:balance}
-  .dl-tresc p{font-size:1.23rem;line-height:1.55;color:#B9C4BD}
+  .dl-tresc h3{line-height:1.3;color:#fff;text-wrap:balance}
+  .dl-tresc p{color:#B9C4BD}
   /* kropki i podpis — ten sam język co pod karuzelą planów */
   /* Cel dotyku 19x44 px zamiast kropki 9x9 px — palcem trafia sie w plame ok. 44 px,
      wiec w kropke 9 px trafialo sie z dokladnoscia 4-6 px. Kropke rysuje ::before,
@@ -1238,8 +1029,9 @@
     background:rgba(255,255,255,.22);transition:background .25s,transform .25s}
   .dl-kropki button:hover::before{background:rgba(153,230,109,.6)}
   .dl-kropki button.on::before{background:var(--lime);transform:scale(1.25)}
+  /* bez `opacity` — z kryciem .65 kontrast spadał do 3,3:1; #7A857E daje 5,0:1 na tle strony */
   .dl-podpis{margin-top:10px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--muted);opacity:.65;text-align:center}
+    color:#7A857E;text-align:center}
   /* strzałki dla myszy — na dotyku wystarcza przesuwanie */
   .dl-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;
     border-radius:50%;border:1px solid rgba(200,230,210,.28);background:rgba(12,18,15,.72);
@@ -1247,7 +1039,7 @@
     line-height:1;cursor:pointer;display:grid;place-items:center;padding-bottom:3px;
     opacity:0;transition:opacity .25s,border-color .25s,color .25s}
   .dl-scena:hover .dl-nav{opacity:1}
-  .dl-nav:hover{border-color:var(--lime);color:var(--lime)}
+  .dl-nav:hover,.dl-nav:focus-visible{opacity:1;border-color:var(--lime);color:var(--lime)}
   /* Strzałki tuż przy telefonie. Pozycje liczy skrypt z REALNEGO obrysu telefonu,
      nie ze środka sekcji — obrót 3D przesuwa bryłę o kilkanaście pikseli w bok,
      więc liczenie od `50%` dawało strzałkę nachodzącą na telefon z jednej strony. */
@@ -1279,11 +1071,10 @@
   /* Trzy opisy leżą JEDEN NA DRUGIM w tej samej komórce siatki: wysokość kolumny bierze
      się z najwyższego, więc przy zmianie ekranu kropki i strzałki nie podskakują. */
   .wa-teksty{display:grid}
-  .wa-teksty .dl-tresc{grid-area:1/1;margin-top:0;padding:0;display:block;
+  .wa-teksty .dl-tresc{grid-area:1/1;position:relative;z-index:2;
     opacity:0;transform:translateY(12px);pointer-events:none;
     transition:opacity .38s ease,transform .38s ease}
   .wa-teksty .dl-tresc.on{opacity:1;transform:none;pointer-events:auto}
-  /* poza telefonem tekst nie jest już zmniejszany skalą bryły — stąd inne rozmiary */
   .wa-teksty h3{font-size:clamp(1.5rem,2.3vw,2.05rem);margin-bottom:16px}
   .wa-teksty p{font-size:1.05rem;line-height:1.62}
   /* kropki i strzałki w jednym rzędzie pod opisem */
@@ -1329,6 +1120,16 @@
     background:var(--lime);color:#0c130c;font-size:.82rem;padding-left:2px}
   .vp-pop-txt{font-size:.9rem;font-weight:600;line-height:1.25;color:#dfeede}
   @media(prefers-reduced-motion:reduce){.vp-track{transition:none}}
+  /* „Zatrzymaj / Odtwórz" (WCAG 2.2.2): pauzuje filmy w telefonie i ruchomy pasek pod hero.
+     Pastylka jak inne przełączniki na stronie; cel dotyku min. 44×44 px; wybór pamiętany
+     w sessionStorage (klasa `ruch-stop` na <html>). */
+  .ruch-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;min-height:44px;
+    margin-top:6px;padding:10px 20px;border:1px solid var(--line);border-radius:99px;background:transparent;
+    color:var(--muted);font-family:inherit;font-size:.72rem;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;cursor:pointer;transition:border-color .25s,color .25s}
+  .ruch-btn:hover,.ruch-btn[aria-pressed="true"]{border-color:var(--lime);color:var(--text)}
+  .ruch-btn .ruch-ic{font-size:.8em;color:var(--lime)}
+  html.ruch-stop .marquee-track{animation-play-state:paused}
 
   /* Drobny druk: nota zdrowotna pod planem i nota o opiniach. Wyciszony szary,
      wyśrodkowany, szerokość ograniczona do ~62 znaków, żeby dało się to przeczytać. */
@@ -1364,18 +1165,9 @@
     .orbit-card{width:min(75vw,262px);padding:20px 20px;gap:11px}
     .orbit-card .oc-body{font-size:.92rem;line-height:1.5}}
 
-  /* ---------- ZAPIS NA LISTĘ OCZEKUJĄCYCH (sierpień 2026) ----------
-     Jeden komponent `.zapis` używany w DWÓCH miejscach: w hero (zamiast przycisku
-     „Dołącz") i w sekcji na dole strony. Wspólny wygląd i jeden kod obsługi
-     (`[data-zapis]`), żeby nie rozjechały się dwie implementacje.
-     Na telefonie pole i przycisk układają się w pion — inaczej przy 288 px
-     napis na przycisku zawija się na dwie linie. */
-  /* Pole NAD przyciskiem — także na komputerze. Powody, oba zmierzone 2026-08-01:
-     (1) przy 1280 px układ obok siebie wchodził 46 px pod telefon 3D w hero i chował
-         przycisk — a to teraz najważniejsze wezwanie do działania na stronie;
-     (2) przy 288 px napis „ZAPISZ SIĘ →" obok pola łamał się na dwie linie.
-     `width:100%` jest konieczne — w hero formularz jest elementem kolumny
-     z `align-items:flex-start`, więc bez tego zwężał się do treści. */
+  /* ---------- FORMULARZ NEWSLETTERA (`.zapis`, sekcja na dole strony) ----------
+     Pole NAD przyciskiem — także na komputerze: przy 288 px napis „ZAPISZ SIĘ →" obok
+     pola łamał się na dwie linie (zmierzone 2026-08-01). Jeden kod obsługi (`[data-zapis]`). */
   .zapis{display:flex;flex-direction:column;width:100%;max-width:380px}
   .zapis input[type=email]{width:100%;background:transparent;outline:none;color:#fff;
     font-size:1.02rem;font-family:inherit;padding:14px 0;border:0;
@@ -1397,13 +1189,10 @@
      Sam `--muted` na tle strony daje 6,35, więc tekst jest czytelny bez zmiany koloru. */
   .zapis-admin{margin-top:10px;font-size:.7rem;line-height:1.5;color:var(--muted);
     width:100%;max-width:380px}
-  /* wariant w hero — węższy, żeby przy 1280 px nie wchodził pod telefon 3D */
-  .zapis-hero{max-width:330px}
-  .zapis-hero+.zapis-zgoda{max-width:330px}
-  /* `margin-top` odsuwa „Rusza 7 września" od opisu — bez niego zdanie kleiło się
-     do akapitu wyżej i gubiło rangę zapowiedzi (decyzja Tomka 3.08) */
-  .hero-start{margin-top:22px;margin-bottom:14px;font-size:.95rem;color:#CFD8D2}
-  .hero-start strong{color:var(--lime);font-weight:800}
+  .zapis-msg:empty{display:none}
+  /* link w rozwiniętej metryczce: cel dotyku 44 px bez rozpychania listy */
+  .fr-mail{display:inline-block;padding:12px 0;margin:-12px 0;color:inherit;text-decoration:underline}
+  .fr-mail:hover{color:var(--lime)}
   /* Co dostajesz za zapis — drobny druk, myślnik w kolorze marki jak na karcie planu,
      żeby wyliczenie należało do tej samej rodziny co lista korzyści planu. */
   .zapis-korzysci{list-style:none;margin:0 0 18px;padding:0;max-width:380px}
@@ -1411,7 +1200,6 @@
     color:var(--muted)}
   .zapis-korzysci li+li{margin-top:3px}
   .zapis-korzysci li::before{content:"—";position:absolute;left:0;color:var(--lime);font-weight:700}
-  .zapis-korzysci strong{color:#CFD8D2;font-weight:700}
   /* wariant w sekcji na dole — tam jest więcej miejsca, więc czcionka jak w akapicie obok */
   .zapis-korzysci-duze{margin:14px 0 18px;max-width:420px}
   .zapis-korzysci-duze li{font-size:.95rem;padding-left:20px}
@@ -1420,24 +1208,21 @@
   /* Telefon: formularz na całą szerokość kolumny — na wąskim ekranie ograniczanie
      szerokości tylko marnuje miejsce, a przycisk ma być łatwy do trafienia palcem. */
   @media(max-width:600px){
-    .zapis,.zapis-hero,.zapis-zgoda,.zapis-hero+.zapis-zgoda,.zapis-msg,.zapis-admin{max-width:none}
+    .zapis,.zapis-zgoda,.zapis-msg,.zapis-admin{max-width:none}
   }
 
   /* ---------- sekcja zapisu na dole strony ---------- */
   /* `scroll-margin-top` — bez tego kotwica `#zapis` chowa nagłówek sekcji pod
      przyklejonym paskiem menu (77 px) */
   .nl{border-top:1px solid var(--line);padding:70px 0;scroll-margin-top:96px}
-  .nl p strong{color:var(--lime);font-weight:800}
   .nl-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
   .nl h2{font-size:clamp(1.7rem,3vw,2.5rem);color:#fff;margin-bottom:14px}
   .nl p{color:var(--muted);max-width:420px}
-  /* Formularz i notka RODO korzystają teraz ze wspólnego komponentu `.zapis` wyżej
-     (ten sam wygląd w hero i tutaj) — dawne `.nl-form` / `.nl-msg` / `.nl-rodo` usunięte. */
 
   /* ---------- stopka ---------- */
   footer{border-top:1px solid var(--line);padding:80px 0 40px}
   .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;margin-bottom:60px}
-  .foot-grid img{height:34px}
+  .foot-logo{height:72px;width:auto}
   .socials{display:flex;gap:12px}
   .socials a{width:46px;height:46px;border:1px solid var(--line);display:flex;align-items:center;
     justify-content:center;transition:.25s;border-radius:2px}
@@ -1482,32 +1267,22 @@
        się przy zwykłym przewijaniu (jak reszta efektów na mobile). */
     .hero-stack{height:auto}
     .hero-pin{position:static;height:auto;overflow:visible}
-    /* Hero jest wyśrodkowane w pionie. Od sierpnia 2026 mieści też zapis na listę, przez co
-       na wąskich telefonach urosło ponad wysokość ekranu i wyśrodkowanie wypychało nagłówek
-       GÓRĄ — pod przyklejone logo. Na telefonie układamy więc treść od góry i pozwalamy
-       hero urosnąć, zamiast trzymać sztywne 100vh. */
-    .hero{height:auto;min-height:100vh;align-items:flex-start;padding-top:104px;padding-bottom:48px}
+    /* Hero na komputerze jest wyśrodkowane w pionie; na wąskim telefonie treść bywa wyższa
+       niż ekran i wyśrodkowanie wypychałoby nagłówek GÓRĄ, pod przyklejone logo. Dlatego
+       układamy ją od góry i pozwalamy hero urosnąć, zamiast trzymać sztywne 100vh.
+       Odstępy ŚCIŚNIĘTE (polecenie Tomka 2026-08-14 — pierwszy ekran krótszy o 82 px,
+       żeby przycisk pod hasłem mieścił się bez przewijania także na małych telefonach):
+       padding 104->86, pod nadtytułem 28->12, pod nagłówkiem 28->10, pod akapitem 40->22. */
+    .hero{height:auto;min-height:100vh;align-items:flex-start;padding-top:86px;padding-bottom:48px}
     /* `svh` to wysokosc ekranu LICZONA Z WIDOCZNYM paskiem przegladarki. Zwykle `vh` udaje,
        ze paska nie ma, wiec hero bylo wyzsze niz to, co klient naprawde widzi. Stara wartosc
        zostaje linijke wyzej dla przegladarek, ktore `svh` nie znaja. */
     .hero{min-height:100svh}
-
-    /* ---- PIERWSZY EKRAN SKROCONY O 82 px (polecenie Tomka 2026-08-14) ----
-       Przycisk „Zapisz sie" konczyl sie na 792 px, a widoczna wysokosc telefonu to 553-819 px
-       — czyli na wszystkich telefonach procz najwiekszego trzeba bylo przewijac, zeby go
-       zobaczyc. Sciagamy WYLACZNIE odstepy: zadne zdanie nie znika i nic nie zmienia miejsca
-       w kolejnosci. Dwa punkty korzysci zostaja PRZED formularzem — komentarz przy nich
-       (linia ~1650) mowi wprost, ze klient ma je przeczytac, zanim zdecyduje sie wpisac adres.
-       Liczby: padding 104->86, pod naglowkiem 28->16, pod akapitem 40->22, nad „Rusza" 22->10,
-       pod „Rusza" 14->8, pod korzysciami 18->10, nad zgoda 14->10, nad przyciskiem 16->12. */
-    .hero{padding-top:86px}
-    .hero .eyebrow{margin-bottom:12px}   /* bylo 28 — ostatnie 16 px do Androida sredniego */
+    .hero .eyebrow{margin-bottom:12px}
     .hero h1{margin-bottom:10px}
-    /* akapit nizej, ale BEZ spychania przycisku zapisu: ile dokladamy u gory,
-       tyle zabieramy u dolu (na iPhonie 13 mini zostaje tylko 22 px zapasu) */
     .hero p.lead{margin-top:22px;margin-bottom:0}
     .lead-omin{display:block;float:right;width:40%;height:88px}
-    .hero-start{margin-top:10px;margin-bottom:8px}
+    /* formularz newslettera na dole strony — ciaśniejsze odstępy na telefonie */
     .zapis-korzysci{margin-bottom:10px}
     .zapis-zgoda{margin-top:10px}
     .zapis button{margin-top:12px}
@@ -1517,41 +1292,17 @@
        Podnosimy grafike o brakujace 24 px MARGINESEM, a nie `top` ani `transform`:
        transform jest co klatke nadpisywany przez skrypt modelu 3D, wiec zmiana tam by zginela. */
     .hero-phone{margin-top:-24px}
-    /* Na telefonie talerze stoją na dole hero po prawej, więc wskaźnik „Przewiń"
-       przesuwamy ze środka na lewą krawędź — inaczej leżałby na talerzach.
-       Od sierpnia 2026 hero mieści też zapis na listę i wskaźnik nachodził na zgodę
-       marketingową — na telefonie go chowamy (i tak każdy wie, że się przewija). */
-    .scroll-cue{left:24px;transform:none;display:none}
+    /* wskaźnik „Przewiń" na telefonie schowany — nachodził na treść pod hasłem,
+       a że strona się przewija, każdy i tak wie */
+    .scroll-cue{display:none}
     /* talerze mniejsze, żeby trzy zmieściły się w rzędzie na telefonie */
     .talerz:nth-child(1){width:84px}
     .talerz:nth-child(2){width:96px}
     .talerz:nth-child(3){width:78px}
-    .cards{grid-template-columns:1fr;gap:16px}
-    /* kafelki „dlaczego" — mniejsze na telefonie */
-    .card{min-height:320px}
-    .card-front{padding:28px 22px}
-    .card .icon svg{width:19px;height:19px}
-    .card h3{font-size:1.05rem;margin-bottom:10px}
-    .card p{font-size:.88rem}
-    .card-hint{padding-top:14px;font-size:.64rem}
-    .card-back{padding:18px;gap:9px;--dev-h:190px}
-    /* na telefonie wszystkie trzy kafelki pokazują TELEFON */
-    .cb-desk{display:none}
-    .cb-mob{display:block}
     .how-grid{grid-template-columns:1fr;gap:40px}
     /* pop-upy kroków tylko na dużym ekranie — na telefonie nie ma najeżdżania kursorem */
     .sp-pop{display:none}
-    .how-left{position:static}
-    /* na telefonie kurtyna off — zwykłe sekcje jedna pod drugą (dlaczego przed jak-to-działa) */
-    .stack{height:auto}
-    .stack-pin{position:static;height:auto;overflow:visible;display:flex;flex-direction:column-reverse}
-    .stack-pin .layer{position:static;padding:90px 0}
-    .door{display:none}
-    .layer-over{background:var(--black)}
-    /* przerywnik musi być własną kotwicą pozycjonowania — bez tego jego wideo
-       wyrywa się poza sekcję i zasłania liczniki nad nim */
-    .stack-pin .divider{position:relative;height:auto;min-height:58vh;overflow:hidden}
-    .stack-pin .divider .bgv{top:0;height:100%}
+    /* kurtyna wyłączona — reguły wspólne z „ogranicz ruch", w osobnym bloku niżej */
     .plan-grid{grid-template-columns:1fr}
     .plan-visual{min-height:340px}
     .plan-body{padding:48px 32px}
@@ -1570,12 +1321,6 @@
     .pstat .lbl-krotki{display:inline}
     .about-grid{grid-template-columns:1fr;gap:60px}
     .nl-grid{grid-template-columns:1fr;gap:40px}
-    .vcar-group video{height:170px}
-    /* na telefonie sąsiednie plany wystają węziej, strzałki chowamy (jest przesuwanie palcem) */
-    /* na telefonie karty z tyłu odsuwamy dalej, żeby zostawić więcej miejsca głównej */
-    .peek-l{transform:translateX(-19vw) scale(.5) rotateY(15deg)}
-    .peek-r{transform:translateX(19vw) scale(.5) rotateY(-15deg)}
-    .pnav{display:none}
     .plan-back-grid{grid-template-columns:1fr;gap:32px;padding:36px 24px}
     /* jedna kolumna: przycisk i podpis WRACAJĄ przed zrzuty, żeby nie leżeć na samym
        dole bardzo wysokiej karty; zrzutów nie ma już czego obniżać */
@@ -1592,18 +1337,25 @@
     .nav-links a{font-size:1.05rem}
     .burger{display:block}
   }
-  @media(prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-    html{scroll-behavior:auto}
-    .rv,.stp{opacity:1;transform:none}
-    .manifest .mw{opacity:1}
+  /* Kurtyna WYŁĄCZONA na telefonie i przy „ogranicz ruch": zwykłe sekcje jedna pod drugą
+     (dlaczego przed jak-to-działa, o mnie przed hasłem — stąd `column-reverse`).
+     Skrypt w tych trybach nie animuje bram (`stackMode()`), więc bez tego bloku
+     warstwa spodnia nigdy by się nie odsłoniła. */
+  @media(max-width:980px),(prefers-reduced-motion:reduce){
     .stack{height:auto}
     .stack-pin{position:static;height:auto;overflow:visible;display:flex;flex-direction:column-reverse}
     .stack-pin .layer{position:static;padding:90px 0}
     .door{display:none}
     .layer-over{background:var(--black)}
+    /* przerywnik musi być własną kotwicą pozycjonowania — bez tego talerz z `.sztangownia`
+       (ustawiony bezwzględnie) wyrywa się poza sekcję */
     .stack-pin .divider{position:relative;height:auto;min-height:58vh;overflow:hidden}
-    .stack-pin .divider .bgv{top:0;height:100%}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    html{scroll-behavior:auto}
+    .rv,.stp{opacity:1;transform:none}
+    .manifest .mw{opacity:1}
     /* Przy ograniczonym ruchu pętla przewijania nie działa (nie wygasza pepitki), więc
        wracamy do wersji przewijanej wraz z blokiem górnym — inaczej statyczne, przypięte
        tło zasłaniałoby kolejne sekcje. */
@@ -1612,8 +1364,8 @@
 </style>
 
 <!-- ===== Dane strukturalne (JSON-LD) — pakiet SEO z wątku Social media FOC =====
-     Świadomie BEZ adresu pocztowego (marka sprzedaje online w całej PL, adres jest w
-     regulaminie na app.fitonlinecoach.com). sameAs: YouTube i Instagram przy MARCE, LinkedIn przy OSOBIE — to profil
+     Adres, KRS, NIP i REGON z sekcji 3a FITONLINECOACH-STATUS.md (dane spółki od 26.08.2026).
+     Oferta wskazuje stronę planu W APLIKACJI, bo tam jest zakup. sameAs: YouTube i Instagram przy MARCE, LinkedIn przy OSOBIE — to profil
      osobisty, nie firmowy, więc na węźle Organization byłby błędem. Konta marki
      IG/FB/TikTok dopisać, gdy powstaną. -->
 <script type="application/ld+json">
@@ -1621,9 +1373,9 @@
   "@context": "https://schema.org",
   "@graph": [
     { "@type": "WebSite", "@id": "https://fitonlinecoach.com/#website", "url": "https://fitonlinecoach.com/", "name": "FitOnlineCoach", "inLanguage": "pl-PL", "publisher": { "@id": "https://fitonlinecoach.com/#org" } },
-    { "@type": "Organization", "@id": "https://fitonlinecoach.com/#org", "name": "FitOnlineCoach", "legalName": "FitOnlineCoach prosta spółka akcyjna", "url": "https://fitonlinecoach.com/", "logo": "https://fitonlinecoach.com/assets/icon_512.png", "image": "https://fitonlinecoach.com/assets/og-image.jpg", "vatID": "PL9542914095", "taxID": "9542914095", "address": { "@type": "PostalAddress", "streetAddress": "ul. Żyzna 2", "postalCode": "40-314", "addressLocality": "Katowice", "addressCountry": "PL" }, "identifier": [{ "@type": "PropertyValue", "propertyID": "KRS", "value": "0001262434" }, { "@type": "PropertyValue", "propertyID": "REGON", "value": "545549296" }], "founder": { "@id": "https://fitonlinecoach.com/#tomek" }, "sameAs": ["https://www.youtube.com/@FitOnlineCoach", "https://instagram.com/tomek.wiesner"] },
+    { "@type": "Organization", "@id": "https://fitonlinecoach.com/#org", "name": "FitOnlineCoach", "legalName": "FitOnlineCoach prosta spółka akcyjna", "url": "https://fitonlinecoach.com/", "logo": "https://fitonlinecoach.com/assets/icon_512.png", "image": "https://fitonlinecoach.com/assets/og-image.jpg", "email": "kontakt@fitonlinecoach.com", "vatID": "PL9542914095", "taxID": "9542914095", "address": { "@type": "PostalAddress", "streetAddress": "ul. Żyzna 2", "postalCode": "40-314", "addressLocality": "Katowice", "addressCountry": "PL" }, "identifier": [{ "@type": "PropertyValue", "propertyID": "KRS", "value": "0001262434" }, { "@type": "PropertyValue", "propertyID": "REGON", "value": "545549296" }], "founder": { "@id": "https://fitonlinecoach.com/#tomek" }, "sameAs": ["https://www.youtube.com/@FitOnlineCoach", "https://instagram.com/tomek.wiesner"] },
     { "@type": "Person", "@id": "https://fitonlinecoach.com/#tomek", "name": "Tomasz Wiesner", "jobTitle": "Trener personalny, fizjoterapeuta i dietetyk", "worksFor": { "@id": "https://fitonlinecoach.com/#org" }, "sameAs": ["https://www.linkedin.com/in/tomek-wiesner-70537333a/"] },
-    { "@type": "Product", "name": "Plan treningowy „Początek”", "description": "4 tygodnie treningu, 3 dni w tygodniu, 12 treningów, 50 ćwiczeń z poradnikiem wideo. Dla osób zaczynających lub wracających do treningu.", "brand": { "@id": "https://fitonlinecoach.com/#org" }, "image": "https://fitonlinecoach.com/assets/plan_poczatek.jpg", "offers": { "@type": "Offer", "price": "79.00", "priceCurrency": "PLN", "availability": "https://schema.org/InStock", "url": "https://fitonlinecoach.com/" } }
+    { "@type": "Product", "name": "Plan treningowy „Początek”", "description": "4 tygodnie treningu, 3 dni w tygodniu, 12 treningów, 50 ćwiczeń z poradnikiem wideo. Dla osób zaczynających lub wracających do treningu.", "brand": { "@id": "https://fitonlinecoach.com/#org" }, "image": "https://fitonlinecoach.com/assets/plan_poczatek_karta.jpg", "offers": { "@type": "Offer", "price": "79.00", "priceCurrency": "PLN", "availability": "https://schema.org/InStock", "url": "https://app.fitonlinecoach.com/plany/poczatek" } }
   ]
 }
 </script>
@@ -1675,8 +1427,7 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (input.value.trim() === (window.FOC_PREVIEW_CODE || '')) {
-        try { localStorage.setItem('foc_preview', '1'); } catch (_) {}
-        document.documentElement.classList.remove('gate-locked');
+        window.focOdblokuj();
         gate.classList.add('hide');
         setTimeout(function () { gate.remove(); }, 650);
       } else {
@@ -1697,8 +1448,7 @@
         <li><a href="#plan">Plan</a></li>
         <li><a href="#o-mnie">O mnie</a></li>
         <li><a href="#wideo">Wideo</a></li>
-        <!-- sierpień 2026: apka jest za bramką, więc menu prowadzi do zapisu, nie do „wkrótce" -->
-        <li><a class="nav-cta" href="#zapis">Zapisz się</a></li>
+        <li><a class="nav-cta" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Aplikacja</a></li>
       </ul>
       <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
     </nav>
@@ -1713,23 +1463,18 @@
 <div class="topblok" id="topblok">
   <span class="tb-wzor" aria-hidden="true"></span>
 
-  <!-- Trzy talerze — po jednym na każdy kafelek w sekcji „dlaczego".
-       Start: w rzędzie po prawej stronie hero, na jednym poziomie, każdy pod innym kątem
-       (jakby stały na podłodze zwrócone w różne strony).
-       Ruch: najpierw mocno w prawo (żeby minąć manifest prawą stroną ekranu), przez
-       cały czas tocząc się w dół razem z przewijaniem, aż na kafelki sekcji „dlaczego".
-       data-x = droga w bok jako ułamek szerokości ekranu, data-y = opadanie w kadrze (px). -->
+  <!-- Trzy talerze olimpijskie: wytaczają się spod ruchomego paska pod hero i toczą się
+       w dół razem z przewijaniem, każdy z inną prędkością, aż znikną za sekcją „dlaczego".
+       Pozycje liczy pętla przewijania w skrypcie; data-kat = kąt startowy (stopnie). -->
   <div class="talerze" aria-hidden="true">
-    <img class="talerz" src="assets/talerz_green10.webp" alt=""
-         data-kat="-24" data-x="0.30" data-y="190">
-    <img class="talerz" src="assets/talerz_blue20.webp" alt=""
-         data-kat="17" data-x="0.34" data-y="215">
-    <img class="talerz" src="assets/talerz_red25.webp" alt=""
-         data-kat="52" data-x="0.26" data-y="160">
+    <img class="talerz" src="assets/talerz_green10.webp" alt="" data-kat="-24">
+    <img class="talerz" src="assets/talerz_blue20.webp" alt="" data-kat="17">
+    <img class="talerz" src="assets/talerz_red25.webp" alt="" data-kat="52">
   </div>
 
 <!-- Hero PRZYPIĘTE na czas dokowania telefonu (desktop): dopóki telefon się nie zadokuje,
-     scroll napędza animację, a widok stoi na hero. Na mobile przypięcie wyłączone. -->
+     scroll napędza animację, a widok stoi na hero. Na telefonie i w niskim oknie komputera
+     (do 700 px wysokości) przypięcie wyłączone. -->
 <div class="hero-stack" id="heroStack">
  <div class="hero-pin">
 <div class="hero" id="top">
@@ -1754,55 +1499,15 @@
     </h1>
     <p class="lead"><span class="lead-omin" aria-hidden="true"></span>Plany treningowe z poradnikiem wideo do każdego ćwiczenia.
       Po polsku, konkretnie, bez ściemy — zawsze w Twoim telefonie.</p>
-    <!-- KAMPANIA ZAPOWIADAJĄCA (sierpień 2026): w miejscu przycisku „DOŁĄCZ / już od 79 zł"
-         stoi zapis na listę oczekujących, bo aplikacja jest za bramką do 7 września i każdy
-         przycisk zakupowy prowadziłby na ekran „wkrótce".
-         PRZYWRÓCENIE WERSJI SPRZEDAŻOWEJ 7.09: `git show sprzedaz-v1:index.html` w repo
-         `_deploy` — tam jest oryginalny przycisk i wszystkie linki do apki. -->
+    <!-- Wersja sprzedażowa (decyzja Tomka 3.09.2026): strona otwiera się dopiero gotowa do
+         sprzedaży, więc pierwszy ekran prowadzi wprost do zakupu w aplikacji. Zapis na listę
+         oczekujących (kampania przedsprzedażowa) został USUNIĘTY. `.btn-join .bj-main/.bj-sub`
+         to ten sam dwuwierszowy przycisk co na karcie planu i przy opiece. -->
     <div class="hero-actions">
-      <!-- Bezosobowo — bez form zależnych od płci (zasada Tomka, egzekwowana 2026-08-16).
-           Piszemy o zdarzeniu i następnym kroku, nie o czytelniku. NIE wracać do „pierwszy"
-           ani do ukośników typu „pierwszy/a" — to ta sama usterka w innej formie. -->
-      <!-- Krótko i od razu pole na e-mail (polecenie Tomka 2026-08-16) — odzyskane miejsce
-           idzie na tekst wyżej. Lista „co dostajesz za adres" USUNIETA STĄD świadomie:
-           to samo mówi zgoda pod polem („e-maile o starcie i wskazówki treningowe"),
-           więc informacja nie ginie, a pierwszy ekran robi się krótszy. Pełna lista
-           korzyści została w dolnej sekcji zapisu (`zapis-korzysci-duze`). -->
-      <p class="hero-start">Ruszamy <strong>7 września</strong>. Zapisz się!</p>
-      <!-- Zgoda leży WEWNĄTRZ formularza i PRZED przyciskiem. Oba są istotne:
-           wewnątrz — bo `new FormData(form)` bierze tylko pola z formularza, a gdy zgoda
-           była obok, zaznaczenie zostawało w przeglądarce i nigdzie się nie zapisywało
-           (wykryte testem 2026-08-01); przed przyciskiem — bo człowiek ma ją przeczytać,
-           zanim kliknie, a nie po. -->
-      <form class="zapis zapis-hero" data-zapis novalidate>
-        <label class="sr-only" for="zapisHero">Adres e-mail</label>
-        <input id="zapisHero" type="email" name="fields[email]" placeholder="Twój adres e-mail"
-               autocomplete="email" required>
-        <label class="zapis-zgoda">
-          <!-- wartość trafia do MailerLite jako pole „Zgoda marketingowa" (`zgoda_marketingowa`)
-               — razem z datą potwierdzenia z double opt-in stanowi dowód zgody -->
-          <input type="checkbox" data-zgoda name="fields[zgoda_marketingowa]"
-                 value="tak — formularz na fitonlinecoach.com" required>
-          <!-- Skrócone (polecenie Tomka 2026-08-16). MUSZĄ zostać trzy rzeczy: na co jest
-               zgoda, prawo do wycofania i odnośnik do polityki. „Wskazówki treningowe"
-               zostają — od kiedy lista korzyści zniknęła z hero, to JEDYNE miejsce, które
-               mówi klientowi, co dostanie za adres. -->
-          <span>Chcę e-maile od FitOnlineCoach. Rezygnacja —
-            <a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
-            target="_blank" rel="noopener">polityka prywatności</a>.</span>
-        </label>
-        <button type="submit">Zapisz się →</button>
-        <!-- skąd przyszedł zapis — wypełnia skrypt na dole strony -->
-        <input type="hidden" name="fields[zrodlo_zapisu]" data-zrodlo>
-        <!-- Pułapka na boty: człowiek tego nie widzi i nie wypełni, automat owszem.
-             BEZ atrybutu `name`, więc nie leci do MailerLite. -->
-        <input class="sr-only" type="text" tabindex="-1" autocomplete="off"
-               aria-hidden="true" data-pulapka>
-      </form>
-      <p class="zapis-msg" data-msg hidden aria-live="polite"></p>
-      <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik
-           (uzgodnione z wątkiem maili 2026-08-01) -->
-      <p class="zapis-admin">Administrator danych: FitOnlineCoach prosta spółka akcyjna, ul. Żyzna 2, 40-314 Katowice, NIP 9542914095.</p>
+      <a class="btn btn-lime btn-join" href="https://app.fitonlinecoach.com/plany" target="_blank" rel="noopener">
+        <span class="bj-main">Dołącz</span>
+        <span class="bj-sub">już od 79 zł</span>
+      </a>
     </div>
   </div>
   <div class="scroll-cue">Przewiń<i></i></div>
@@ -1947,9 +1652,9 @@
           </div>
           <div class="wa-ster">
             <div class="dl-kropki" id="dlKropki">
-              <button type="button" class="on" data-ekran="0" aria-label="Ekran 1 z 3"></button>
-              <button type="button" data-ekran="1" aria-label="Ekran 2 z 3"></button>
-              <button type="button" data-ekran="2" aria-label="Ekran 3 z 3"></button>
+              <button type="button" class="on" data-ekran="0" aria-label="Ekran 1 z 3" aria-current="true"></button>
+              <button type="button" data-ekran="1" aria-label="Ekran 2 z 3" aria-current="false"></button>
+              <button type="button" data-ekran="2" aria-label="Ekran 3 z 3" aria-current="false"></button>
             </div>
           </div>
           <!-- podpis wędruje pod sterowanie: pod telefonem nie ma już na niego miejsca
@@ -2009,11 +1714,12 @@
               </div>
               <div class="price-row">
                 <!-- Ten sam układ co przycisk opieki indywidualnej: górny wiersz akcja,
-                     dolny cena i termin. Cena INFORMUJE — w sierpniu nie da się kupić,
-                     przycisk prowadzi do zapisu na listę. -->
-                <a class="btn btn-lime btn-join btn-care" id="planCta" href="#zapis">
-                  <span class="bj-main" id="planCtaGlowny">Zapisz się</span>
-                  <span class="bj-sub" id="planCtaCena">79 zł za plan — rusza 7.09</span>
+                     dolny cena. Link prowadzi do kasy w aplikacji (`?kup=1` otwiera zakup od
+                     razu; bez konta apka przekierowuje na /start i wraca). Znacznik MUSI zostać
+                     dwuwierszowy z tymi id — skrypt setPlan pisze do #planCtaGlowny i #planCtaCena. -->
+                <a class="btn btn-lime btn-join btn-care" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">
+                  <span class="bj-main" id="planCtaGlowny">Kup plan</span>
+                  <span class="bj-sub" id="planCtaCena">79 zł — jednorazowo</span>
                 </a>
               </div>
               <span class="plan-hint">Kliknij kartę — zobacz szczegóły planu →</span>
@@ -2054,16 +1760,16 @@
                  stylami (`order`): przycisk i podpis PRZED zrzutami. Bez tego przycisk
                  wylądowałby na samym dole bardzo wysokiej karty. -->
             <div class="plan-back-right">
-              <div class="plan-screens" aria-label="Prawdziwe ekrany z aplikacji">
+              <div class="plan-screens" role="group" aria-label="Prawdziwe ekrany z aplikacji">
                 <img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async">
                 <img src="assets/screen_trening.jpg" alt="Ekran aplikacji: dzisiejszy trening" loading="lazy" decoding="async">
                 <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async">
               </div>
               <div class="price-row">
                 <!-- rewers karty — ten sam dwuwierszowy układ co na przodzie i przy opiece -->
-                <a class="btn btn-lime btn-join btn-care" href="#zapis">
-                  <span class="bj-main">Zapisz się</span>
-                  <span class="bj-sub">79 zł za plan — rusza 7.09</span>
+                <a class="btn btn-lime btn-join btn-care" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">
+                  <span class="bj-main">Kup plan</span>
+                  <span class="bj-sub">79 zł — jednorazowo</span>
                 </a>
               </div>
               <span class="plan-hint">Kliknij kartę — wróć do planu →</span>
@@ -2077,8 +1783,8 @@
 
     <!-- zamiast kropek karuzeli: most do opieki indywidualnej — opis produktu żyje W APLIKACJI
          (decyzja Tomka 29.07: bez osobnej sekcji na stronie, sprzedaż opieki to nie priorytet) -->
-    <a class="opieka-zajawka rv rv4" href="#zapis">Wolisz plan pisany specjalnie dla Ciebie?
-      <b>Opieka indywidualna też rusza 7.09 →</b></a>
+    <a class="opieka-zajawka rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny" target="_blank" rel="noopener">Wolisz plan pisany specjalnie dla Ciebie?
+      <b>Poznaj opiekę indywidualną →</b></a>
 
     <!-- NOTA ZDROWOTNA. Treść SŁOWO W SŁOWO taka sama jak komponent `HealthNote`
          w aplikacji (fitonlinecoach-app/src/components/ui.tsx) — jeśli ktoś zmienia jedno,
@@ -2127,19 +1833,20 @@
             <p class="rv rv3">Wierzę w złoty środek — mądry ruch, proste zasady odżywiania
               i systematyczność, którą utrzymasz latami.</p>
             <div class="roles rv rv4" id="roles">
-              <button class="role" type="button" data-detail="Szkolenia EXOS, EPI – NCSC, IFBB i inne"><span>Trener personalny</span></button>
-              <button class="role" type="button" data-detail="mgr fizjoterapii — AWF Katowice"><span>Fizjoterapeuta</span></button>
-              <button class="role" type="button" data-detail="lic. dietetyki klinicznej — ŚUM Katowice"><span>Dietetyk</span></button>
+              <button class="role" type="button" aria-pressed="false" data-detail="Szkolenia EXOS, EPI – NCSC, IFBB i inne"><span>Trener personalny</span></button>
+              <button class="role" type="button" aria-pressed="false" data-detail="mgr fizjoterapii — AWF Katowice"><span>Fizjoterapeuta</span></button>
+              <button class="role" type="button" aria-pressed="false" data-detail="lic. dietetyki klinicznej — ŚUM Katowice"><span>Dietetyk</span></button>
             </div>
             <div class="role-detail" id="roleDetail" aria-live="polite"></div>
-            <!-- sierpień 2026: oferta opieki żyje w aplikacji, a ta jest za bramką do 7.09,
-                 więc przycisk prowadzi do zapisu. Cena zostaje — buduje wyobrażenie o produkcie.
+            <!-- Oferta opieki żyje w aplikacji (decyzja Tomka 29.07: bez osobnej sekcji na stronie).
                  „/ mies." obowiązkowe: bez niego cena abonamentu wyglądała na jednorazową
-                 (audyt 2026-07-29). -->
-            <a class="btn btn-lime btn-join btn-care rv rv4" href="#zapis">
+                 (audyt 2026-07-29). Warunek ceny „od" stoi POD przyciskiem, nie na nim —
+                 napis na guziku ma mieć jedną linię (zasada ≤ 22 znaków). -->
+            <a class="btn btn-lime btn-join btn-care rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny" target="_blank" rel="noopener">
               <span class="bj-main">Opieka indywidualna</span>
-              <span class="bj-sub">od 399 zł / mies. — rusza 7.09</span>
+              <span class="bj-sub">od 399 zł / mies.</span>
             </a>
+            <span class="cena-warunek rv rv4">399 zł / mies. przy 3 miesiącach opłaconych z góry</span>
           </div>
         </div>
       </div>
@@ -2151,8 +1858,8 @@
 <!-- ===== YT ===== -->
 <section class="yt" id="wideo">
   <div class="wrap">
-    <div class="sec-label rv" style="justify-content:center">05 — Darmowa wiedza</div>
-    <h2 class="rv rv2"><span class="yt-count">80</span> <span class="yt-adj">darmowych</span> <span class="yt-noun">poradników</span> wideo</h2>
+    <div class="sec-label rv center">05 — Darmowa wiedza</div>
+    <h2 class="rv rv2"><span class="yt-count"></span> <span class="yt-adj">Darmowe</span> <span class="yt-noun">poradniki</span> wideo</h2>
     <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem SAM „przewija" (swajp)
          do kolejnego — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
          które „wyprzedzają" telefon i dodają głębi 3D: pierwszy niesie tekst spod tytułu, drugi
@@ -2172,22 +1879,25 @@
         </div>
         <!-- szklane pop-upy wyprzedzające telefon (więcej 3D) -->
         <div class="vp-pop vp-pop-a"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</div>
-        <a class="vp-pop vp-pop-b" href="https://youtube.com/playlist?list=PLEgy8VO2gIhkaWkcrwXJrCfdo338oPv4v" target="_blank" rel="noopener">
+        <a class="vp-pop vp-pop-b" href="https://www.youtube.com/@FitOnlineCoach" data-yt-link target="_blank" rel="noopener">
           <span class="vp-pop-ic" aria-hidden="true">▶</span>
-          <!-- te same klasy co w nagłówku sekcji — bez nich liczba była wpisana na sztywno
-               i rozjechałaby się z resztą strony przy pierwszym nowym filmie na playliście -->
-          <span class="vp-pop-txt"><b><span class="yt-count">80</span> <span class="yt-noun">poradników</span> wideo</b><br>Oglądaj na YouTube</span>
+          <!-- te same klasy co w nagłówku sekcji — liczbę i odmianę wpisuje skrypt z assets/yt.json;
+               adres playlisty też (data-yt-link), dopóki nie ma playlisty prowadzi na kanał -->
+          <span class="vp-pop-txt"><b><span class="yt-count"></span> <span class="yt-noun">Poradniki</span> wideo</b><br>Oglądaj na YouTube</span>
         </a>
       </div>
     </div>
+    <!-- WCAG 2.2.2: filmy i pasek pod hero ruszają same, więc musi być sposób, żeby je zatrzymać.
+         Obsługa w skrypcie efektów (`ruchBtn`); wybór pamiętany do końca sesji. -->
+    <button class="ruch-btn" id="ruchBtn" type="button" aria-pressed="false"><span class="ruch-ic" aria-hidden="true">❚❚</span><span class="ruch-txt">Zatrzymaj</span></button>
   </div>
 </section>
 
 <!-- ===== OPINIE (pokazuje się dopiero, gdy są zatwierdzone opinie) ===== -->
 <section class="reviews" id="opinie" hidden>
   <div class="wrap">
-    <div class="sec-label rv" style="justify-content:center">06 — Opinie</div>
-    <h2 class="sec-title rv rv2" style="text-align:center;margin-left:auto;margin-right:auto">Co mówią osoby,<br>które <span style="color:var(--lime)">już trenują</span>.</h2>
+    <div class="sec-label rv center">06 — Opinie</div>
+    <h2 class="sec-title rv rv2 center">Co mówią osoby,<br>które <span class="lime">już trenują</span>.</h2>
     <!-- Wymóg z przepisów o opiniach konsumenckich (tzw. Omnibus): trzeba napisać, CZY i JAK
          sprawdzamy opinie. Treść podyktowana przez Tomka 2026-08-14. Zdanie zobowiązuje —
          publikujemy wyłącznie opinie prawdziwych użytkowników aplikacji. -->
@@ -2225,6 +1935,14 @@
           przygodę — sprawdź plan „Początek".</p>
       </details>
       <details class="faq-item">
+        <!-- najdroższy produkt był na stronie tylko ceną — obiekcja „za co tyle?" (audyt 3.09) -->
+        <summary><span>Czym różni się opieka indywidualna od gotowego planu?</span></summary>
+        <p>Gotowy plan kupujesz raz i realizujesz samodzielnie w aplikacji. W opiece
+          indywidualnej plan powstaje po wywiadzie zdrowotnym i treningowym specjalnie pod
+          Ciebie, a w trakcie masz stały kontakt z trenerem na czacie i zmiany planu, gdy
+          czegoś potrzebujesz. Szczegóły i ceny są w aplikacji.</p>
+      </details>
+      <details class="faq-item">
         <summary><span>Jaki sprzęt jest potrzebny?</span></summary>
         <!-- ⚠ TA ODPOWIEDŹ MA BYĆ OGÓLNA — dotyczy WSZYSTKICH planów, także tych, których
              jeszcze nie ma (decyzja Tomka 2026-08-14). NIE wpisywać tu listy sprzętu
@@ -2235,9 +1953,9 @@
              Poprzednia wersja wymieniała „mata, gumy, sztanga, kettle, hantle i drążek"
              i była nieprawdziwa: brakowało m.in. DWÓCH jednakowych kettli, sprzętu cardio,
              skrzyni i piłki lekarskiej, a „mata" w planie w ogóle nie występuje. -->
-        <p>To zależy od planu. Jedne robisz na siłowni i wymagają więcej sprzętu, inne zrobisz
-          w domu, praktycznie bez niczego. Przy każdym planie znajdziesz dokładną listę tego,
-          co będzie potrzebne — zobaczysz ją, zanim kupisz.</p>
+        <p>To zależy od planu. Plan „Początek" robisz na siłowni — pełną listę sprzętu
+          widzisz na karcie planu i w aplikacji, zanim kupisz. Plany do wykonania w domu,
+          praktycznie bez sprzętu, są w przygotowaniu.</p>
       </details>
       <details class="faq-item">
         <summary><span>Jak długo mam dostęp do planu?</span></summary>
@@ -2260,35 +1978,41 @@
   </div>
 </section>
 
-<!-- ===== ZAPIS NA LISTĘ OCZEKUJĄCYCH =====
-     Kotwica `#zapis` — prowadzą do niej WSZYSTKIE przyciski na stronie na czas kampanii
-     zapowiadającej (menu, karta planu, opieka). Drugie miejsce zapisu obok hero. -->
+<!-- ===== NEWSLETTER =====
+     Kotwica `#zapis`. Do 3.09.2026 była to „lista oczekujących" kampanii przedsprzedażowej —
+     kampania ODWOŁANA (decyzja Tomka), został zwykły newsletter. Ten sam formularz i ta sama
+     grupa MailerLite (komentarz przy FOC_NEWSLETTER w <head>). -->
 <section class="nl" id="zapis">
   <div class="wrap">
     <div class="nl-grid">
       <div>
-        <div class="sec-label rv">08 — Lista oczekujących</div>
-        <!-- bezosobowo — patrz komentarz przy .hero-start -->
-        <h2 class="rv rv2">Bądź na liście, gdy ruszamy.</h2>
-        <p class="rv rv3">Start <strong>7 września</strong>. Zapisani dowiadują się jako pierwsi.
-          Co dostajesz za zostawienie adresu:</p>
+        <div class="sec-label rv">08 — Newsletter</div>
+        <!-- bezosobowo: mówimy o tym, co przychodzi na skrzynkę, nie o czytelniku -->
+        <h2 class="rv rv2">Wskazówki treningowe na skrzynkę.</h2>
+        <p class="rv rv3">Co dostajesz za zostawienie adresu:</p>
         <ul class="zapis-korzysci zapis-korzysci-duze rv rv3">
-          <li>cotygodniowe wskazówki treningowe</li>
+          <li>konkretne wskazówki treningowe</li>
           <li>informacje o nowych planach</li>
         </ul>
-        <p class="rv rv3">Zero spamu — wypiszesz się jednym kliknięciem.</p>
+        <p class="rv rv3">Zero spamu — wypisanie jednym kliknięciem.</p>
       </div>
       <div class="rv rv3">
-        <!-- zgoda wewnątrz formularza i przed przyciskiem — powody opisane przy formularzu w hero -->
+        <!-- Zgoda leży WEWNĄTRZ formularza i PRZED przyciskiem: wewnątrz — bo `new FormData(form)`
+             bierze tylko pola z formularza (wykryte testem 2026-08-01); przed przyciskiem — bo
+             człowiek ma ją przeczytać, zanim kliknie. -->
         <form class="zapis" data-zapis novalidate>
           <label class="sr-only" for="zapisDol">Adres e-mail</label>
           <input id="zapisDol" type="email" name="fields[email]" placeholder="Twój adres e-mail"
                  autocomplete="email" required>
           <label class="zapis-zgoda">
+            <!-- wartość trafia do MailerLite jako pole „Zgoda marketingowa" (`zgoda_marketingowa`)
+                 — razem z datą potwierdzenia z double opt-in stanowi dowód zgody. WERSJONOWANA:
+                 zmiana brzmienia zgody = nowa wersja w `value`, inaczej dowód nie mówi,
+                 które brzmienie klient widział. -->
             <input type="checkbox" data-zgoda name="fields[zgoda_marketingowa]"
-                   value="tak — formularz na fitonlinecoach.com" required>
-            <span>Chcę dostawać e-maile o starcie i wskazówki treningowe. Wypiszę się jednym
-              kliknięciem — <a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
+                   value="v2 (2026-09-03): wskazówki treningowe i informacje o nowych planach — formularz na fitonlinecoach.com" required>
+            <span>Chcę dostawać wskazówki treningowe i informacje o nowych planach od FitOnlineCoach.
+              Wypisanie jednym kliknięciem — <a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
               target="_blank" rel="noopener">polityka prywatności</a>.</span>
           </label>
           <button type="submit">Zapisz się →</button>
@@ -2299,10 +2023,12 @@
           <input class="sr-only" type="text" tabindex="-1" autocomplete="off"
                  aria-hidden="true" data-pulapka>
         </form>
-        <p class="zapis-msg" data-msg hidden aria-live="polite"></p>
-        <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik
-             (uzgodnione z wątkiem maili 2026-08-01) -->
-        <p class="zapis-admin">Administrator danych: FitOnlineCoach prosta spółka akcyjna, ul. Żyzna 2, 40-314 Katowice, NIP 9542914095.</p>
+        <!-- region „na żywo" istnieje od początku (bez `hidden`) — czytnik ekranu ogłasza zmianę
+             treści tylko w regionie, który już był w drzewie dostępności; pusty akapit nic nie
+             zajmuje (`.zapis-msg:empty`). -->
+        <p class="zapis-msg" data-msg aria-live="polite"></p>
+        <!-- informacja o administratorze danych — wymóg RODO, nie ozdobnik -->
+        <p class="zapis-admin">Administrator danych: FitOnlineCoach prosta spółka akcyjna, ul. Żyzna 2, 40-314 Katowice, NIP 9542914095, kontakt@fitonlinecoach.com.</p>
       </div>
     </div>
   </div>
@@ -2314,7 +2040,7 @@
 <footer>
   <div class="wrap">
     <div class="foot-grid">
-      <img src="assets/logo_stacked.png" alt="FitOnlineCoach" width="560" height="742" style="height:72px;width:auto" loading="lazy" decoding="async">
+      <img class="foot-logo" src="assets/logo_stacked.png" alt="FitOnlineCoach" width="560" height="742" loading="lazy" decoding="async">
       <ul class="foot-links">
         <li><a href="#dlaczego">Dlaczego</a></li>
         <li><a href="#plan">Plan</a></li>
@@ -2335,7 +2061,7 @@
         </a>
       </div>
     </div>
-    <!-- Metryczka wymagana przez art. 300(11) KSH: dla prostej spolki akcyjnej przepis
+    <!-- Metryczka wymagana przez art. 300⁶¹ KSH: dla prostej spolki akcyjnej przepis
          wymienia "informacje na stronach internetowych spolki" WPROST i zada firmy, siedziby
          i adresu, sadu rejestrowego z numerem KRS, NIP oraz wysokosci kapitalu akcyjnego.
          Dane wylacznie z sekcji 3a pliku FITONLINECOACH-STATUS.md — nie przepisywac z pamieci.
@@ -2349,6 +2075,9 @@
         <p>KRS 0001262434 · NIP 9542914095 · REGON 545549296</p>
         <p>Sąd Rejonowy Katowice-Wschód w Katowicach, VIII Wydział Gospodarczy KRS</p>
         <p>Kapitał akcyjny 5 000,00 zł</p>
+        <!-- adres elektroniczny — art. 5 ust. 2 ustawy o świadczeniu usług drogą elektroniczną
+             i art. 13 RODO; skrzynka kontaktowa dla klientów (decyzja Tomka 3.09.2026) -->
+        <p>Kontakt: <a class="fr-mail" href="mailto:kontakt@fitonlinecoach.com">kontakt@fitonlinecoach.com</a></p>
       </div>
     </details>
     <div class="copy">
@@ -2358,16 +2087,6 @@
     </div>
   </div>
 </footer>
-
-<!-- ===== DUŻY PODGLĄD ZRZUTU Z APLIKACJI (klik w kafelek „dlaczego") =====
-     Kafelek się obraca, a zrzut wyskakuje TUTAJ na całą stronę w szklanej ramce (liquid glass),
-     reszta strony przygasa i się rozmywa. Klik w podgląd = zamknięcie i powrót kafelka.
-     Warstwa musi siedzieć POZA sekcjami (kurtyna „dlaczego" ma overflow:hidden i by ją przycięła). -->
-<div class="shot" id="shot" role="dialog" aria-modal="true" aria-label="Powiększony ekran aplikacji" hidden>
-  <!-- tu JS wstawia KOPIĘ całego urządzenia (telefon/tablet/laptop) z kafelka -->
-  <div class="shot-glass" id="shotGlass"></div>
-  <span class="shot-hint">Kliknij, żeby zamknąć</span>
-</div>
 
 <!-- ===== BANER ZGÓD NA CIASTECZKA =====
      Nic nie śledzi, dopóki klient nie kliknie. Zgoda zapisywana na domenie nadrzędnej
@@ -2379,7 +2098,7 @@
            Świadomie ZOSTAJE „Na Twoim urządzeniu zapisujemy pliki" — zgoda dotyczy dostępu do
            pamięci urządzenia, a samo „używamy plików" można przeczytać jako „mamy pliki na
            serwerze". Zdanie jest prawdziwe od pierwszego kliknięcia: baner zapisuje ciasteczko
-           `foc_consent` z zapamiętanym wyborem (linia ~2302), niezależnie od Pixela. -->
+           `foc_consent` z zapamiętanym wyborem (funkcja `zapisz` w skrypcie zgód), niezależnie od Pixela. -->
       <b>Ciasteczka</b>
       <p>Na Twoim urządzeniu zapisujemy pliki niezbędne do działania strony.
         Statystyki i reklamy — tylko za zgodą.
@@ -2423,7 +2142,7 @@
   /* zgoda zapisywana na domenie nadrzędnej — dzięki temu obowiązuje też w app.fitonlinecoach.com */
   const domena = () => location.hostname.endsWith('fitonlinecoach.com') ? '; domain=.fitonlinecoach.com' : '';
   const zapisz = z => {
-    document.cookie = `${NAZWA}=${encodeURIComponent(JSON.stringify(z))}; path=/${domena()}; max-age=${DNI * 86400}; SameSite=Lax`;
+    document.cookie = `${NAZWA}=${encodeURIComponent(JSON.stringify(z))}; path=/${domena()}; max-age=${DNI * 86400}; Secure; SameSite=Lax`;
   };
   const odczytaj = () => {
     const m = document.cookie.match(new RegExp('(?:^|; )' + NAZWA + '=([^;]*)'));
@@ -2511,14 +2230,13 @@
     } catch (_) { /* pomiar nigdy nie może zepsuć kliknięcia */ }
   }, true);
 
-  /* ===== Pomiar konwersji: ZAPIS NA LISTĘ =====
-     W sierpniu to JEDYNA konwersja na stronie — apka jest za bramką, więc nasłuch wyżej
-     (kliki w linki do aplikacji) nie ma czego liczyć. Zdarzenie leci ze skryptu formularza
-     dopiero po odpowiedzi `{"success":true}` z MailerLite, czyli liczymy zapisy realne,
-     nie kliknięcia w przycisk. */
+  /* ===== Pomiar konwersji: ZAPIS DO NEWSLETTERA (konwersja pomocnicza — główną są kliki
+     w linki do aplikacji, liczone wyżej) =====
+     Zdarzenie leci ze skryptu formularza dopiero po odpowiedzi `{"success":true}`
+     z MailerLite, czyli liczymy zapisy realne, nie kliknięcia w przycisk. */
   document.addEventListener('foc:zapis', () => {
     try {
-      if (ga4Wczytane || adsWczytane) gtag('event', 'sign_up', {method: 'lista_oczekujacych'});
+      if (ga4Wczytane || adsWczytane) gtag('event', 'sign_up', {method: 'newsletter'});
       if (pixelWczytany && window.fbq) fbq('track', 'Lead');
     } catch (_) { /* pomiar nigdy nie może zepsuć zapisu */ }
   });
@@ -2537,9 +2255,145 @@
 })();
 </script>
 
+<!-- ===== NEWSLETTER + MENU MOBILNE =====
+     Osobny skrypt, PRZED efektami wizualnymi: gdyby w bloku efektów coś się wysypało
+     (np. brak elementu po przebudowie sekcji), zapis i menu mają działać dalej. -->
+<script>
+(() => {
+  /* ---------- NEWSLETTER ----------
+     Jeden kod dla każdego formularza oznaczonego `data-zapis` (dziś jeden, w sekcji na dole).
+     Wysyłka leci POST-em w tle, a strona zostaje na miejscu. Odpowiedź MailerLite
+     ODCZYTUJEMY i dopiero `success:true` uznajemy za zapis — szczegóły przy `fetch` niżej.
+     Potwierdzenie mailem robi MailerLite (double opt-in).
+     Zgoda marketingowa jest wymagana ręcznie, bo `required` na polu wyboru wewnątrz
+     formularza z `novalidate` nie zatrzyma wysyłki samo z siebie. */
+  /* Skąd przyszedł zapis — bez tego kampania nie powie, który kanał działa.
+     `utm_source` z linku, a gdy go nie ma — domena strony, z której klient przyszedł.
+     Jedno pole zamiast pięciu (utm_medium/campaign/…): do wyboru kanału wystarczy. */
+  const zrodloZapisu = (() => {
+    const utm = new URLSearchParams(location.search).get('utm_source');
+    /* tylko litery, cyfry, myślnik i podkreślenie — obcy tekst z linku nie ma trafić do MailerLite */
+    if (utm) return utm.replace(/[^a-z0-9_-]/gi, '').slice(0, 60) || 'nieznane';
+    if (!document.referrer) return 'bezposrednio';
+    try { return new URL(document.referrer).hostname; } catch (_) { return 'nieznane'; }
+  })();
+  document.querySelectorAll('[data-zrodlo]').forEach(p => p.value = zrodloZapisu);
+
+  document.querySelectorAll('form[data-zapis]').forEach(form => {
+    const msg = form.parentElement.querySelector('[data-msg]');
+    const zgoda = form.querySelector('[data-zgoda]');   /* wewnątrz formularza — patrz komentarz w treści */
+    const pole = form.querySelector('input[type=email]');
+    const pokaz = (tekst, blad) => {
+      if (!msg) return;
+      msg.hidden = false; msg.textContent = tekst; msg.classList.toggle('blad', !!blad);
+    };
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      /* Bot wypełnił pułapkę — udajemy, że wszystko poszło dobrze i nie wysyłamy nic.
+         Automat nie dowiaduje się, że został wykryty, a lista zostaje czysta. */
+      const pulapka = form.querySelector('[data-pulapka]');
+      if (pulapka && pulapka.value) { form.reset(); return; }
+      const adres = (pole.value || '').trim();
+      /* Poprzedni warunek („jest małpa i jest kropka") przepuszczał literówki, bo NIE
+         sprawdzał, czy kropka stoi PO małpie — `jan.kowalski@gmailcom` przechodził.
+         Zmierzone na 12 przykładach: stary warunek mylił się w 5, ten w żadnym.
+         Nie wystarczy też `type=email` przeglądarki: specyfikacja HTML dopuszcza adresy
+         bez kropki w domenie (np. `jan@intranet`), więc też przepuszcza tę literówkę. */
+      const adresOk = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(adres) && /\.[a-z]{2,}$/i.test(adres);
+      if (!adresOk) {
+        pokaz('Adres e-mail wygląda na niepoprawny — sprawdź pisownię.', true); pole.focus(); return;
+      }
+      if (zgoda && !zgoda.checked) {
+        pokaz('Zaznacz zgodę — bez niej wysyłka e-maili nie jest możliwa.', true);
+        zgoda.focus(); return;
+      }
+      const akcja = ((window.FOC_NEWSLETTER || {}).action || '').trim();
+      if (!akcja) { pokaz('Zapis jest chwilowo niedostępny — spróbuj później.'); return; }
+      pokaz('Zapisywanie…');
+      const przycisk = form.querySelector('button[type=submit]');
+      if (przycisk) przycisk.disabled = true;   /* jedno kliknięcie = jedna wysyłka */
+      /* BEZ `mode:'no-cors'`. Endpoint MailerLite odsyła `access-control-allow-origin: *`
+         (sprawdzone 2026-08-02), więc odpowiedź DA SIĘ odczytać. Wcześniej `no-cors`
+         zaślepiał wynik: `fetch` kończył się sukcesem nawet przy błędzie serwera i strona
+         mówiła „sprawdź skrzynkę", choć zapis przepadał. To nie jest teoria — 1.08 ten
+         endpoint zwrócił 503 z Varnisha przy prawidłowym adresie. */
+      fetch(akcja, {method: 'POST', body: new FormData(form),
+            signal: AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined})   /* 15 s zamiast „Zapisywanie…" bez końca */
+        .then(r => r.json())
+        .then(d => {
+          /* ROZRÓŻNIAMY DWA PRZYPADKI. Wcześniej każde odrzucenie kończyło się komunikatem
+             „spróbuj jeszcze raz za chwilę" — czyli: zawinił serwer, poczekaj. Klient
+             z literówką w adresie próbował więc w kółko z tą samą literówką i za każdym
+             razem dostawał tę samą odpowiedź. Gdy MailerLite skarży się na adres,
+             mówimy o adresie. */
+          if (d && d.success !== true) {
+            const opis = JSON.stringify(d.errors || d.error || d).toLowerCase();
+            if (opis.indexOf('mail') >= 0) {
+              pokaz('Ten adres nie został przyjęty — sprawdź, czy jest poprawny.', true);
+              pole.focus(); return;
+            }
+          }
+          if (!d || d.success !== true) throw new Error('zapis odrzucony');
+          /* Treść uzgodniona z wątkiem maili (2026-08-01): musi WPROST mówić, że trzeba kliknąć
+             link, bo przy double opt-in ludzie inaczej piszą, że „nic nie przyszło".
+             Sformułowana BEZOSOBOWO (polecenie Tomka 2026-08-16) — poprzednia wersja mówiła
+             „wysłałem", czyli w rodzaju męskim, co łamie zasadę tekstów do klienta. */
+          pokaz('Na podany adres został wysłany link potwierdzający. Kliknij go, aby dokończyć '
+              + 'zapis. Sprawdź także folder ze spamem.');
+          form.reset(); if (zgoda) zgoda.checked = false;
+          /* pomiar konwersji — obsługiwany w bloku zgód, żeby błąd pomiaru nie psuł zapisu */
+          document.dispatchEvent(new CustomEvent('foc:zapis'));
+        })
+        .catch(() => pokaz('Zapis nie powiódł się — spróbuj ponownie za chwilę.', true))
+        .finally(() => { if (przycisk) przycisk.disabled = false; });
+    });
+  });
+
+  /* ===== MENU MOBILNE =====
+     Zmierzone przed poprawką: po otwarciu menu ŻADEN z ośmiu kolejnych Tabów nie wchodził
+     do menu. Wszystkie lądowały POD ZASŁONĄ — w polu e-mail, w zgodzie, w linku do polityki
+     i na przycisku „Zapisz się". Ktoś, kto obsługuje stronę klawiaturą albo czytnikiem ekranu,
+     pisał więc adres do pola, którego nie widzi. Powód jest w kolejności: hamburger stoi
+     w kodzie PO liście linków, więc Tab z niego idzie dalej, w treść strony, a menu zostaje
+     z tyłu. Escape też nie zamykał.
+
+     Naprawa: na czas otwarcia wyłączamy całą zakrytą treść właściwością `inert` (przeglądarka
+     pomija ją i dla klawiatury, i dla czytnika ekranu), przenosimy fokus na pierwszy link,
+     a po zamknięciu oddajemy go hamburgerowi. Do tego Escape zamyka, a `aria-expanded` mówi
+     czytnikowi, czy menu jest otwarte — to druga usterka z tej samej listy. */
+  const burger = document.getElementById('burger');
+  const nav = document.getElementById('navLinks');
+  /* Zakryte przez zasłonę: cała treść strony ORAZ logo w nagłówku. Logo zostaje pod
+     zasłoną, więc bez tego dawało się na nie wejść klawiszem Tab, choć go nie widać.
+     Sam nagłówek zostaje aktywny — inaczej zniknąłby też hamburger i menu. */
+  const logo = document.querySelector('#header .logo');
+  const zakryte = () => [...document.body.children].filter(e => e.id !== 'header')
+    .concat(logo ? [logo] : []);
+  burger.setAttribute('aria-expanded', 'false');
+  burger.setAttribute('aria-controls', 'navLinks');
+
+  const ustawMenu = otwarte => {
+    burger.classList.toggle('open', otwarte);
+    nav.classList.toggle('open', otwarte);
+    burger.setAttribute('aria-expanded', String(otwarte));
+    /* `inert` nie działa na sam nagłówek — wtedy zniknąłby też hamburger i menu */
+    zakryte().forEach(e => { if (otwarte) e.setAttribute('inert', ''); else e.removeAttribute('inert'); });
+    if (otwarte) { const pierwszy = nav.querySelector('a'); if (pierwszy) pierwszy.focus(); }
+    else burger.focus();
+  };
+
+  burger.addEventListener('click', () => ustawMenu(!nav.classList.contains('open')));
+  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => ustawMenu(false)));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && nav.classList.contains('open')) ustawMenu(false);
+  });
+})();
+</script>
+
 <script>
 (() => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ogr = (v, lo, hi) => Math.min(Math.max(v, lo), hi);   /* obcięcie do zakresu — w całym bloku */
 
   /* pasek postępu + stan nagłówka */
   const progress = document.getElementById('progress');
@@ -2637,13 +2491,16 @@
 
   /* manifest — podświetlanie słów w rytmie przewijania */
   const manifest = document.getElementById('manifest');
-  const words = manifest.textContent.trim().split(/\s+/);
-  const emText = [...manifest.querySelectorAll('em')].map(e => e.textContent.trim());
-  manifest.innerHTML = words.map(w => {
-    const accent = emText.some(t => t.split(/\s+/).includes(w));
-    return `<span class="mw${accent ? ' accent' : ''}">${w}</span>`;
-  }).join(' ');
-  const mws = [...manifest.querySelectorAll('.mw')];
+  let mws = [];
+  if (manifest) {
+    const words = manifest.textContent.trim().split(/\s+/);
+    const emText = [...manifest.querySelectorAll('em')].map(e => e.textContent.trim());
+    manifest.innerHTML = words.map(w => {
+      const accent = emText.some(t => t.split(/\s+/).includes(w));
+      return `<span class="mw${accent ? ' accent' : ''}">${w}</span>`;
+    }).join(' ');
+    mws = [...manifest.querySelectorAll('.mw')];
+  }
 
   /* pętla przewijania: parallax + hero + manifest + progress + kurtyna */
   /* Ozdobne tła sekcji: dokładamy obrazek 1200 px przed sekcją, żeby zdążył się wczytać,
@@ -2657,8 +2514,6 @@
   });
 
   const pxEls = [...document.querySelectorAll('[data-parallax]')];
-  const heroContent = document.getElementById('heroContent');
-  const heroVideo = document.getElementById('heroVideo');   /* może nie istnieć — hero jest dziś bez wideo */
   const topblok = document.getElementById('topblok');
   const talerze = [...document.querySelectorAll('.talerz')];
   const heroPhone = document.getElementById('heroPhone');
@@ -2835,7 +2690,7 @@
       dlDomknij();
       dlIdx = ((krok ? dlIdx + krok : i) + dlN) % dlN;
       dlUstaw(krok ? dlPoz + krok : dlIdx + 1);
-      dlKropki.forEach((k, n) => k.classList.toggle('on', n === dlIdx));
+      dlKropki.forEach((k, n) => { k.classList.toggle('on', n === dlIdx); k.setAttribute('aria-current', String(n === dlIdx)); });
       dlTeksty.forEach((t, n) => t.classList.toggle('on', n === dlIdx));
     };
     dlKropki.forEach(k => k.addEventListener('click', () => dlPokaz(+k.dataset.ekran)));
@@ -2875,8 +2730,10 @@
   const vphone = document.getElementById('vphone');
   const vpTrack = document.getElementById('vpTrack');
   if (vphone && vpTrack) {
-    const reducedVP = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     zbudujTelefon(vphone.querySelector('.dl-body'), 18, true);
+    /* „Zatrzymaj" (przycisk pod telefonem) — stan pamiętany do końca sesji */
+    let vpPauza = false;
+    try { vpPauza = sessionStorage.getItem('foc_ruch') === 'stop'; } catch (_) {}
 
     /* responsywna skala (żeby zmieścił się na telefonie) + obrót 3D za kursorem */
     const vpWrap = vphone.parentElement;
@@ -2888,7 +2745,7 @@
     };
     vpPrzelicz(); vpStosuj();
     window.addEventListener('resize', () => { vpPrzelicz(); vpStosuj(); });
-    if (!reducedVP) {
+    if (!reduced) {
       /* Obrót prowadzi ruch myszy po CAŁEJ sekcji, nie tylko nad samym telefonem
          (polecenie Tomka 2026-08-13). Odchylenie liczymy od środka sekcji, więc
          telefon „patrzy" za kursorem także wtedy, gdy ten jest daleko od niego. */
@@ -2922,7 +2779,7 @@
         vpPoZmianie();
       }
     });
-    if (!reducedVP) setInterval(vpDalej, 3800);   /* każdy film ~3,2 s + 0,6 s swajp */
+    if (!reduced) setInterval(() => { if (!vpPauza) vpDalej(); }, 3800);   /* każdy film ~3,2 s + 0,6 s swajp */
 
     /* ===== FILMY WCZYTUJĄ SIĘ DOPIERO PRZY DOJEŻDŻANIU DO SEKCJI =====
        Wcześniej znaczniki miały `autoplay` obok `preload="none"` — i `autoplay` wygrywał,
@@ -2952,7 +2809,8 @@
            że przy pierwszym slajdzie grał też jego klon z końca pętli (dwa dekodowania
            tego samego pliku). `vpIdx` przechodzi 0..vpN, a klon ma indeks vpN. */
         const biezacy = i === vpIdx;
-        if (vpWidac && biezacy) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+        /* przy „ogranicz ruch" (WCAG 2.3.3) i po „Zatrzymaj" filmy stoją na pierwszej klatce */
+        if (vpWidac && biezacy && !reduced && !vpPauza) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
         else v.pause();
       });
     };
@@ -2961,6 +2819,27 @@
       vpGraj();
     }, { rootMargin: '200px 0px' }).observe(vpCel);
     vpPoZmianie = vpGraj;
+
+    /* ===== „ZATRZYMAJ / ODTWÓRZ" (WCAG 2.2.2) =====
+       Pauzuje filmy, ich auto-przewijanie i ruchomy pasek pod hero (klasa `ruch-stop`
+       na <html> → `animation-play-state:paused` w stylach). Wybór w sessionStorage,
+       żeby po powrocie na stronę nie trzeba było klikać drugi raz. */
+    const ruchBtn = document.getElementById('ruchBtn');
+    const ruchStosuj = () => {
+      document.documentElement.classList.toggle('ruch-stop', vpPauza);
+      if (ruchBtn) {
+        ruchBtn.setAttribute('aria-pressed', String(vpPauza));
+        ruchBtn.querySelector('.ruch-txt').textContent = vpPauza ? 'Odtwórz' : 'Zatrzymaj';
+        ruchBtn.querySelector('.ruch-ic').textContent = vpPauza ? '▶' : '❚❚';
+      }
+      vpGraj();
+    };
+    if (ruchBtn) ruchBtn.addEventListener('click', () => {
+      vpPauza = !vpPauza;
+      try { sessionStorage.setItem('foc_ruch', vpPauza ? 'stop' : 'graj'); } catch (_) {}
+      ruchStosuj();
+    });
+    ruchStosuj();
   }
 
   const slowoRozumiesz = document.querySelector('.hero h1 .outline');
@@ -2997,9 +2876,9 @@
   const dokujTelefon = (force) => {
     if (!heroPhone || !hpBody || !heroEl || !slowoRozumiesz) return 0;
     const hr = heroEl.getBoundingClientRect();
-    const ogr = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
-    /* Na desktopie postęp ze zwykłego przewijania. Na MOBILE telefon jest OD RAZU
-       zadokowany za napisami — p=1 — zamiast startować duży i zasłaniać nagłówek.
+    /* Na desktopie postęp ze zwykłego przewijania. Na MOBILE (i w niskim oknie komputera,
+       gdzie style zdejmują przypięcie — `.hero-stack` ma wtedy wysokość hero) telefon jest
+       OD RAZU zadokowany za napisami — p=1 — zamiast startować duży i zasłaniać nagłówek.
        Telefonu nie gasimy: dokuje w rogu i wyjeżdża w górę razem z hero (decyzja Tomka
        2026-08-12). Zjazd w dół i zniknięcie robi teraz telefon w sekcji „Dlaczego FOC". */
     const plynne = stackMode() && heroStack && heroStack.offsetHeight > window.innerHeight * 1.2;
@@ -3011,7 +2890,7 @@
     const xStart = hr.width * 0.05, yStart = 0;
     /* CEL DOKOWANIA (wskazany przez Tomka 2026-08-12): wolne pole po prawej stronie,
        PONIŻEJ hasła — a nie za słowem „rozumiesz.". Tam nic nie zasłania i telefon
-       nie wchodzi w nagłówek ani w formularz zapisu. */
+       nie wchodzi w nagłówek ani w przycisk „Dołącz". */
     const wr = slowoRozumiesz.getBoundingClientRect();
     let sDock = 0.46;
     let xDock = hr.width * 0.26;
@@ -3103,11 +2982,6 @@
     });
     heroEl.addEventListener('mouseleave', () => { ptrX = 0; ptrY = 0; stosujTelefon(); });
   }
-  /* Rząd talerzy w hero: tuż pod nagłówkiem, dolne krawędzie na jednej linii
-     („stoją na podłodze"), każdy pod innym kątem — kąty ustawia pętla przewijania. */
-  /* Pozycje talerzy liczy teraz pętla przewijania w układzie ekranu (nakładka fixed),
-     więc ta funkcja nic już nie ustawia — zostaje pusta dla zgodności z wywołaniami. */
-  const ustawTalerzeHero = () => {};
   const stackEl = document.querySelector('.stack:not(.stack-about)');
   const doorL = document.getElementById('doorL');
   const doorR = document.getElementById('doorR');
@@ -3149,7 +3023,6 @@
     }
   };
 
-  const ogr01 = v => Math.min(Math.max(v, 0), 1);
   const rollRysuj = g => {
     if (!sztangownia || !talerzRoll || !hasloTekst) return;
     const W = sztangownia.clientWidth;
@@ -3197,45 +3070,23 @@
       const y = window.scrollY;
       const vh = window.innerHeight;
       const doc = document.documentElement.scrollHeight - vh;
-      progress.style.width = (doc > 0 ? (y / doc) * 100 : 0) + '%';
-      header.classList.toggle('scrolled', y > 40);
+      if (progress) progress.style.width = (doc > 0 ? (y / doc) * 100 : 0) + '%';
+      if (header) header.classList.toggle('scrolled', y > 40);
       if (reduced) return;
 
-      /* Gdy hero jest PRZYPIĘTE (desktop), treść ma stać nieruchomo — inaczej parallax/zanikanie
-         ze starego designu przesuwałyby i wygaszały napis, za którym dokuje się telefon.
-         Przy braku przypięcia (mobile) zostaje dawny parallax. */
-      const heroPinned = stackMode() && heroStack && heroStack.offsetHeight > vh * 1.2;
-      if (heroPinned) {
-        heroContent.style.transform = 'none';
-        heroContent.style.opacity = '1';
-      } else if (!stackMode()) {
-        /* TELEFON — ZERO PARALLAXU I ZERO ZANIKANIA (zgloszone przez Tomka 2026-08-14).
-           Ten efekt zostal po starym projekcie i na telefonie dziala PRZECIWKO klientowi.
-           Przycisk „Zapisz sie" startuje ponizej krawedzi ekranu na kazdym telefonie
-           procz najwiekszych (iPhone 14/15: brakuje 62 px, maly telefon: 191 px). Zeby go
-           dosiegnac, trzeba przewinac — a przewijanie robilo dwie rzeczy naraz: spychalo
-           przycisk W DOL o 0,35 px na kazdy przewiniety piksel (czyli uciekal przed palcem,
-           zblizajac sie tylko o 65 px na 100 px przewiniecia) i wygaszalo cala tresc.
-           Efekt: przycisk stawal sie widoczny dokladnie wtedy, gdy stawal sie niewidoczny
-           (przy 400 px przewiniecia krycie = 0,00), a pod palcem byl juz ruchomy pasek,
-           ktory lezy warstwe wyzej (.marquee ma z-index:3, .hero-content 2).
-           Na duzym telefonie tego nie widac, bo wystarczy przewinac ~60 px i przycisk jest
-           jeszcze prawie nieprzezroczysty — stad „u mnie dziala".
-           Osobna galaz zamiast warunku przy `y < vh`, bo styl trzeba tez WYCZYSCIC: bez tego
-           po obroceniu telefonu albo zmianie rozmiaru okna zostawal wpisany stary, przezroczysty. */
-        heroContent.style.transform = 'none';
-        heroContent.style.opacity = '1';
-      } else if (y < vh) {
-        heroContent.style.transform = `translateY(${y * .35}px)`;
-        heroContent.style.opacity = Math.max(1 - y / (vh * .72), 0);
-      }
+      /* Treść hero stoi NIERUCHOMO — bez parallaxu i zanikania ze starego projektu.
+         Przypięte hero (komputer): za napisem dokuje się telefon, więc ruch napisu psułby
+         cel dokowania. Nieprzypięte (telefon, niskie okno): parallax spychał przycisk pod
+         hasłem w dół (0,35 px na każdy przewinięty piksel) i jednocześnie go wygaszał —
+         przycisk stawał się widoczny dokładnie wtedy, gdy stawał się niewidoczny
+         (zgłosił Tomek 2026-08-14). */
 
       /* pepitka jest przypięta do ekranu (fixed) — pokazujemy ją tylko, gdy blok górny
          (hero + pasek + manifest) jest w kadrze; przy wjeździe sekcji „dlaczego" gaśnie,
          żeby statyczne tło nie prześwitywało nad kolejnymi sekcjami. */
       if (tbWzor && topblok) {
         const tbr = topblok.getBoundingClientRect();
-        const f = Math.min(Math.max(tbr.bottom / (vh * 0.5), 0), 1);
+        const f = ogr(tbr.bottom / (vh * 0.5), 0, 1);
         tbWzor.style.opacity = (0.16 * f).toFixed(3);
       }
 
@@ -3255,7 +3106,6 @@
          Za sekcją „dlaczego" po prostu znikają: sekcja ma własne tło i zasłania je.
          Pozycję liczymy w układzie ekranu, więc ruch odwraca się sam przy przewijaniu w górę. */
       if (talerze.length) {
-        const ogr = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
         /* Nakładka na ekran: talerze wytaczają się ZZA ruchomego paska pod hero (maska chowa
            wszystko powyżej jego dolnej krawędzi), a potem toczą się w dół przez manifest —
            KAŻDY Z INNĄ PRĘDKOŚCIĄ, więc rozjeżdżają się w trakcie. Znikają na „dlaczego".
@@ -3295,15 +3145,17 @@
       }
 
       /* manifest scrub */
-      const mr = manifest.getBoundingClientRect();
-      const prog = Math.min(Math.max((vh * .82 - mr.top) / (mr.height + vh * .35), 0), 1);
-      const lit = Math.floor(prog * mws.length);
-      mws.forEach((w, i) => w.classList.toggle('lit', i < lit));
+      if (manifest) {
+        const mr = manifest.getBoundingClientRect();
+        const prog = ogr((vh * .82 - mr.top) / (mr.height + vh * .35), 0, 1);
+        const lit = Math.floor(prog * mws.length);
+        mws.forEach((w, i) => w.classList.toggle('lit', i < lit));
+      }
 
       /* kurtyna: „dlaczego" rozjeżdża się i odsłania „jak to działa" */
       if (stackEl && stackMode()) {
-        const p = Math.min(Math.max((y - stackEl.offsetTop) / (stackEl.offsetHeight - vh), 0), 1);
-        const s = Math.min(Math.max((p - .38) / .52, 0), 1);
+        const p = ogr((y - stackEl.offsetTop) / (stackEl.offsetHeight - vh), 0, 1);
+        const s = ogr((p - .38) / .52, 0, 1);
         /* wygładzenie (ease-in-out), żeby start i koniec były miękkie */
         const e = s < .5 ? 2 * s * s : 1 - Math.pow(-2 * s + 2, 2) / 2;
         doorL.style.transform = `translateX(${-e * 102}%)`;
@@ -3356,8 +3208,8 @@
 
       /* druga kurtyna: „o mnie" rozjeżdża się, spod spodu wjeżdża przerywnik z deszczem */
       if (stack2El && stackMode()) {
-        const p2 = Math.min(Math.max((y - stack2El.offsetTop) / (stack2El.offsetHeight - vh), 0), 1);
-        const s2 = Math.min(Math.max((p2 - .35) / .55, 0), 1);
+        const p2 = ogr((y - stack2El.offsetTop) / (stack2El.offsetHeight - vh), 0, 1);
+        const s2 = ogr((p2 - .35) / .55, 0, 1);
         const e2 = s2 < .5 ? 2 * s2 * s2 : 1 - Math.pow(-2 * s2 + 2, 2) / 2;
         door2L.style.transform = `translateX(${-e2 * 102}%)`;
         door2R.style.transform = `translateX(${e2 * 102}%)`;
@@ -3369,13 +3221,13 @@
 
         /* talerz toczy się i odsłania hasło w miarę rozjeżdżania się kurtyny „o mnie".
            Szeroki zakres na dłuższej sekcji = talerz jedzie WYRAŹNIE wolniej. */
-        rollRysuj(ogr01((p2 - .44) / .52));
+        rollRysuj(ogr((p2 - .44) / .52, 0, 1));
       }
       /* Na telefonie nie ma kurtyny (sekcje idą jedna pod drugą), więc toczeniem
          steruje po prostu pozycja przerywnika na ekranie. */
       if (!stackMode() && hasloEl) {
         const hr2 = hasloEl.getBoundingClientRect();
-        rollRysuj(ogr01((vh * .82 - hr2.top) / (hr2.height * .7)));
+        rollRysuj(ogr((vh * .82 - hr2.top) / (hr2.height * .7), 0, 1));
       }
     });
   };
@@ -3383,87 +3235,17 @@
   onScroll();
 
 
-  /* karty — poświata podąża za kursorem + klik obraca kafelek na ekran z aplikacji */
-  /* ---- DUŻY PODGLĄD ZRZUTU z kafelków „dlaczego" (liquid glass) ----
-     Otwiera się po obrocie kafelka; klik w podgląd (lub Esc) zamyka go i cofa obrót kafelka. */
-  const shot = document.getElementById('shot');
-  const shotGlass = document.getElementById('shotGlass');
-  const reducedShot = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-  let shotCard = null;
-  /* Na duży ekran przenosimy CAŁE urządzenie (obudowa + ekran) — kopiujemy je z kafelka. */
-  const shotOpen = card => {
-    if (!shot || !shotGlass) return;
-    /* kafelek może mieć dwa warianty urządzenia (duży ekran / telefon) — bierzemy WIDOCZNY */
-    const dev = [...card.querySelectorAll('.cb-dev')].find(d => d.offsetParent !== null)
-      || card.querySelector('.cb-dev');
-    if (!dev) return;
-    shotCard = card;
-    const kopia = dev.cloneNode(true);
-    kopia.removeAttribute('aria-label');
-    kopia.style.transform = 'perspective(1500px) rotateY(0deg) rotateX(0deg)';   /* start: na wprost */
-    shotGlass.innerHTML = '';
-    shotGlass.appendChild(kopia);
-    shot.hidden = false;
-    document.documentElement.classList.add('shot-open');   /* strona pod spodem stoi */
-    void shot.offsetWidth;                                  /* reflow, żeby przejście zadziałało */
-    shot.classList.add('open');
-  };
-  /* Zamknięcie WRACA DO REWERSU kafelka (telefon dalej widoczny) — kafelek obraca się na przód
-     dopiero po kliknięciu w rewers obok telefonu. */
-  const shotClose = () => {
-    if (!shot || shot.hidden) return;
-    shot.classList.remove('open');
-    document.documentElement.classList.remove('shot-open');
-    shotCard = null;
-    setTimeout(() => { shot.hidden = true; shotGlass.innerHTML = ''; }, reducedShot ? 0 : 430);
-  };
-  if (shot) {
-    shot.addEventListener('click', shotClose);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') shotClose(); });
-    /* Powiększone urządzenie żyje w 3D — obraca się za kursorem po całym ciemnym ekranie. */
-    if (!reducedShot) {
-      shot.addEventListener('pointermove', e => {
-        const dev = shotGlass.firstElementChild;
-        if (!dev) return;
-        const px = (e.clientX / window.innerWidth - 0.5) * 2;    /* -1..1 */
-        const py = (e.clientY / window.innerHeight - 0.5) * 2;
-        dev.style.transform =
-          `perspective(1500px) rotateY(${(px * 15).toFixed(1)}deg) rotateX(${(-py * 10).toFixed(1)}deg)`;
-      });
-    }
-  }
-
-  document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
-      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
-    });
-    /* Klik w kafelek OBRACA go (awers ↔ rewers ze zrzutem w telefonie 3D).
-       Klik w sam TELEFON na rewersie — otwiera duży podgląd (liquid glass), bez obracania. */
-    const flip = () => card.classList.toggle('flipped');
-    card.addEventListener('click', e => {
-      if (card.classList.contains('flipped') && e.target.closest('.cb-dev')) {
-        shotOpen(card);
-        return;
-      }
-      flip();
-    });
-    card.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
-    });
-  });
-
   /* role w „o mnie" — klik pokazuje kwalifikacje */
   const roleDetail = document.getElementById('roleDetail');
   document.querySelectorAll('.role').forEach(btn => btn.addEventListener('click', () => {
     const wasActive = btn.classList.contains('active');
-    document.querySelectorAll('.role').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.role').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
     if (wasActive) {                       /* ponowny klik chowa treść — MIEJSCE zostaje zarezerwowane */
       roleDetail.classList.remove('show');
       return;
     }
     btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
     roleDetail.textContent = btn.dataset.detail;
     void roleDetail.offsetHeight;
     roleDetail.classList.add('show');
@@ -3491,14 +3273,13 @@
       weeks: 4, workouts: 12, exercises: 50, minutes: 595,
       desc: 'Plan dla osób, które chcą wystartować z treningiem — spokojnie, bezpiecznie i ze zrozumieniem tego, co robią.',
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
-      price: '79 <span class="zl">zł</span> <small>/ jednorazowo</small>',
       img: 'assets/plan_poczatek_karta.jpg', alt: 'Tomek w russian twist z piłką lekarską; na podłodze sali logo FitOnlineCoach',
-      /* sierpień 2026: apka za bramką do 7.09 — przycisk prowadzi do zapisu, nie do zakupu */
       /* Przycisk dwuwierszowy jak przy opiece indywidualnej (decyzja Tomka 3.08):
-         `cta` = górny wiersz (akcja), `ctaCena` = dolny (cena + termin).
-         Wcześniej próba wciśnięcia obu w jedną linię („Zapisz się — rusza 7.09")
-         zawijała się na telefonie — dlatego cena ma WŁASNY wiersz, nie dopisek. */
-      url: '#zapis', cta: 'Zapisz się', ctaCena: '79 zł za plan — rusza 7.09'
+         `cta` = górny wiersz (akcja), `ctaCena` = dolny (cena). Wcześniej próba wciśnięcia
+         obu w jedną linię zawijała się na telefonie — dlatego cena ma WŁASNY wiersz.
+         Te same trzy wartości co w znaczniku karty (przód i tył): setPlan nadpisuje je przy
+         przełączaniu planów, więc rozjazd tutaj wróciłby po dodaniu drugiego planu. */
+      url: 'https://app.fitonlinecoach.com/plany/poczatek?kup=1', cta: 'Kup plan', ctaCena: '79 zł — jednorazowo'
     }
     /* Kolejne plany dopisuj TUTAJ (tag, title, liczby, desc, feats, img, url, cta).
        Puste karty „Plan 2/3 — Wkrótce" zdjęte 2026-07-29 (audyt): odciągały od jedynego
@@ -3533,6 +3314,7 @@
      i 14). Kod karuzeli jest w historii gita — wróci razem z drugim planem. */
   const planFlip = document.getElementById('planFlip');
   const planSlider = document.getElementById('planSlider');
+  if (planFlip && planSlider) {
   const planFront = planFlip.querySelector('.plan-front');
   const planBack = planFlip.querySelector('.plan-back');
 
@@ -3559,25 +3341,50 @@
     if (e.target.closest('a, button')) return;   /* Enter na „Kup plan" ma kupować, nie obracać */
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); obrocKarte(); }
   });
+  }
 
-  /* liczba filmów z playlisty YouTube — plik odświeżany automatycznie raz w tygodniu.
-     Odmieniamy po polsku, bo liczba się zmienia: 1 poradnik / 3 poradniki / 5 poradników */
-  const odmienPoradniki = n => {
-    const koncowka = n % 10, setka = n % 100;
-    if (n === 1) return {adj: 'darmowy', noun: 'poradnik'};
-    if (koncowka >= 2 && koncowka <= 4 && (setka < 12 || setka > 14)) return {adj: 'darmowe', noun: 'poradniki'};
-    return {adj: 'darmowych', noun: 'poradników'};
+  /* Liczba poradników na YouTube — plik assets/yt.json odświeża automat codziennie
+     (_deploy/.github/workflows/yt-count.yml). Odmieniamy po polsku, bo liczba się zmienia:
+     1 poradnik / 3 poradniki / 5 poradników. */
+  const odmienPoradniki = n => ({
+    adj: odmien(n, ['darmowy', 'darmowe', 'darmowych']),
+    noun: odmien(n, ['poradnik', 'poradniki', 'poradników'])
+  });
+  /* Sekcja „Darmowa wiedza" żyje tylko wtedy, gdy na YouTube SĄ poradniki (decyzja Tomka
+     3.09.2026: liczba ma być prawdziwa w każdej chwili — dziś 0, na start co najmniej 50).
+     Przy 0 albo braku pliku chowamy całą sekcję razem z linkami „Wideo" w menu i stopce.
+     HTML nie ma żadnej liczby na sztywno, więc strona nigdy nie obieca czegoś, czego nie ma.
+     Numery sekcji („05 — …") przeliczamy, żeby po schowaniu nie było dziury w numeracji. */
+  const przenumerujSekcje = () => {
+    /* pierwotny numer trzymamy w data-nr — po pierwszym przeliczeniu tekst już go nie ma,
+       a funkcja wraca, gdy pojawią się opinie (sekcja „Opinie" wychodzi z ukrycia) */
+    const ety = [...document.querySelectorAll('main .sec-label')]
+      .map(el => { if (!el.dataset.nr) el.dataset.nr = String(parseInt(el.textContent, 10) || 0);
+                   return {el, n: +el.dataset.nr}; }).filter(x => x.n > 0);
+    const ukryte = ety.filter(x => x.el.closest('section[hidden]')).map(x => x.n);
+    ety.forEach(x => {
+      const nowy = x.n - ukryte.filter(u => u < x.n).length;
+      x.el.textContent = String(nowy).padStart(2, '0') + x.el.textContent.replace(/^\s*\d+/, '');
+    });
+  };
+  const schowajWideo = () => {
+    const sek = document.getElementById('wideo');
+    if (sek) sek.hidden = true;
+    document.querySelectorAll('a[href="#wideo"]').forEach(a => { (a.closest('li') || a).hidden = true; });
+    przenumerujSekcje();
   };
   fetch('assets/yt.json', {cache: 'no-cache'})
     .then(r => (r.ok ? r.json() : null))
     .then(d => {
-      if (!d || !d.count) return;
-      const f = odmienPoradniki(d.count);
-      document.querySelectorAll('.yt-count').forEach(el => { el.textContent = d.count; });
+      const n = (d && Number(d.count)) || 0;
+      if (n < 1) { schowajWideo(); return; }
+      const f = odmienPoradniki(n);
+      document.querySelectorAll('.yt-count').forEach(el => { el.textContent = n; });
       document.querySelectorAll('.yt-adj').forEach(el => { el.textContent = f.adj; });
       document.querySelectorAll('.yt-noun').forEach(el => { el.textContent = f.noun; });
+      if (d.url) document.querySelectorAll('[data-yt-link]').forEach(a => { a.href = d.url; });
     })
-    .catch(() => {});   /* gdyby pliku brakło — zostaje liczba wpisana w HTML */
+    .catch(schowajWideo);
 
   /* opinie klientów — czytane wprost z bazy aplikacji (tylko zatwierdzone przez Tomka).
      Brak opinii albo problem z bazą = sekcja w ogóle się nie pokazuje. */
@@ -3589,7 +3396,6 @@
     if (!sec || !grid) return;
     const esc = s => String(s == null ? '' : s)
       .replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
-    const reducedOrbit = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     let orbitRAF = 0, orbitPaused = false, orbitT = 0;
     /* Krążenie po orbicie: karty rozstawione co 360/N wokół osi; kąt rośnie z czasem.
        „Głębia" = cos(kąta): przód (=1) największy i ostry, tył (=-1) mały, przygaszony, rozmyty. */
@@ -3627,7 +3433,7 @@
         orbitRAF = requestAnimationFrame(tick);
       };
       rysuj();                          /* zawsze ustaw karty raz — także zanim (i czy w ogóle) ruszy pętla */
-      if (reducedOrbit) return;         /* „ogranicz ruch": zostaje statyczny kadr, pętli nie startujemy */
+      if (reduced) return;              /* „ogranicz ruch": zostaje statyczny kadr, pętli nie startujemy */
       /* Pętla chodzi TYLKO gdy karuzela jest na ekranie — poza widokiem zatrzymujemy rAF, żeby nie
          zużywać baterii i nie szarpać na telefonie. Obserwator odpala się z bieżącym stanem po observe(). */
       const bieg = widoczna => {
@@ -3658,11 +3464,13 @@
             ${r.author_name ? `<span class="oc-author">— ${esc(r.author_name)}</span>` : ''}
           </article>`;
       }).join('');
-      sec.hidden = false;
+      sec.hidden = false; if (typeof przenumerujSekcje === "function") przenumerujSekcje();
       startOrbit();
       return true;
     };
-    fetch(`${SUPA_URL}/rest/v1/reviews?select=rating,body,author_name&published=eq.true`, {
+    /* widok public_reviews (3.09.2026): tylko opublikowane wiersze i tylko te trzy kolumny —
+       anon nie widzi już tabeli reviews (ani user_id) */
+    fetch(`${SUPA_URL}/rest/v1/public_reviews?select=rating,body,author_name`, {
       headers: {apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}`}
     })
       .then(r => (r.ok ? r.json() : []))
@@ -3676,6 +3484,7 @@
   const track = document.getElementById('marqueeTrack');
   const marqueeUnit = '<b>FitOnlineCoach</b> · Trening · Dieta · Fizjoterapia · Po polsku · 24/7 · ';
   const buildMarquee = () => {
+    if (!track) return;
     track.innerHTML = `<span>${marqueeUnit}</span>`;
     const unitW = track.firstElementChild.getBoundingClientRect().width || 600;
     const reps = Math.ceil(Math.max(window.innerWidth, 320) / unitW) + 1;
@@ -3687,135 +3496,13 @@
   let mqTimer;
   window.addEventListener('resize', () => {
     clearTimeout(mqTimer);
-    mqTimer = setTimeout(() => { buildMarquee(); ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); }, 200);
+    mqTimer = setTimeout(() => { buildMarquee(); dokujTelefon(reduced ? 1 : undefined); onScroll(); }, 200);
   });
-  /* pozycje talerzy pod kafelkami liczymy, gdy układ i obrazki są już gotowe;
-     telefon też ustawiamy od razu (przy redukcji ruchu — od razu zadokowany, żeby nie zasłaniał tekstu) */
-  window.addEventListener('load', () => { ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); });
-  setTimeout(() => { ustawTalerzeHero(); dokujTelefon(reduced ? 1 : undefined); onScroll(); }, 400);
+  /* telefon ustawiamy, gdy układ i obrazki są już gotowe
+     (przy redukcji ruchu — od razu zadokowany, żeby nie zasłaniał tekstu) */
+  window.addEventListener('load', () => { dokujTelefon(reduced ? 1 : undefined); onScroll(); });
+  setTimeout(() => { dokujTelefon(reduced ? 1 : undefined); onScroll(); }, 400);
 
-  /* ---------- ZAPIS NA LISTĘ OCZEKUJĄCYCH ----------
-     Jeden kod dla OBU formularzy (hero + sekcja na dole) — oznaczone `data-zapis`.
-     Wysyłka leci POST-em w tle, a strona zostaje na miejscu. Odpowiedź MailerLite
-     ODCZYTUJEMY i dopiero `success:true` uznajemy za zapis — szczegóły przy `fetch` niżej.
-     Potwierdzenie mailem robi MailerLite (double opt-in).
-     Zgoda marketingowa jest wymagana ręcznie, bo `required` na polu wyboru wewnątrz
-     formularza z `novalidate` nie zatrzyma wysyłki samo z siebie. */
-  /* Skąd przyszedł zapis — bez tego kampania nie powie, który kanał działa.
-     `utm_source` z linku, a gdy go nie ma — domena strony, z której klient przyszedł.
-     Jedno pole zamiast pięciu (utm_medium/campaign/…): do wyboru kanału wystarczy. */
-  const zrodloZapisu = (() => {
-    const utm = new URLSearchParams(location.search).get('utm_source');
-    if (utm) return utm.slice(0, 60);
-    if (!document.referrer) return 'bezposrednio';
-    try { return new URL(document.referrer).hostname; } catch (_) { return 'nieznane'; }
-  })();
-  document.querySelectorAll('[data-zrodlo]').forEach(p => p.value = zrodloZapisu);
-
-  document.querySelectorAll('form[data-zapis]').forEach(form => {
-    const msg = form.parentElement.querySelector('[data-msg]');
-    const zgoda = form.querySelector('[data-zgoda]');   /* wewnątrz formularza — patrz komentarz w treści */
-    const pole = form.querySelector('input[type=email]');
-    const pokaz = (tekst, blad) => {
-      if (!msg) return;
-      msg.hidden = false; msg.textContent = tekst; msg.classList.toggle('blad', !!blad);
-    };
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      /* Bot wypełnił pułapkę — udajemy, że wszystko poszło dobrze i nie wysyłamy nic.
-         Automat nie dowiaduje się, że został wykryty, a lista zostaje czysta. */
-      const pulapka = form.querySelector('[data-pulapka]');
-      if (pulapka && pulapka.value) { form.reset(); return; }
-      const adres = (pole.value || '').trim();
-      /* Poprzedni warunek („jest małpa i jest kropka") przepuszczał literówki, bo NIE
-         sprawdzał, czy kropka stoi PO małpie — `jan.kowalski@gmailcom` przechodził.
-         Zmierzone na 12 przykładach: stary warunek mylił się w 5, ten w żadnym.
-         Nie wystarczy też `type=email` przeglądarki: specyfikacja HTML dopuszcza adresy
-         bez kropki w domenie (np. `jan@intranet`), więc też przepuszcza tę literówkę. */
-      const adresOk = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(adres) && /\.[a-z]{2,}$/i.test(adres);
-      if (!adresOk) {
-        pokaz('Adres e-mail wygląda na niepoprawny — sprawdź pisownię.', true); pole.focus(); return;
-      }
-      if (zgoda && !zgoda.checked) {
-        pokaz('Zaznacz zgodę — bez niej wysyłka e-maili nie jest możliwa.', true);
-        zgoda.focus(); return;
-      }
-      const akcja = ((window.FOC_NEWSLETTER || {}).action || '').trim();
-      if (!akcja) { pokaz('Zapisy zostaną uruchomione wkrótce — zajrzyj tu ponownie.'); return; }
-      pokaz('Zapisywanie…');
-      /* BEZ `mode:'no-cors'`. Endpoint MailerLite odsyła `access-control-allow-origin: *`
-         (sprawdzone 2026-08-02), więc odpowiedź DA SIĘ odczytać. Wcześniej `no-cors`
-         zaślepiał wynik: `fetch` kończył się sukcesem nawet przy błędzie serwera i strona
-         mówiła „sprawdź skrzynkę", choć zapis przepadał. To nie jest teoria — 1.08 ten
-         endpoint zwrócił 503 z Varnisha przy prawidłowym adresie. */
-      fetch(akcja, {method: 'POST', body: new FormData(form)})
-        .then(r => r.json())
-        .then(d => {
-          /* ROZRÓŻNIAMY DWA PRZYPADKI. Wcześniej każde odrzucenie kończyło się komunikatem
-             „spróbuj jeszcze raz za chwilę" — czyli: zawinił serwer, poczekaj. Klient
-             z literówką w adresie próbował więc w kółko z tą samą literówką i za każdym
-             razem dostawał tę samą odpowiedź. Gdy MailerLite skarży się na adres,
-             mówimy o adresie. */
-          if (d && d.success !== true) {
-            const opis = JSON.stringify(d.errors || d.error || d).toLowerCase();
-            if (opis.indexOf('mail') >= 0) {
-              pokaz('Ten adres nie został przyjęty — sprawdź, czy jest poprawny.', true);
-              pole.focus(); return;
-            }
-          }
-          if (!d || d.success !== true) throw new Error('zapis odrzucony');
-          /* Treść uzgodniona z wątkiem maili (2026-08-01): musi WPROST mówić, że trzeba kliknąć
-             link, bo przy double opt-in ludzie inaczej piszą, że „nic nie przyszło".
-             Sformułowana BEZOSOBOWO (polecenie Tomka 2026-08-16) — poprzednia wersja mówiła
-             „wysłałem", czyli w rodzaju męskim, co łamie zasadę tekstów do klienta. */
-          pokaz('Na podany adres został wysłany link potwierdzający. Kliknij go, aby dokończyć '
-              + 'zapis. Sprawdź także folder ze spamem.');
-          form.reset(); if (zgoda) zgoda.checked = false;
-          /* pomiar konwersji — obsługiwany w bloku zgód, żeby błąd pomiaru nie psuł zapisu */
-          document.dispatchEvent(new CustomEvent('foc:zapis'));
-        })
-        .catch(() => pokaz('Zapis nie powiódł się — spróbuj ponownie za chwilę.', true));
-    });
-  });
-
-  /* ===== MENU MOBILNE =====
-     Zmierzone przed poprawką: po otwarciu menu ŻADEN z ośmiu kolejnych Tabów nie wchodził
-     do menu. Wszystkie lądowały POD ZASŁONĄ — w polu e-mail, w zgodzie, w linku do polityki
-     i na przycisku „Zapisz się". Ktoś, kto obsługuje stronę klawiaturą albo czytnikiem ekranu,
-     pisał więc adres do pola, którego nie widzi. Powód jest w kolejności: hamburger stoi
-     w kodzie PO liście linków, więc Tab z niego idzie dalej, w treść strony, a menu zostaje
-     z tyłu. Escape też nie zamykał.
-
-     Naprawa: na czas otwarcia wyłączamy całą zakrytą treść właściwością `inert` (przeglądarka
-     pomija ją i dla klawiatury, i dla czytnika ekranu), przenosimy fokus na pierwszy link,
-     a po zamknięciu oddajemy go hamburgerowi. Do tego Escape zamyka, a `aria-expanded` mówi
-     czytnikowi, czy menu jest otwarte — to druga usterka z tej samej listy. */
-  const burger = document.getElementById('burger');
-  const nav = document.getElementById('navLinks');
-  /* Zakryte przez zasłonę: cała treść strony ORAZ logo w nagłówku. Logo zostaje pod
-     zasłoną, więc bez tego dawało się na nie wejść klawiszem Tab, choć go nie widać.
-     Sam nagłówek zostaje aktywny — inaczej zniknąłby też hamburger i menu. */
-  const logo = document.querySelector('#header .logo');
-  const zakryte = () => [...document.body.children].filter(e => e.id !== 'header')
-    .concat(logo ? [logo] : []);
-  burger.setAttribute('aria-expanded', 'false');
-  burger.setAttribute('aria-controls', 'navLinks');
-
-  const ustawMenu = otwarte => {
-    burger.classList.toggle('open', otwarte);
-    nav.classList.toggle('open', otwarte);
-    burger.setAttribute('aria-expanded', String(otwarte));
-    /* `inert` nie działa na sam nagłówek — wtedy zniknąłby też hamburger i menu */
-    zakryte().forEach(e => { if (otwarte) e.setAttribute('inert', ''); else e.removeAttribute('inert'); });
-    if (otwarte) { const pierwszy = nav.querySelector('a'); if (pierwszy) pierwszy.focus(); }
-    else burger.focus();
-  };
-
-  burger.addEventListener('click', () => ustawMenu(!nav.classList.contains('open')));
-  nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => ustawMenu(false)));
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && nav.classList.contains('open')) ustawMenu(false);
-  });
 })();
 </script>
 
