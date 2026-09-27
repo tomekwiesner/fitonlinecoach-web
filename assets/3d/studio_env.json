@@ -1,0 +1,10 @@
+{
+ "plik": "studio_env.jpg",
+ "skala": 9.6015,
+ "mapowanie": "equirect, srodek obrazu = +X three.js",
+ "swiatlo_kierunkowe_blender": [
+  -1.3,
+  -1.7,
+  1.5
+ ]
+}
