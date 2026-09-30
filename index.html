@@ -1507,6 +1507,58 @@
        tło zasłaniałoby kolejne sekcje. */
     .tb-wzor{position:absolute;height:120%}
   }
+
+  /* ---------- M1: WERSJA NA TELEFON (polecenie Tomka 2026-09-27) ----------
+     Tylko telefon (≤ 767 px): komputer i tablet bez zmian. Przystanki (blok PRZYSTANKI) liczą kadry z tego układu. */
+  @media(max-width:767px){
+    /* hero: „Dołącz" niżej pod tekstem i na środku. Treść hero wypełnia pierwszy ekran (kolumna), przycisk stoi
+       pośrodku wolnego miejsca pod akapitem, co najmniej 28 px pod tekstem. W kolumnie marginesy się nie sklejają,
+       dlatego nad akapitem 12 zamiast 22 (10 pod nagłówkiem + 12 = dawne 22). */
+    .hero-content{align-self:stretch;display:flex;flex-direction:column}
+    .hero p.lead{margin-top:12px}
+    .hero-actions{align-items:center;margin:auto 0;padding-top:28px}
+    /* „Dlaczego": podpis „Przesuń, żeby zobaczyć więcej" wraca POD TELEFON, opis i kropki pod nim. Telefon jest tak
+       duży, żeby nagłówek, telefon i podpis mieściły się razem w oknie pod paskiem (skrypt dlPrzelicz, przystanek „dlaczego").
+       .wa-txt znika z układu (contents), jego dzieci stają w kolumnie siatki w kolejności z `order`. */
+    #whyLayer .wa-grid{row-gap:0}
+    #whyLayer .wa-txt{display:contents}
+    #whyLayer .dl-podpis{order:1;margin-top:12px}
+    #whyLayer .wa-teksty{order:2;margin-top:26px}
+    #whyLayer .wa-ster{order:3}
+    /* plan: karta bierze wysokość WIDOCZNEJ ścianki. Dawniej obie ścianki leżały w jednej komórce siatki, więc przód
+       dostawał wysokość tyłu (1236 px przy 343) i między przyciskiem a notą zdrowotną była pusta dziura. Niewidoczna
+       ścianka leży teraz w absolute; po obróceniu karta rośnie do wysokości tyłu (strona przelicza przystanki). */
+    .plan-flip:not(.flipped) .plan-back,.plan-flip.flipped .plan-front{position:absolute;left:0;top:0;width:100%}
+    /* przód karty + nota w jednym oknie: karta i nota szersze (16 px od brzegu ekranu zamiast 32 — tekst karty i tak stoi
+       na linii nagłówka: 16 + 16), mniej łamań linii; zdjęcie niższe (wysokość ustawia skrypt planFoto), zwarte odstępy.
+       Czcionki bez zmian (min. 11 px). Zdjęcie wystaje 60 px w górę i w dół: parallax 0,1 przesuwa je do ok. 50 px. */
+    #plan .plan-slider{margin-left:-16px;margin-right:-16px}
+    #plan .zdrowie-nota{margin:12px -16px 0;max-width:none;padding:0}
+    #plan .plan-visual{min-height:0}
+    #plan .plan-visual img{top:-60px;height:calc(100% + 120px)}
+    #plan .plan-body{padding:12px 16px 10px}
+    #plan .plan-tag{margin-bottom:6px;padding:3px 12px}
+    #plan .plan-body h3{margin-bottom:6px}
+    #plan .plan-body>p{margin-bottom:8px;line-height:1.42}
+    #plan .plan-feats{margin-bottom:6px}
+    #plan .plan-feats li{padding:3px 0;line-height:1.4}
+    #plan .plan-stats{margin:4px 0 6px;padding:4px 0}
+    #plan .pstat .val{margin-bottom:0}
+    #plan .pstat .lbl{line-height:1.2}
+    #plan .btn-care{padding-top:10px;padding-bottom:10px}
+    #plan .plan-hint{margin-top:2px;line-height:1.4}
+  }
+  /* Manifest z talerzami SAM NA EKRANIE. Sekcja ma co najmniej wysokość okna pod paskiem menu (77 px; lvh = ekran bez
+     paska adresu), a akapit stoi dołem na 0,47 wysokości ekranu (próg zapalenia ostatniego słowa w onScroll), wysoki — 48 px
+     pod górą sekcji. Przystanek „manifest" (bez zmian w silniku) wypada więc zawsze 40 px pod górą sekcji (góra schowana pod
+     paskiem, akapit 8 px pod nim): nad nią nic, a „Dlaczego" zaczyna się 2 px za dolną krawędzią okna (zapas na ułamki piksela).
+     Liczby: 37 = 77 (pasek) − 40; 35 = 37 − 2. Talerze jak dotąd 150 px pod akapitem
+     (podłoga liczona od akapitu, talerzeHero), niżej pas tła. */
+  @media(max-width:767px) and (prefers-reduced-motion:no-preference){
+    .topblok .manifest{display:flex;flex-direction:column;padding:0 0 150px;min-height:calc(100vh - 35px);min-height:calc(100lvh - 35px)}
+    .topblok .manifest .wrap{width:100%;min-height:calc(47vh - 37px);min-height:calc(47svh - 37px);padding-top:48px;
+      display:flex;flex-direction:column;justify-content:flex-end}
+  }
 </style>
 
 <!-- ===== Dane strukturalne (JSON-LD) — pakiet SEO z wątku Social media FOC =====
@@ -3303,12 +3355,20 @@
     dlTelefon.querySelector('.dl-body').replaceWith(...dlStill, dlEkranEl);
 
     const dlScena = dlTelefon.parentElement;
-    let dlSkala = 1;
+    let dlSkala = 1, dlVh = 0, dlSzer = 0;
+    const dlTel = matchMedia('(max-width:767px)'), dlPodpis = document.querySelector('#whyLayer .dl-podpis'), dlGlowa = document.getElementById('whyHead');
+    const dlDocTop = el => { let t = 0; for (let e = el; e; e = e.offsetParent) t += e.offsetTop; return t; };
     const dlPrzelicz = () => {
       /* Warstwa kurtyny centruje tytuł + siatkę w 100vh pod paskiem 76 px, więc cała treść ≤ vh − 76 − 32
-         (dół telefonu ≥ 16 px nad krawędzią ekranu). Bez kurtyny sam telefon ≤ vh − 76 − 32. SMAX: ostrość. */
+         (dół telefonu ≥ 16 px nad krawędzią ekranu). Bez kurtyny sam telefon ≤ vh − 76 − 32. SMAX: ostrość.
+         Telefon (M1): nagłówek sekcji, telefon i podpis „Przesuń…" pod nim mieszczą się razem w oknie pod paskiem (przystanek
+         „dlaczego"); wysokość okna tylko przy zmianie szerokości — pasek adresu nie zmienia rozmiaru telefonu. */
       const nad = stackMode() ? dlScena.parentElement.offsetTop : 0;
-      dlSkala = ogr(Math.min((dlScena.clientWidth - 24) / dlU.w, (window.innerHeight - 108 - nad) / dlU.h), 0.3, T3.SMAX);
+      if (innerWidth !== dlSzer) { dlSzer = innerWidth; dlVh = innerHeight; }
+      const pod = dlTel.matches
+        ? dlVh - header.offsetHeight - 32 - (dlDocTop(dlScena) - dlDocTop(dlGlowa)) - dlPodpis.offsetHeight - parseFloat(getComputedStyle(dlPodpis).marginTop)
+        : window.innerHeight - 108 - nad;
+      dlSkala = ogr(Math.min((dlScena.clientWidth - 24) / dlU.w, pod / dlU.h), dlTel.matches ? 0.1 : 0.3, T3.SMAX);   /* 288 px: nagłówek w 4 wierszach, telefon ok. 0,2 */
       dlTelefon.style.width = `${(dlU.w * dlSkala).toFixed(2)}px`;
       dlTelefon.style.height = `${(dlU.h * dlSkala).toFixed(2)}px`;
     };
@@ -3339,7 +3399,7 @@
     dlPrzelicz(); dlStosuj(); dlStrzalki();
     window.addEventListener('resize', () => { dlPrzelicz(); dlStosuj(); dlStrzalki(); });
     /* po dojściu fontów obrys telefonu bywa inny — ustawiamy strzałki jeszcze raz */
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(dlStrzalki);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (dlTel.matches) { dlPrzelicz(); dlStosuj(); } dlStrzalki(); });
     /* ⚠ I JESZCZE RAZ PO WEJŚCIU SEKCJI W KADR. Siatka ma klasę `.rv` (pojawianie się przy
        przewijaniu): zanim wjedzie w ekran, jest przesunięta, więc obrys telefonu policzony
        przy starcie strony jest NIEAKTUALNY — strzałki stały wtedy 30 px obok telefonu aż do
@@ -3986,7 +4046,7 @@
      Reset tylko poza wzrokiem (podłoga > vh + 100 pod ekranem). Tory, skala i linie styku z
      FOC_FIZ.rzutHero, w px dokumentu. Test: strona3d/testy/sonda.mjs … talerze. */
   const talerzeHero = (() => {
-    const box = document.querySelector('.talerze'), dl = document.getElementById('dlaczego');
+    const box = document.querySelector('.talerze'), dl = document.getElementById('dlaczego'), manWrap = document.querySelector('.topblok .manifest > .wrap');
     if (reduced || !box || !dl || talerze.length !== 3) return null;
     const cienie = [...box.querySelectorAll('.talerz-cien')], plama = box.querySelector('.talerze-plama');
     const els = [...talerze, ...talerze.map(t => t.querySelector('.t3d-napis')), ...cienie, plama];
@@ -4117,7 +4177,9 @@
       const pinEnd = (stackMode() && heroStack && heroStack.offsetHeight > vh * 1.2)
         ? heroStack.offsetTop + heroStack.offsetHeight - vh : vh * 0.72;
       cw = document.documentElement.clientWidth;
-      const uk = { cw, vh, pinEnd, floorBase: dl.getBoundingClientRect().top + sy - 14,
+      /* podłoga = dół akapitu manifestu + dolny odstęp sekcji (na komputerze to samo co góra „Dlaczego"; telefon ma pod nią pas tła, M1) */
+      const uk = { cw, vh, pinEnd, floorBase: (manWrap ? manWrap.getBoundingClientRect().bottom + parseFloat(getComputedStyle(manWrap.parentElement).paddingBottom)
+          : dl.getBoundingClientRect().top) + sy - 14,
         naglowek: Math.round(header.getBoundingClientRect().bottom), w: talerze.map(t => t.offsetWidth), telefon: !stackMode() };
       const t = czas();
       r = FOC_FIZ.rzutHero(uk); r.uk = uk;
@@ -4380,6 +4442,27 @@
   const obrocKarte = () => { planFlip.classList.toggle('flipped'); oznaczScianki(); };
   oznaczScianki();
 
+  /* M1 (telefon): zdjęcie tak wysokie, żeby przód karty RAZEM z notą pod nim mieścił się w oknie pod paskiem (przystanek
+     „plan_kadr"), o ile zdjęcie ma wtedy co najmniej FOTO_NOTA. Gdy nie (288×640) — sama karta wypełnia okno, zdjęcie nie
+     niższe niż FOTO_MIN, a notę pokazuje drugi kadr (plan_kadr → dół strefy). Wysokość okna tylko przy zmianie szerokości
+     (pasek adresu nie rusza układu). Komputer i tablet: zdjęcie jak było. */
+  const FOTO_MIN = 40, FOTO_NOTA = 64, FOTO_SEKCJA = 160, planTel = matchMedia('(max-width:767px)'), planSekcja = document.getElementById('plan');
+  const planWiz = planFront.querySelector('.plan-visual'), nota = document.querySelector('#plan .zdrowie-nota');
+  let pSzer = 0, pVh = 0;
+  const planFoto = () => {
+    if (!planTel.matches || !planWiz) { if (planWiz) planWiz.style.height = ''; return; }
+    if (innerWidth !== pSzer) { pSzer = innerWidth; pVh = innerHeight; }
+    const okno = pVh - header.offsetHeight - 32, wiz = planWiz.offsetHeight, A = okno - (planFront.offsetHeight - wiz),
+      n = nota ? nota.offsetHeight + parseFloat(getComputedStyle(nota).marginTop) : 0,
+      cs = getComputedStyle(planSekcja), S = planFlip.classList.contains('flipped') ? 0
+        : okno - (planSekcja.offsetHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - wiz);
+    /* cała sekcja (nagłówek + karta + nota) w jednym kadrze, jeśli zdjęcie ma wtedy co najmniej FOTO_SEKCJA (430×932) */
+    planWiz.style.height = Math.round(ogr(S >= FOTO_SEKCJA ? S : A - n >= FOTO_NOTA ? A - n : A, FOTO_MIN, 340)) + 'px';
+  };
+  planFoto();
+  window.addEventListener('resize', planFoto);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(planFoto);
+
   /* Odwracanie karty planu: klik w dowolne miejsce pokazuje drugą stronę ze szczegółami
      i ekranami z aplikacji. Odnośniki i przyciski (np. „Kup plan") działają normalnie. */
   planSlider.addEventListener('click', e => {
@@ -4591,6 +4674,7 @@
     KURTYNA: 1400,        /* ms przejazdu przez drzwi kurtyny (sinus) */
     CZAS: d => ogr(450 + .3 * Math.abs(d), 600, 900),
     PROG_KOLKO: 20, MARGINES: 16, MIEKKI: .3, SCAL_DOTYK: .4, SCAL_DOL: .5,   /* dół strefy bliżej niż .5 ekranu: rzut go przeskakiwał (FAQ przy 288) */
+    ODST_KADR: .5, GLOWA: .35,   /* telefon (M1, kadr()): nagłówek co najmniej .5 ekranu nad kadrem, najwyżej .35 ekranu nad górą treści */
     DOPCH_PX: 50,         /* min. pionowa droga palca do dopchnięcia */
     OSIADZ_STRZALKI: 450, ZAKLADKA: 48,
     ZAKLADKA_DOTYK: 137   /* dotyk: długa strefa co (ekran − 137 px) — tyle zostaje na ekranie z poprzedniego przystanku (+ pasek menu) */
@@ -4599,6 +4683,7 @@
   const widoczny = el => el && !el.hidden && el.offsetHeight > 0;
   const log = [], loguj = w => { w.t = Math.round(performance.now()); log.push(w); if (log.length > 400) log.shift(); return w; };
   let vhCalc = innerHeight, szer = innerWidth, plan = null;
+  const kadrPrzod = {};   /* id → [szerokość okna, y przystanku przodu karty] (kadr()) */
 
   /* ---- przystanki z układu: {S: [{id, y, twardy, strefa?}], drzwi: [[a, b]], vh, nag} ----
      y liczone z offsetTop (nie z prostokąta: .rv przed wjazdem jest przesunięte o 46 px) */
@@ -4624,6 +4709,28 @@
       if (b - a < .25 * A) return dodaj(id, a);
       dodaj(id, a, true, b); dodaj(id + '_dol', b);
     };
+    /* telefon (M1, polecenie Tomka 27.09): sekcja = nagłówek + KADR, który ma być widać w całości (przód karty planu, a pod nim
+       nota, jeśli się zmieści): k0..k1 kadr, k2 ≥ k1 koniec z notą. Przystanek `id_kadr`
+       na kadrze (z notą — dół noty przy dole okna; bez — góra kadru pod paskiem), a nad nim `id` na nagłówku (góra treści pod
+       paskiem). Nagłówek stoi co najmniej P.ODST_KADR ekranu nad kadrem (bliżej machnięcie palcem 300 px go przeskakuje — przy 343
+       i odstępie .4 ekranu tak było), więc w razie potrzeby wyżej (nad nim koniec poprzedniej sekcji), ale najwyżej P.GLOWA ekranu
+       nad górą treści — dalej nagłówek schodziłby na dół kadru; wtedy przystanku nagłówka nie ma.
+       Kadr wyższy niż ekran (odwrócona karta): od góry kadru strefa do końca sekcji. Cała sekcja w oknie = blok(). */
+    /* tyl = karta odwrócona: kadr zaczyna się tam, gdzie stał przystanek przodu (kadrPrzod, ta sama szerokość) — obrót nie
+       przesuwa strony (430×932: przód z nagłówkiem w jednym kadrze, blok). Nagłówka nie dokładamy, gdy kadr już go pokazuje. */
+    const kadr = (id, el, k0, k1, k2 = k1, tyl = false) => {
+      const t = docTop(el), cs = getComputedStyle(el), ct = t + parseFloat(cs.paddingTop), cb = t + el.offsetHeight - parseFloat(cs.paddingBottom);
+      if (cb - ct + 2 * m <= A) { blok(id, el); if (!tyl) kadrPrzod[id] = [innerWidth, S[S.length - 1].y]; return; }
+      const a = ct - nag - m, y0 = k0 - nag - m, b = cb + m - vh, kd = id + '_kadr';
+      const zp = tyl && kadrPrzod[id] && kadrPrzod[id][0] === innerWidth ? kadrPrzod[id][1] : Infinity;
+      const y = Math.min(k1 - k0 + 2 * m <= A ? Math.min(Math.max(k1, k2) + m - vh, y0) : y0, zp);
+      if (!tyl) kadrPrzod[id] = [innerWidth, Math.round(y)];
+      const g = Math.min(a, Math.round(y) - Math.ceil(P.ODST_KADR * vh));
+      if (y > a + m && a - g <= P.GLOWA * vh) dodaj(id, g);
+      /* kadr z notą mieści się → jeden przystanek; sam kadr tak, nota nie (288×640) → strefa do dołu sekcji, jej dół = nota pod kartą */
+      if (Math.max(k1, k2) - k0 + 2 * m <= A || b - y < 24) return dodaj(kd, y);
+      dodaj(kd, y, true, b); dodaj(kd + '_dol', b);
+    };
     /* kurtyna (komputer): początek (martwa strefa) i plateau otwartej; drzwi przejeżdżamy wolniej */
     const kurtyna = (id, id2, el) => {
       const t = docTop(el), d = el.offsetHeight - vh, od = el.id === 'o-mnie' ? .35 : .38;
@@ -4635,7 +4742,7 @@
       [['zero', 'main > .divider'], ['plan', '#plan']].forEach(([id, s]) => { const el = q(s); if (widoczny(el)) blok(id, el); });
       if (widoczny(om)) kurtyna('omnie', 'haslo', om);
     } else {
-      const wl = q('#whyLayer'); if (widoczny(wl)) blok('dlaczego', wl);
+      const tel = innerWidth <= 767, wl = q('#whyLayer'); if (widoczny(wl)) blok('dlaczego', wl);
       /* „Jak to działa" w kolumnie: nagłówek, potem przystanek na każdym kroku — gra krok na środku ekranu (wariant A), cały kadr w oknie */
       const hl = q('#dlaczego .how-left'); if (widoczny(hl)) blok('jak', hl);
       document.querySelectorAll('#dlaczego [data-step]').forEach((el, i) => {
@@ -4648,8 +4755,12 @@
         const ft = docTop(f), fb = ft + f.offsetHeight;
         dodaj('jak_' + (i + 1), fb - ft <= A ? Math.min(fb + m - vh, ft - nag) : fb + m - vh);
       });
+      /* karta planu: kadr = widoczna ścianka (po obróceniu tył), z notą pod nią */
+      const pf = q('#planFlip'), sc = pf && pf.querySelector(pf.classList.contains('flipped') ? '.plan-back' : '.plan-front'), nota = q('#plan .zdrowie-nota');
       [['zero', 'main > .divider'], ['plan', '#plan'], ['omnie', '#aboutLayer'], ['haslo', '#hasloRegularnie']]
-        .forEach(([id, s]) => { const el = q(s); if (widoczny(el)) blok(id, el); });
+        .forEach(([id, s]) => { const el = q(s); if (!widoczny(el)) return;
+          if (id === 'plan' && tel && widoczny(sc)) kadr(id, el, docTop(sc), docTop(sc) + sc.offsetHeight, widoczny(nota) ? docTop(nota) + nota.offsetHeight : undefined, pf.classList.contains('flipped'));
+          else blok(id, el); });
     }
     [['wideo', '#wideo'], ['opinie', '#opinie'], ['faq', '#faq'], ['zapis', '#zapis']]
       .forEach(([id, s]) => { const el = q(s); if (widoczny(el)) blok(id, el); });
@@ -4874,7 +4985,8 @@
     const pl = plan = przystanki();
     /* #top = hero w przypiętym bloku: jego offsetTop zależy od przewinięcia, więc wprost 0 */
     const yA = id === 'top' ? 0 : docTop(el) - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
-    const cel = najblizszy(pl.S, yA);
+    /* przystanek o nazwie sekcji (np. nagłówek „plan” nad kadrem karty), inaczej najbliższy */
+    const cel = (pl.S.find(s => s.id === id) || { y: najblizszy(pl.S, yA) }).y;
     history.pushState(null, '', location.pathname + location.search + '#' + id);
     const fokus = () => {
       if (!el.matches('a[href],button,input,select,textarea,summary,[tabindex]')) el.setAttribute('tabindex', '-1');
