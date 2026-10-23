@@ -348,9 +348,12 @@
   /* Telefon hero (B.7): host = suma obrysów póz (liczy skrypt), położenie i skala od lewego górnego rogu hero (origin 0 0).
      Pod spodem zdjęcie z tej samej sceny, nad nim płótno (komputer z dokowaniem: .gl-hero). Poświata: --blask = 0,075 bryły. */
   .hero-phone picture{display:contents}
-  .hero-phone .fon-still,.hero-phone .gl3d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;
-    filter:drop-shadow(0 0 var(--blask,30px) rgba(153,230,109,.42))}
-  .hero-phone .gl3d{opacity:0;transition:opacity .2s}
+  .hero-phone .fon-still,.hero-phone .gl3d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+  /* Poświata zdjęcia dopiero po jego zdekodowaniu i po nadaniu rozmiaru (klasa .blask-on, skrypt przy dokujTelefon):
+     Safari na iPhonie liczył drop-shadow przed wczytaniem zdjęcia i przy pierwszym wejściu rysował limonkowy PROSTOKĄT (Tomek 23.10). */
+  .hero-phone .fon-still{opacity:0}
+  .hero-phone.blask-on .fon-still{opacity:1;transition:opacity .25s;filter:drop-shadow(0 0 var(--blask,30px) rgba(153,230,109,.42))}
+  .hero-phone .gl3d{opacity:0;transition:opacity .2s;filter:drop-shadow(0 0 var(--blask,30px) rgba(153,230,109,.42))}
   .hero-phone.gl-hero .gl3d{opacity:1}
   .hero-phone.gl-hero .fon-still{opacity:0;transition:opacity 0s .2s}
   .hero .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.78rem;font-weight:600;
@@ -4048,6 +4051,11 @@
       st.width = px(hpU.w * sHost); st.height = px(hpU.h * sHost);
       st.setProperty('--pcx', px(hpU.ox * sHost)); st.setProperty('--pcy', px(hpU.oy * sHost));
       st.setProperty('--pw', px(2 * T3H.hx * T3H.K0 * sHost)); st.setProperty('--ph', px(bh)); st.setProperty('--blask', px(0.075 * bh));
+      if (!heroPhone.classList.contains('blask-on')) {   /* zdjęcie z poświatą dopiero po zdekodowaniu (CSS .blask-on) */
+        const im = heroPhone.querySelector('.fon-still');
+        (im && im.decode ? im.decode() : Promise.resolve()).catch(() => {})
+          .then(() => requestAnimationFrame(() => heroPhone.classList.add('blask-on')));
+      }
     }
     const poza = !plynne ? H.M : hpGlHost ? { ry: tiltY, rx: tiltX } : H.START, b = FOC_FIZ.ukladTel([poza], H.F);
     const cx = hr.width / 2 + x, cy = hr.height / 2 + y;
