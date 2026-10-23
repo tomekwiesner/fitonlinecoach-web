@@ -1588,7 +1588,6 @@
     /* plan: karta bierze wysokość WIDOCZNEJ ścianki. Dawniej obie ścianki leżały w jednej komórce siatki, więc przód
        dostawał wysokość tyłu (1236 px przy 343) i między przyciskiem a notą zdrowotną była pusta dziura. Niewidoczna
        ścianka leży teraz w absolute; po obróceniu karta rośnie do wysokości tyłu (strona przelicza przystanki). */
-    .plan-flip:not(.flipped) .plan-back,.plan-flip.flipped .plan-front{position:absolute;left:0;top:0;width:100%}
     /* przód karty + nota w jednym oknie: karta i nota szersze (16 px od brzegu ekranu zamiast 32 — tekst karty i tak stoi
        na linii nagłówka: 16 + 16), mniej łamań linii; zdjęcie niższe (wysokość ustawia skrypt planFoto), zwarte odstępy.
        Czcionki bez zmian (min. 11 px). Zdjęcie wystaje 60 px w górę i w dół: parallax 0,1 przesuwa je do ok. 50 px. */
@@ -1608,16 +1607,150 @@
     #plan .btn-care{padding-top:10px;padding-bottom:10px}
     #plan .plan-hint{margin-top:2px;line-height:1.4}
   }
-  /* Manifest z talerzami SAM NA EKRANIE. Sekcja ma co najmniej wysokość okna pod paskiem menu (77 px; lvh = ekran bez
-     paska adresu), a akapit stoi dołem na 0,47 wysokości ekranu (próg zapalenia ostatniego słowa w onScroll), wysoki — 48 px
-     pod górą sekcji. Przystanek „manifest" (bez zmian w silniku) wypada więc zawsze 40 px pod górą sekcji (góra schowana pod
-     paskiem, akapit 8 px pod nim): nad nią nic, a „Dlaczego" zaczyna się 2 px za dolną krawędzią okna (zapas na ułamki piksela).
-     Liczby: 37 = 77 (pasek) − 40; 35 = 37 − 2. Talerze jak dotąd 150 px pod akapitem
-     (podłoga liczona od akapitu, talerzeHero), niżej pas tła. */
-  @media(max-width:767px) and (prefers-reduced-motion:no-preference){
-    .topblok .manifest{display:flex;flex-direction:column;padding:0 0 150px;min-height:calc(100vh - 35px);min-height:calc(100lvh - 35px)}
-    .topblok .manifest .wrap{width:100%;min-height:calc(47vh - 37px);min-height:calc(47svh - 37px);padding-top:48px;
-      display:flex;flex-direction:column;justify-content:flex-end}
+  /* ---------- JEDNA SEKCJA = JEDEN EKRAN (decyzja Tomka 23.10) ----------
+     Każda sekcja ma wysokość ekranu pod paskiem menu (--nag ustawia skrypt), treść stoi na środku. Przystanki (blok
+     PRZYSTANKI) zatrzymują przewijanie na górze sekcji, więc na ekranie nigdy nie ma kawałków dwóch sekcji. Sekcja, której
+     treść mimo ściśnięcia jest wyższa (rozwinięte FAQ, bardzo niskie okno), rośnie i jest strefą z przystankami w środku.
+     Komputer: kurtyny („Dlaczego”, „O mnie”) już zajmują ekran; manifest dostaje własny ekran; newsletter + stopka = ostatni
+     ekran (--stopka = wysokość stopki). */
+  :root{--nag:77px;--ekran:calc(100vh - var(--nag))}
+  @supports (height:100svh){:root{--ekran:calc(100svh - var(--nag))}}
+  @media(min-width:981px){
+    .topblok .manifest,#plan,#faq,#zapis{min-height:var(--ekran);box-sizing:border-box;display:flex;flex-direction:column;
+      justify-content:center;padding-top:32px;padding-bottom:32px}
+    .topblok .manifest > .wrap,#plan > .wrap,#faq > .wrap,#zapis > .wrap{width:100%}
+    #zapis{min-height:calc(var(--ekran) - var(--stopka,0px))}
+    main > .divider{height:var(--ekran);min-height:0}
+    #faq .faq-list{margin-top:28px}
+    /* wysokość dopasowana do okna (laptop 1366 × 768, 1280 × 720) */
+    #plan .plan-visual{min-height:clamp(220px,38vh,380px)}
+    #faq .sec-title{font-size:clamp(1.9rem,5.2vh,3.2rem)}
+    #faq .faq-item summary{padding-top:clamp(8px,1.7vh,18px);padding-bottom:clamp(8px,1.7vh,18px)}
+    #zapis{padding-top:20px;padding-bottom:20px}
+    #zapis .nl h2,#zapis h2{font-size:clamp(1.5rem,4.2vh,2.5rem)}
+    footer{padding:36px 0 24px}
+    footer .foot-grid{margin-bottom:28px}
+  }
+  @media(min-width:981px) and (max-height:760px){#plan .plan-body{padding-top:16px;padding-bottom:16px}}
+  /* karta planu bierze wysokość WIDOCZNEJ ścianki (dawniej tylko telefon, M1): niewidoczna leży poza układem, po obróceniu
+     karta rośnie do wysokości tyłu (przystanki się przeliczają) */
+  .plan-flip:not(.flipped) .plan-back,.plan-flip.flipped .plan-front{position:absolute;left:0;top:0;width:100%}
+  @media(max-width:980px){
+    .topblok .manifest,#whyLayer,#dlaczego .how,#plan,#aboutLayer,#hasloRegularnie,#faq,#zapis,footer{min-height:var(--ekran);
+      box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-top:20px;padding-bottom:20px}
+    .topblok .manifest > .wrap,#whyLayer > .wrap,#dlaczego .how > .wrap,#plan > .wrap,#aboutLayer > .wrap,#faq > .wrap,
+      #zapis > .wrap,footer > .wrap{width:100%}
+    main > .divider,#hasloRegularnie{height:var(--ekran);min-height:0}
+    /* manifest: akapit nad pasem, na który spadają talerze (podłoga liczona od akapitu, talerzeHero) */
+    .topblok .manifest{padding-bottom:150px}
+  }
+  @media(max-width:767px){
+    /* „Dlaczego”: telefon 3D w lewej kolumnie, opisy obok (skrypt dlPrzelicz dopasowuje telefon do okna) */
+    #whyLayer .why-head .sec-label{margin-bottom:12px}
+    #whyLayer .sec-title{font-size:1.55rem;margin-bottom:0}
+    #whyLayer .wa-grid{grid-template-columns:44% 1fr;column-gap:12px;row-gap:0;margin-top:18px;align-items:center}
+    #whyLayer .wa-txt{display:block}
+    #whyLayer .dl-scena{margin-top:0}
+    /* minmax(0,…): najdłuższe słowo niewidocznego opisu („anglojęzycznych”) rozpychało kolumnę poza ekran */
+    #whyLayer .wa-teksty{margin-top:0;grid-template-columns:minmax(0,1fr)}
+    #whyLayer .wa-teksty h3{hyphens:auto;overflow-wrap:break-word}
+    #whyLayer .wa-teksty h3{font-size:1.02rem;margin-bottom:8px}
+    #whyLayer .wa-teksty p{font-size:.9rem;line-height:1.5}
+    #whyLayer .wa-ster{justify-content:flex-start;margin-top:14px}
+    #whyLayer .wa-ster .dl-kropki{justify-content:flex-start}
+    #whyLayer .dl-podpis{text-align:left;margin-top:10px}
+  }
+  .jk-kropki{display:none}
+  /* krótka nota pod kartą planu: odnośnik do pełnej noty w FAQ, pole dotyku rośnie w pionie */
+  .zdrowie-nota a{color:var(--lime);text-decoration:underline;text-underline-offset:2px;display:inline-block;padding:12px 0;margin:-12px 0}
+  @media(max-width:767px){
+    /* „Jak to działa”: kroki 1-2-3 w karuzeli przesuwanej palcem w bok (decyzja Tomka 23.10). Kadr animacji tak duży,
+       żeby nagłówek, krok i kropki zmieściły się w ekranie: --jk-reszta = sekcja bez kadru (skrypt jkKropki), 24/29 = najwyższa
+       scena, 16 px = obramowanie kadru. */
+    #dlaczego .how .how-grid{gap:10px}
+    #dlaczego .how .sec-label{margin-bottom:12px}
+    #dlaczego .how .sec-title{font-size:1.45rem;margin-bottom:6px}
+    #dlaczego .how .sec-sub{font-size:.88rem;line-height:1.45}
+    #dlaczego .how .steps{flex-direction:row;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+      overscroll-behavior-x:contain;scrollbar-width:none;margin:0 -32px}
+    #dlaczego .how .steps::-webkit-scrollbar{display:none}
+    #dlaczego .how .stp{flex:0 0 100%;box-sizing:border-box;scroll-snap-align:center;padding:0 32px;border:0;
+      opacity:1;transform:none;grid-template-columns:auto 1fr;gap:6px 14px;align-content:start}
+    #dlaczego .how .stp::after{display:none}
+    #dlaczego .how .stp .n{font-size:1.9rem}
+    #dlaczego .how .stp h3{font-size:1.1rem;margin-bottom:4px}
+    #dlaczego .how .stp p{font-size:.9rem;line-height:1.45}
+    #dlaczego .how .stp .jk-pop{margin:10px auto 0;width:100%;max-width:calc((var(--ekran) - var(--jk-reszta,360px) - 16px) * 24 / 29 + 16px)}
+    .jk-kropki{display:flex;align-items:center;justify-content:center;gap:10px}
+    .jk-kropki i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);transition:.25s}
+    .jk-kropki i.on{background:var(--lime);transform:scale(1.25)}
+    .jk-kropki span{margin-left:8px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    /* plan: nagłówek ciaśniej, zdjęcie karty bierze resztę ekranu (skrypt planFoto) */
+    #plan .sec-label{margin-bottom:10px}
+    #plan .sec-title{font-size:1.45rem;margin-bottom:12px}
+    #plan .plan-slider{margin-top:14px}
+    /* lista zalet karty powtarza „Dlaczego” (wideo, po polsku, w telefonie) — na telefonie ustępuje miejsca, żeby plan
+       zmieścił się na jednym ekranie (decyzja Tomka 23.10) */
+    #plan .plan-front .plan-feats{display:none}
+    #plan .plan-front .plan-body>p{font-size:.88rem;line-height:1.4}
+  }
+  @media(max-width:767px){
+    /* „O mnie”: zdjęcie małe obok nagłówka, tekst pod spodem — sekcja na jednym ekranie (23.10). Na telefonie kurtyny nie ma,
+       więc #aboutText może zniknąć z układu (contents): jego dzieci stają w siatce obok i pod zdjęciem. */
+    #aboutLayer .about-grid{grid-template-columns:34% 1fr;gap:0 16px;align-items:center}
+    #aboutText{display:contents}
+    #aboutPhoto{grid-column:1;grid-row:1 / span 2}
+    #aboutText > *{grid-column:1 / -1}
+    #aboutText > .sec-label{grid-column:2;grid-row:1;align-self:end;margin-bottom:6px}
+    #aboutText > .sec-title{grid-column:2;grid-row:2;align-self:start;font-size:1.45rem;margin-bottom:0}
+    #aboutText > p{font-size:.85rem;line-height:1.45;margin-bottom:7px;max-width:none}
+    #aboutText > p:first-of-type{margin-top:10px}
+    #aboutLayer .roles{margin:4px 0 6px;gap:6px}
+    #aboutLayer .role{padding:7px 12px;font-size:.69rem;letter-spacing:.08em}
+    #aboutLayer .role-detail{min-height:36px;margin-bottom:8px;padding:6px 12px;font-size:.8rem}
+    #aboutLayer .btn-care{padding-top:8px;padding-bottom:8px}
+    #aboutLayer .cena-warunek{margin-top:6px}
+  }
+  @media(max-width:767px){
+    /* FAQ, newsletter, stopka — ciaśniej, żeby każde mieściło się na jednym ekranie (23.10); rozwinięte pytanie FAQ może
+       wydłużyć sekcję — wtedy przewija się w środku jak dotąd. Wiersz pytania ma ≥ 44 px (pole dotyku). */
+    #faq .sec-label,#zapis .sec-label{margin-bottom:10px}
+    #faq .sec-title{font-size:1.45rem;margin-bottom:0}
+    #faq .faq-list{margin-top:14px}
+    #faq .faq-item summary{padding-top:11px;padding-bottom:11px;font-size:.92rem;line-height:1.35}
+    #zapis .nl-grid{gap:16px}
+    #zapis h2{font-size:1.45rem;margin-bottom:8px}
+    #zapis .zapis-korzysci{margin-bottom:8px}
+    footer .foot-grid{gap:18px;margin-bottom:22px}
+    footer .foot-logo{height:56px}
+    footer .foot-rejestr{margin-bottom:14px}
+  }
+  /* niski ekran telefonu (iPhone SE, 288 × 640): karta bez zdjęcia — inaczej plan nie mieści się na ekranie */
+  @media(max-width:767px) and (max-height:700px){
+    #plan .plan-front .plan-visual{display:none}
+    #aboutText > p{font-size:.82rem;line-height:1.4;margin-bottom:5px}
+    #aboutLayer .role-detail{min-height:30px;padding:4px 12px}
+    #zapis h2{font-size:1.25rem}
+    #zapis .zapis-korzysci li{font-size:.78rem;line-height:1.4}
+    #zapis .nl-grid > div > p{font-size:.85rem}
+    #zapis .zapis-zgoda{font-size:.7rem;line-height:1.4}
+    #zapis .zapis button{margin-top:8px}
+  }
+  @media(max-width:360px){
+    #plan .sec-label{margin-bottom:6px}
+    #plan .sec-title{font-size:1.2rem;margin-bottom:8px}
+    #plan .plan-slider{margin-top:8px}
+    #plan .btn-care{padding-top:7px;padding-bottom:7px}
+    #plan .zdrowie-nota{margin-top:8px;line-height:1.5}
+    #dlaczego .how .sec-title{font-size:1.25rem}
+    #dlaczego .how .why-content,#dlaczego .how > .wrap{padding-left:20px;padding-right:20px}
+    #dlaczego .how .steps{margin:0 -20px}
+    #dlaczego .how .stp{padding:0 20px}
+    #whyLayer .sec-title{font-size:1.32rem}
+    #whyLayer .wa-teksty h3{font-size:.92rem}
+    #whyLayer .wa-teksty p{font-size:.84rem}
+    #whyLayer .why-content{padding-left:20px;padding-right:20px}
+    #whyLayer .dl-podpis{display:none}   /* kropki wystarczą; na 288 px podpis wypychał sekcję poza ekran */
   }
 </style>
 
@@ -1871,9 +2004,9 @@
       <div class="wrap">
         <div class="how-grid">
           <div class="how-left">
-            <div class="sec-label">02 — Jak to działa</div>
-            <h2 class="sec-title">Trzy kroki<br>do pierwszego<br>treningu.</h2>
-            <p class="sec-sub">Bez skomplikowanych ustawień. Kupujesz, otwierasz, trenujesz.</p>
+            <div class="sec-label rv">02 — Jak to działa</div>
+            <h2 class="sec-title rv rv2">Trzy kroki<br>do pierwszego<br>treningu.</h2>
+            <p class="sec-sub rv rv3">Bez skomplikowanych ustawień. Kupujesz, otwierasz, trenujesz.</p>
           </div>
           <div class="steps">
             <div class="stp" data-step tabindex="0">
@@ -2002,6 +2135,8 @@
               </div>
             </div>
           </div>
+          <!-- telefon (23.10): kroki to karuzela przesuwana palcem w bok; kropki pokazują, który krok widać (skrypt jkKropki) -->
+          <div class="jk-kropki" aria-hidden="true"><i class="on"></i><i></i><i></i><span>Przesuń w bok</span></div>
         </div>
       </div>
     </section>
@@ -2012,7 +2147,7 @@
 <!-- ===== DIVIDER ===== -->
 <div class="divider">
   <div class="bg tlo-pozne" data-parallax="0.18"></div>
-  <h2>Zero ściemy.<br><span>Sam konkret.</span></h2>
+  <h2 class="rv">Zero ściemy.<br><span>Sam konkret.</span></h2>
 </div>
 
 <!-- ===== PLAN ===== -->
@@ -2141,7 +2276,9 @@
          a to zdanie ma być widoczne BEZ klikania. Do tej pory istniało wyłącznie w zwiniętym
          FAQ — cały tekst widoczny bez kliknięcia (4981 znaków) nie zawierał ani słowa
          o konsultacji, przeciwwskazaniach czy ciąży (audyt 2026-08-14). W FAQ zostaje. -->
-    <p class="zdrowie-nota rv rv4"><!--TRESC:nota-zdrowotna-->Przed pierwszym treningiem porozmawiaj z lekarzem, jeśli chorujesz na serce, masz nadciśnienie, cukrzycę leczoną insuliną lub lekami obniżającymi cukier albo świeży uraz — a także w ciąży i do roku po porodzie. Przy innych chorobach przewlekłych, kontuzjach i po długiej przerwie od ruchu skonsultuj się z lekarzem lub fizjoterapeutą. Jeśli lekarz odradza wysiłek, nie zaczynaj.<!--/TRESC--></p>
+    <!-- 23.10 (decyzja Tomka: plan na jednym ekranie telefonu): pod kartą KRÓTKA nota, pełna treść wspólna z apką
+         (TRESCI-WSPOLNE.md, nota-zdrowotna) stoi w FAQ „Mam kontuzję albo problemy zdrowotne”. -->
+    <p class="zdrowie-nota rv rv4">Chorujesz przewlekle, masz uraz, jesteś w ciąży lub wracasz po długiej przerwie? Przed startem skonsultuj się z&nbsp;lekarzem lub fizjoterapeutą. <a href="#faq-zdrowie" id="notaWiecej">Więcej w FAQ</a></p>
   </div>
 </section>
 
@@ -2334,7 +2471,7 @@
           w regulaminie, ale nie musisz z niego korzystać). Dostęp do kupionego planu nie wygasa po czasie,
           więc nic Cię nie goni.</p>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" id="faq-zdrowie">
         <summary><span>Mam kontuzję albo problemy zdrowotne — czy mogę trenować?</span></summary>
         <!-- 2026-10-04 (przegląd prawny, F71): ta sama nota co pod kartą planu (P05) — łagodniejsze „dobrze skonsultować
              się ze specjalistą" przeczyło nocie i §6 regulaminu. Osobny znacznik „-faq", bo synchronizuj-tresci.py
@@ -3254,6 +3391,14 @@
   const progress = document.getElementById('progress');
   const paskiemSkrypt = progress && !(window.CSS && CSS.supports('animation-timeline:scroll()'));
   const header = document.getElementById('header');
+  /* JEDNA SEKCJA = JEDEN EKRAN: wysokość paska menu i stopki dla CSS (--nag, --stopka) */
+  const ustawEkran = () => {
+    const st = document.documentElement.style, f = document.querySelector('footer');
+    st.setProperty('--nag', header.offsetHeight + 'px');
+    if (f) st.setProperty('--stopka', f.offsetHeight + 'px');
+  };
+  ustawEkran();
+  addEventListener('resize', ustawEkran);
 
   /* reveal on scroll */
   const io = new IntersectionObserver(entries => {
@@ -3387,13 +3532,24 @@
     kroki.forEach(s => vis.observe(s));
 
     /* kolumna: gra krok, który przecina środek ekranu (pas 4% wysokości), jeden naraz */
+    const mqKar = matchMedia('(max-width: 767px)');
     const pas = new IntersectionObserver(es => {
-      if (!INL()) return;
+      if (!INL() || mqKar.matches) return;   /* telefon: karuzela niżej */
       es.forEach(e => { if (e.isIntersecting && cur !== e.target) open(e.target); });
     }, { rootMargin: '-48% 0px -48% 0px' });
     const podepnij = () => { pas.disconnect(); kroki.forEach(s => pas.observe(s)); };
     podepnij();
     mqKol.addEventListener('change', () => { if (cur) close(cur); podepnij(); });
+    /* telefon (≤ 767 px, 23.10): kroki w karuzeli — gra krok widoczny w karuzeli, gdy karuzela przecina środek ekranu
+       (pas wyżej łapał sąsiedni krok, który tylko dotyka krawędzi ekranu) */
+    const tor = document.querySelector('#dlaczego .how .steps');
+    if (tor) {
+      const widac = () => kroki[Math.round(tor.scrollLeft / Math.max(1, tor.clientWidth))];
+      let torNaSrodku = false;
+      const graj = () => { if (!mqKar.matches || !torNaSrodku) return; const k = widac(); if (k && cur !== k) open(k); };
+      new IntersectionObserver(es => es.forEach(e => { torNaSrodku = e.isIntersecting; graj(); }), { rootMargin: '-48% 0px -48% 0px' }).observe(tor);
+      tor.addEventListener('scroll', graj, { passive: true });
+    }
     mqRM.addEventListener('change', () => { if (cur) { const c = cur; close(c); if (INL()) open(c); } });
 
     document.addEventListener('visibilitychange', () => {
@@ -3402,6 +3558,26 @@
       if (document.hidden) v.pause();
       else if (v.currentTime * 1000 < VID_STOP) v.play().catch(() => {});
     });
+  })();
+
+  /* „Jak to działa” na telefonie (23.10): kropki karuzeli kroków i kadr animacji dopasowany do ekranu (--jk-reszta = wysokość
+     sekcji bez najwyższego kadru: odstępy, nagłówek, tekst kroku, kropki — nie zależą od rozmiaru kadru, więc jeden pomiar) */
+  (() => {
+    const how = document.querySelector('#dlaczego .how'), tor = how && how.querySelector('.steps'), kr = [...document.querySelectorAll('.jk-kropki i')];
+    if (!tor || !kr.length) return;
+    tor.addEventListener('scroll', () => {
+      const i = Math.round(tor.scrollLeft / Math.max(1, tor.clientWidth));
+      kr.forEach((k, n) => k.classList.toggle('on', n === i));
+    }, { passive: true });
+    const dopasuj = () => {
+      if (innerWidth > 767) return how.style.removeProperty('--jk-reszta');
+      const hmax = Math.max(...[...how.querySelectorAll('.jk-pop')].map(e => e.offsetHeight)), cs = getComputedStyle(how);
+      const tresc = how.querySelector('.wrap').offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      how.style.setProperty('--jk-reszta', Math.ceil(tresc - hmax) + 'px');
+    };
+    dopasuj();
+    addEventListener('resize', dopasuj);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(dopasuj);
   })();
 
   /* odometr — cyfry przewijają się jak w liczniku; wartość można podmienić w locie */
@@ -3587,7 +3763,7 @@
 
     const dlScena = dlTelefon.parentElement;
     let dlSkala = 1, dlVh = 0, dlSzer = 0;
-    const dlTel = matchMedia('(max-width:767px)'), dlPodpis = document.querySelector('#whyLayer .dl-podpis'), dlGlowa = document.getElementById('whyHead');
+    const dlTel = matchMedia('(max-width:767px)'), dlGlowa = document.getElementById('whyHead');
     const dlDocTop = el => { let t = 0; for (let e = el; e; e = e.offsetParent) t += e.offsetTop; return t; };
     const dlPrzelicz = () => {
       /* Warstwa kurtyny centruje tytuł + siatkę w 100vh pod paskiem 76 px, więc cała treść ≤ vh − 76 − 32
@@ -3596,10 +3772,12 @@
          „dlaczego"); wysokość okna tylko przy zmianie szerokości — pasek adresu nie zmienia rozmiaru telefonu. */
       const nad = stackMode() ? dlScena.parentElement.offsetTop : 0;
       if (innerWidth !== dlSzer) { dlSzer = innerWidth; dlVh = innerHeight; }
+      /* telefon (23.10, „jedna sekcja = jeden ekran”): telefon w lewej kolumnie obok opisów, cała sekcja w oknie pod paskiem:
+         wysokość okna − pasek − odstępy sekcji (2 × 20) − nagłówek − odstęp nad siatką (18) */
       const pod = dlTel.matches
-        ? dlVh - header.offsetHeight - 32 - (dlDocTop(dlScena) - dlDocTop(dlGlowa)) - dlPodpis.offsetHeight - parseFloat(getComputedStyle(dlPodpis).marginTop)
+        ? dlVh - header.offsetHeight - 40 - dlGlowa.offsetHeight - 18
         : window.innerHeight - 108 - nad;
-      dlSkala = ogr(Math.min((dlScena.clientWidth - 24) / dlU.w, pod / dlU.h), dlTel.matches ? 0.1 : 0.3, T3.SMAX);   /* 288 px: nagłówek w 4 wierszach, telefon ok. 0,2 */
+      dlSkala = ogr(Math.min((dlScena.clientWidth - (dlTel.matches ? 0 : 24)) / dlU.w, pod / dlU.h), dlTel.matches ? 0.1 : 0.3, T3.SMAX);   /* 288 px: nagłówek w 4 wierszach, telefon ok. 0,2 */
       dlTelefon.style.width = `${(dlU.w * dlSkala).toFixed(2)}px`;
       dlTelefon.style.height = `${(dlU.h * dlSkala).toFixed(2)}px`;
     };
@@ -4461,7 +4639,7 @@
       const stack = stackMode();
       const tbr = tbWzor && topblok ? topblok.getBoundingClientRect() : null;
       const pxR = reduced ? [] : pxEls.map(el => el.parentElement.getBoundingClientRect());
-      const mr = manifest ? manifest.getBoundingClientRect() : null;
+      const mr = manifest ? manifest.getBoundingClientRect() : null, msr = mr && manifest.closest('section').getBoundingClientRect();
       const nag = mr && header ? header.offsetHeight : 0;
       const k1 = stackEl && stack ? [stackEl.offsetTop, stackEl.offsetHeight] : null;
       const k2 = stack2El && stack ? [stack2El.offsetTop, stack2El.offsetHeight] : null;
@@ -4501,10 +4679,9 @@
 
       /* manifest scrub */
       if (mr) {
-        /* ostatnie słowo zapala się, gdy akapit wjedzie na .47 ekranu, ale najpóźniej, gdy jego góra dojdzie pod pasek menu
-           (telefon: akapit wyższy niż pół ekranu — inaczej końcówka gasła dopiero pod paskiem; przystanek „manifest", E11).
-           +4 px zapasu: przystanek wypada dokładnie na tym progu, a przewinięcie bywa ułamkowe */
-        const koniec = Math.max(vh * .47 - mr.height, nag + 8) + 4;
+        /* manifest to osobny ekran (23.10): ostatnie słowo zapala się, gdy góra sekcji dojdzie pod pasek menu (jej przystanek);
+           +4 px zapasu, bo przewinięcie bywa ułamkowe */
+        const koniec = nag + (mr.top - msr.top) + 4;
         const prog = ogr((vh * .82 - mr.top) / (vh * .82 - koniec), 0, 1);
         const lit = Math.floor(prog * mws.length);
         if (lit !== mwsLit) { mwsLit = lit; mws.forEach((w, i) => w.classList.toggle('lit', i < lit)); }
@@ -4684,21 +4861,25 @@
      „plan_kadr"), o ile zdjęcie ma wtedy co najmniej FOTO_NOTA. Gdy nie (288×640) — sama karta wypełnia okno, zdjęcie nie
      niższe niż FOTO_MIN, a notę pokazuje drugi kadr (plan_kadr → dół strefy). Wysokość okna tylko przy zmianie szerokości
      (pasek adresu nie rusza układu). Komputer i tablet: zdjęcie jak było. */
-  const FOTO_MIN = 40, FOTO_NOTA = 64, FOTO_SEKCJA = 160, planTel = matchMedia('(max-width:767px)'), planSekcja = document.getElementById('plan');
+  const FOTO_MIN = 40, FOTO_NOTA = 64, planTel = matchMedia('(max-width:767px)'), planSekcja = document.getElementById('plan');
   const planWiz = planFront.querySelector('.plan-visual'), nota = document.querySelector('#plan .zdrowie-nota');
   let pSzer = 0, pVh = 0;
   const planFoto = () => {
     if (!planTel.matches || !planWiz) { if (planWiz) planWiz.style.height = ''; return; }
     if (innerWidth !== pSzer) { pSzer = innerWidth; pVh = innerHeight; }
-    const okno = pVh - header.offsetHeight - 32, wiz = planWiz.offsetHeight, A = okno - (planFront.offsetHeight - wiz),
+    /* 23.10 (jedna sekcja = jeden ekran): sekcja ma odstępy 2 × 20 px i wysokość ekranu, treść stoi w .wrap */
+    const okno = pVh - header.offsetHeight - 40, wiz = planWiz.offsetHeight, A = okno - (planFront.offsetHeight - wiz),
       n = nota ? nota.offsetHeight + parseFloat(getComputedStyle(nota).marginTop) : 0,
-      cs = getComputedStyle(planSekcja), S = planFlip.classList.contains('flipped') ? 0
-        : okno - (planSekcja.offsetHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - wiz);
-    /* cała sekcja (nagłówek + karta + nota) w jednym kadrze, jeśli zdjęcie ma wtedy co najmniej FOTO_SEKCJA (430×932) */
-    planWiz.style.height = Math.round(ogr(S >= FOTO_SEKCJA ? S : A - n >= FOTO_NOTA ? A - n : A, FOTO_MIN, 340)) + 'px';
+      S = planFlip.classList.contains('flipped') ? 0 : okno - (planSekcja.querySelector('.wrap').offsetHeight - wiz);
+    /* przód: cała sekcja (nagłówek + karta + nota) w jednym ekranie — zdjęcie bierze to, co zostaje (co najmniej FOTO_MIN);
+       tył: karta z notą albo sama karta jak dotąd */
+    planWiz.style.height = Math.round(ogr(S > 0 ? S : A - n >= FOTO_NOTA ? A - n : A, FOTO_MIN, 340)) + 'px';
   };
   planFoto();
   window.addEventListener('resize', planFoto);
+  /* krótka nota pod kartą (23.10): „Więcej w FAQ” od razu rozwija pytanie z pełną notą */
+  const notaWiecej = document.getElementById('notaWiecej'), faqZdrowie = document.getElementById('faq-zdrowie');
+  if (notaWiecej && faqZdrowie) notaWiecej.addEventListener('click', () => { faqZdrowie.open = true; });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(planFoto);
 
   /* Odwracanie karty planu: klik w dowolne miejsce pokazuje drugą stronę ze szczegółami
@@ -4935,8 +5116,6 @@
     const hs = q('#heroStack');
     if (stack && hs && hs.offsetHeight > vh * 1.2) dodaj('hero_dok', docTop(hs) + hs.offsetHeight - vh);   /* telefon zadokowany */
     /* manifest: wszystkie słowa zapalone (próg z onScroll), akapit nie pod paskiem menu */
-    const man = q('#manifest');
-    if (widoczny(man)) { const t = docTop(man); dodaj('manifest', Math.min(t + man.offsetHeight - .47 * vh, t - nag - 8)); }
     /* blok mieszczący się pod paskiem = miękki przystanek (środek); wyższy = strefa a..b (albo jeden twardy, gdy ledwo wyższy) */
     const blok = (id, el) => {
       const t = docTop(el), h = el.offsetHeight, cs = getComputedStyle(el);
@@ -4947,6 +5126,8 @@
       if (b - a < .25 * A) return dodaj(id, a);
       dodaj(id, a, true, b); dodaj(id + '_dol', b);
     };
+    const man = q('.topblok .manifest');   /* sekcja = jeden ekran (23.10); słowa zapalają się do jej przystanku (onScroll) */
+    if (widoczny(man)) blok('manifest', man);
     /* telefon (M1, polecenie Tomka 27.09): sekcja = nagłówek + KADR, który ma być widać w całości (przód karty planu, a pod nim
        nota, jeśli się zmieści): k0..k1 kadr, k2 ≥ k1 koniec z notą. Przystanek `id_kadr`
        na kadrze (z notą — dół noty przy dole okna; bez — góra kadru pod paskiem), a nad nim `id` na nagłówku (góra treści pod
@@ -4982,8 +5163,11 @@
     } else {
       const tel = innerWidth <= 767, wl = q('#whyLayer'); if (widoczny(wl)) blok('dlaczego', wl);
       /* „Jak to działa" w kolumnie: nagłówek, potem przystanek na każdym kroku — gra krok na środku ekranu (wariant A), cały kadr w oknie */
-      const hl = q('#dlaczego .how-left'); if (widoczny(hl)) blok('jak', hl);
-      document.querySelectorAll('#dlaczego [data-step]').forEach((el, i) => {
+      const hw = q('#dlaczego .how');
+      /* telefon (23.10): kroki w karuzeli, sekcja = jeden ekran; tablet: przystanek na górze sekcji (nagłówek wyśrodkowany
+         pokazywał koniec „Dlaczego”), dalej przystanki kroków */
+      if (widoczny(hw)) { if (tel) blok('jak', hw); else dodaj('jak', docTop(hw) - nag); }
+      if (!tel) document.querySelectorAll('#dlaczego [data-step]').forEach((el, i) => {
         if (!widoczny(el)) return;
         const f = el.querySelector('.jk-pop');
         if (!f || el.offsetHeight <= A) return blok('jak_' + (i + 1), el);
