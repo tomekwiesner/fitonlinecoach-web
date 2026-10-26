@@ -695,14 +695,9 @@
   /* przeglądarka */
   .jk-s2 .jk-brw{background:#0B0F0D}
   .jk-s2 .jk-brw .jk-st{left:24px;top:10px;font-weight:600;font-size:9.5px}
-  .jk-s2 .jk-brw .jk-lg{left:16px;top:40px;height:16px;width:auto}
-  .jk-s2 .jk-brw .jk-hi{left:0;top:66px;width:100%;height:150px;object-fit:cover;object-position:50% 36%;
-    -webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
-  .jk-s2 .jk-brw h4{left:16px;right:16px;top:176px;font-family:'Montserrat',sans-serif;font-weight:900;font-size:19px;line-height:1.02;text-transform:uppercase}
-  .jk-s2 .jk-brw h4 em{position:static;font-style:normal;color:var(--lime)}
-  .jk-s2 .jk-brw .jk-su{left:16px;right:30px;top:241px;font-size:8.5px;color:var(--muted);line-height:1.35}
-  .jk-s2 .jk-brw .jk-bt{left:16px;top:270px;height:26px;padding:0 14px;background:var(--lime);color:#0B0F0D;border-radius:2px;
-    font-family:'Montserrat',sans-serif;font-weight:800;font-size:8px;letter-spacing:.14em;line-height:26px;text-transform:uppercase}
+  /* prawdziwy zrzut strony z telefonu (wersja startowa, 390×792 css px, zrzut 2× → 400×812) zamiast udawanej strony (Tomek 26.10);
+     pod paskiem stanu, pasek adresu Safari leży na nim jak w prawdziwym telefonie */
+  .jk-s2 .jk-brw .jk-www{left:0;top:24px;width:100%;height:calc(100% - 24px);object-fit:cover;object-position:top}
   .jk-s2 .jk-brw .jk-url{left:12px;right:12px;top:auto;bottom:48px;height:30px;border-radius:15px;background:#232b27;color:#d6ddd9;
     font-size:9.5px;line-height:30px;text-align:center}
   .jk-s2 .jk-brw .jk-tb{left:0;right:0;top:auto;bottom:12px;height:26px}
@@ -767,13 +762,14 @@
   @keyframes a2fill{from{opacity:0;transform:scale(.5)}}
 
   /* ---------- 03. Trenuj z wideo ---------- */
-  .jk-s3 .jk-vid{left:1.2em;top:1.2em;width:31.6em;height:14.02em;border-radius:1.4em;overflow:hidden;background:#000;
+  .jk-s3 .jk-vid{left:1.2em;top:1.2em;width:31.6em;height:17.775em;border-radius:1.4em;overflow:hidden;background:#000;
     transform-origin:0 0;transform:scale(.5);box-shadow:0 1em 2em -1em rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,255,255,.08)}
-  /* ramka 16:7,1; klip „pompki na podwyższeniu" z galerii apki (surowe-petle/box-push-up_zapetlony.mp4)
-     jest przycięty już w pliku do tej proporcji (720×320), cała sylwetka + skrzynia w kadrze */
+  /* ramka 16:9 = prawdziwy film z apki bez przeróbek (cwiczenia-wideo/box-push-up.mp4, 720×406, Tomek 26.10), nic nie przycina;
+     w górnych rogach filmu są jego napis i logo, więc etykieta „Poradnik wideo” stoi na środku u góry */
   .jk-s3 .jk-vid video,.jk-s3 .jk-vid img{left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:50% 0}
   .jk-s3 .jk-vid .jk-tag{left:1em;top:1em;   /* u góry, na ścianie — na dole zasłaniała nogi ćwiczącego */padding:.35em .9em;border-radius:.6em;background:rgba(11,15,13,.72);font-size:1.1em;font-weight:600;color:#fff;
     opacity:0}  /* stan końcowy = miniatura, na niej etykieta byłaby nieczytelna */
+  .jk-s3 .jk-vid .jk-tag{left:50%;transform:translateX(-50%);white-space:nowrap}
   .jk-s3 .jk-vid .jk-tag b{position:static;display:inline-block;width:.55em;height:.55em;border-radius:50%;background:var(--lime);margin-right:.5em;vertical-align:.05em}
   .jk-s3 .jk-vbar{left:0;right:0;bottom:0;height:.5em;background:var(--lime);transform-origin:0 50%}
   .jk-s3 .jk-ttl{left:17.8em;top:1.5em;width:14.8em}
@@ -783,7 +779,7 @@
   .jk-s3 .jk-ttl b{position:static;display:block;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.3em;line-height:1.12;color:#fff;
     text-transform:uppercase;margin-top:.3em}
   .jk-s3 .jk-ttl span{position:static;display:block;font-size:max(.95em,11px);color:var(--muted);margin-top:.4em}
-  .jk-s3 .jk-ch{--chy:5.6em;left:1.2em;right:1.2em;top:10em;bottom:1.2em;border-radius:1.2em;background:#101714;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+  .jk-s3 .jk-ch{--chy:5.6em;left:1.2em;right:1.2em;top:10.6em;bottom:1.2em;border-radius:1.2em;background:#101714;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
   .jk-s3 .jk-chh{left:1.4em;top:1.2em;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.1em;letter-spacing:.06em;text-transform:uppercase;color:#fff}
   .jk-s3 .jk-chs{left:1.6em;top:3.1em;font-size:max(.9em,11px);color:var(--muted)}
   .jk-s3 svg{left:0;bottom:0;width:100%;height:12em;overflow:visible}
@@ -795,9 +791,9 @@
   .jk-s3 .jk-rg{fill:none;stroke:var(--lime);stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center}
   .jk-s3 .jk-bd{right:1.2em;top:5.4em;padding:.5em .9em .55em;border-radius:.6em;background:var(--lime);color:#0B0F0D;text-align:right;
     transform-origin:90% 110%;box-shadow:0 .8em 1.6em -.6em rgba(153,230,109,.45)}
-  .jk-s3 .jk-tips{left:1.4em;right:1.4em;top:16.6em;opacity:0}   /* stan końcowy: schowane */
+  .jk-s3 .jk-tips{left:1.4em;right:1.4em;top:19.55em;opacity:0}   /* stan końcowy: schowane; tuż pod filmem 16:9 (26.10) */
   .jk-s3 .jk-tips .jk-ey{display:block;font-size:max(.85em,11px);font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--lime)}
-  .jk-s3 .jk-tips div{display:flex;gap:.8em;align-items:center;margin-top:.8em;font-size:1.25em;font-weight:600;color:#fff;line-height:1.3}
+  .jk-s3 .jk-tips div{display:flex;gap:.8em;align-items:center;margin-top:.5em;font-size:1.15em;font-weight:600;color:#fff;line-height:1.3}
   .jk-s3 .jk-tips i{flex:none;width:1.8em;height:1.8em;border-radius:50%;display:grid;place-items:center;font-style:normal;background:var(--lime);
     font-family:'Montserrat',sans-serif;font-weight:800;font-size:.8em;color:#0B0F0D}
   .jk-s3 .jk-bd small{position:static;display:block;font-size:max(.78em,11px);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
@@ -899,7 +895,7 @@
     @keyframes a2l3{0%,50%{opacity:0;transform:translateY(.5em)}54%,100%{opacity:1;transform:none}}
     /* 03: film na całą szerokość → miniatura z tytułem obok → wykres z większymi napisami */
     .how .jk-s3{aspect-ratio:24/26}
-    .how .jk-s3 .jk-vid{left:1em;top:1em;width:22em;height:9.76em}
+    .how .jk-s3 .jk-vid{left:1em;top:1em;width:22em;height:12.375em}
     .how .jk-s3 .jk-ttl{left:12.6em;top:.9em;width:10.6em}
     .how .jk-s3 .jk-ttl .jk-ey{font-size:max(.9em,min(11px,4.4cqw));letter-spacing:.1em}
     .how .jk-s3 .jk-ttl b{font-size:max(1em,min(11.5px,4.6cqw))}
@@ -912,7 +908,7 @@
     .how .jk-s3 .jk-bd small{font-size:max(.9em,min(11px,4.4cqw));letter-spacing:.08em}
     .how .jk-s3 .jk-vid .jk-tag{font-size:max(1.1em,min(11px,4.4cqw))}
     .how .jk-s3 .jk-bd b{font-size:1.2em}
-    .how .jk-s3 .jk-tips{left:1em;right:1em;top:12.4em}
+    .how .jk-s3 .jk-tips{left:1em;right:1em;top:15em}
     .how .jk-s3 .jk-tips .jk-ey{letter-spacing:.1em}
     .how .jk-s3 .jk-tips div{font-size:max(1.1em,min(12px,4.8cqw));margin-top:.9em}
   }
@@ -1311,6 +1307,8 @@
     gap:12px;text-decoration:none;background:rgba(153,230,109,.16);border-color:rgba(153,230,109,.55);
     transition:background .2s ease, box-shadow .2s ease}
   .vp-pop-b:hover{background:rgba(153,230,109,.28);box-shadow:0 30px 60px -16px rgba(0,0,0,.8),0 0 0 1px rgba(153,230,109,.4)}
+  /* bez filmów na YouTube (0 albo brak yt.json): bez licznika i bez okienka „Oglądaj na YouTube” (Tomek 26.10) */
+  #wideo:not(.yt-jest) .yt-tak,#wideo:not(.yt-jest) .vp-pop-b,#wideo.yt-jest .yt-nie{display:none}
   .vp-pop-b b{color:#eef8e9}
   .vp-pop-ic{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;
     background:var(--lime);color:#0c130c;font-size:.82rem;padding-left:2px}
@@ -2118,7 +2116,7 @@
                     <div class="dl-foto"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
                   </article>
                   <article class="dl-slajd">
-                    <div class="dl-foto"><img src="assets/screen_popup.jpg" alt="Ekran aplikacji: opis ćwiczenia po polsku ze wskazówkami trenera" loading="lazy" decoding="async"></div>
+                    <div class="dl-foto"><img src="assets/screen_okno.jpg" alt="Ekran aplikacji: okno ćwiczenia z filmem i wskazówkami trenera" loading="lazy" decoding="async"></div>
                   </article>
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
@@ -2213,12 +2211,8 @@
                         <div class="jk-ico"><img loading="lazy" decoding="async" src="assets/apple-touch-icon-180.png" alt=""><span>FitOnlineCoach</span></div>
                       </div>
                       <div class="jk-brw">
+                        <img loading="lazy" decoding="async" class="jk-www" src="assets/jak/strona-telefon.webp" alt="">
                         <div class="jk-st">9:41</div>
-                        <img loading="lazy" decoding="async" class="jk-lg" src="assets/logo-320.webp" alt="">
-                        <img loading="lazy" decoding="async" class="jk-hi" src="assets/jak/deska-bokiem.webp" alt="">
-                        <h4>Trening, który <em>rozumiesz</em></h4>
-                        <div class="jk-su">Plany treningowe z poradnikiem wideo do każdego ćwiczenia.</div>
-                        <div class="jk-bt">Kup plan</div>
                         <div class="jk-url">fitonlinecoach.com</div>
                         <div class="jk-tb">
                           <svg style="left:18px" viewBox="0 0 16 16"><path d="M10 3 L5 8 L10 13"/></svg>
@@ -2287,8 +2281,8 @@
                     <span>Poradnik po polsku</span>
                   </div>
                   <div class="jk-vid">
-                    <img loading="lazy" decoding="async" src="assets/jak/pompki-skrzynia.webp" alt="" width="720" height="320">
-                    <video muted playsinline preload="none" data-src="assets/jak/pompki-skrzynia.mp4"></video>
+                    <img loading="lazy" decoding="async" src="assets/jak/pompki-apka.webp" alt="" width="720" height="406">
+                    <video muted playsinline preload="none" data-src="assets/jak/pompki-apka.mp4"></video>
                     <span class="jk-tag"><b></b>Poradnik wideo</span>
                     <i class="jk-vbar"></i>
                   </div>
@@ -2496,8 +2490,10 @@
 <!-- ===== YT ===== -->
 <section class="yt" id="wideo">
   <div class="wrap">
-    <div class="sec-label rv center">05 — Darmowa wiedza</div>
-    <h2 class="rv rv2"><span class="yt-count"></span> <span class="yt-adj">Darmowe</span> <span class="yt-noun">poradniki</span> wideo</h2>
+    <div class="sec-label rv center">05 — Poradniki wideo</div>
+    <!-- dwa tytuły: .yt-nie widać od razu (0 filmów na YouTube albo brak pliku yt.json), .yt-tak dopiero po klasie
+         .yt-jest na sekcji (skrypt z assets/yt.json, liczba ≥ 1) — sekcja stoi od początku, więc strona nie przeskakuje -->
+    <h2 class="rv rv2"><span class="yt-tak"><span class="yt-count"></span> <span class="yt-adj">Darmowe</span> <span class="yt-noun">poradniki</span> wideo</span><span class="yt-nie">Poradnik wideo do każdego ćwiczenia</span></h2>
     <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem SAM „przewija" (swajp)
          do kolejnego — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
          które „wyprzedzają" telefon i dodają głębi 3D: pierwszy niesie tekst spod tytułu, drugi
@@ -2507,10 +2503,10 @@
         <div class="dl-body">
           <div class="dl-ekran">
             <div class="vp-track" id="vpTrack" aria-hidden="true">
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_plecy.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_licznik.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_hollow.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/cwiczenie_counter.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_1.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_2.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_3.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_4.mp4"></video></div>
             </div>
           </div>
         </div>
@@ -5117,11 +5113,10 @@
     adj: odmien(n, ['darmowy', 'darmowe', 'darmowych']),
     noun: odmien(n, ['poradnik', 'poradniki', 'poradników'])
   });
-  /* Sekcja „Darmowa wiedza" żyje tylko wtedy, gdy na YouTube SĄ poradniki (decyzja Tomka
-     3.09.2026: liczba ma być prawdziwa w każdej chwili — dziś 0, na start co najmniej 50).
-     Przy 0 albo braku pliku chowamy całą sekcję razem z linkami „Wideo" w menu i stopce.
-     HTML nie ma żadnej liczby na sztywno, więc strona nigdy nie obieca czegoś, czego nie ma.
-     Numery sekcji („05 — …") przeliczamy, żeby po schowaniu nie było dziury w numeracji. */
+  /* Sekcja „Poradniki wideo" stoi zawsze (Tomek 26.10: chowanie po wczytaniu yt.json przesuwało stronę), z fragmentami
+     prawdziwych instruktaży z apki. Liczba i okienko „Oglądaj na YouTube" pojawiają się dopiero przy ≥ 1 filmie na YouTube
+     (klasa .yt-jest) — liczba ma być prawdziwa w każdej chwili (Tomek 3.09.2026), HTML nie ma żadnej liczby na sztywno.
+     Numery sekcji („05 — …") przeliczamy od razu: ukryte „Opinie" nie zostawiają dziury w numeracji. */
   const przenumerujSekcje = () => {
     /* pierwotny numer trzymamy w data-nr — po pierwszym przeliczeniu tekst już go nie ma,
        a funkcja wraca, gdy pojawią się opinie (sekcja „Opinie" wychodzi z ukrycia) */
@@ -5134,24 +5129,20 @@
       x.el.textContent = String(nowy).padStart(2, '0') + x.el.textContent.replace(/^\s*\d+/, '');
     });
   };
-  const schowajWideo = () => {
-    const sek = document.getElementById('wideo');
-    if (sek) sek.hidden = true;
-    document.querySelectorAll('a[href="#wideo"]').forEach(a => { (a.closest('li') || a).hidden = true; });
-    przenumerujSekcje();
-  };
+  przenumerujSekcje();
   fetch('assets/yt.json', {cache: 'no-cache'})
     .then(r => (r.ok ? r.json() : null))
     .then(d => {
       const n = (d && Number(d.count)) || 0;
-      if (n < 1) { schowajWideo(); return; }
+      if (n < 1) return;
       const f = odmienPoradniki(n);
       document.querySelectorAll('.yt-count').forEach(el => { el.textContent = n; });
       document.querySelectorAll('.yt-adj').forEach(el => { el.textContent = f.adj; });
       document.querySelectorAll('.yt-noun').forEach(el => { el.textContent = f.noun; });
       if (d.url) document.querySelectorAll('[data-yt-link]').forEach(a => { a.href = d.url; });
+      document.getElementById('wideo')?.classList.add('yt-jest');
     })
-    .catch(schowajWideo);
+    .catch(() => {});   /* brak pliku = jak 0 filmów: sekcja zostaje, bez liczby i bez YouTube */
 
   /* opinie klientów — czytane wprost z bazy aplikacji (tylko zatwierdzone przez Tomka).
      Brak opinii albo problem z bazą = sekcja w ogóle się nie pokazuje. */
