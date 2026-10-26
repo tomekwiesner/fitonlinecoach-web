@@ -34,8 +34,7 @@
      w apce na 30 dni — szczegóły przy PAMIEC_ZRODLA_W_APCE w skrypcie zgód). Wpisanie identyfikatora samo dokłada
      w banerze wiersz „Statystyki” (ga4Id) albo zdanie o Instagramie i Google (Meta / Google Ads) i pyta od nowa
      osoby, które decydowały przy innym zestawie narzędzi. Po wpisaniu choć jednego klik w „Kup plan" / „Załóż konto"
-     zgłasza zdarzenia begin_checkout (Google) i InitiateCheckout (Meta), a „Wypróbuj za darmo"
-     osobno: start_trial (Google) i StartTrial (Meta) — tylko za zgodą klienta.
+     zgłasza zdarzenia begin_checkout (Google) i InitiateCheckout (Meta) — tylko za zgodą klienta.
      Sygnały Google ad_storage / ad_user_data / ad_personalization = granted tylko przy wpisanym metaPixelId albo googleAdsId
      (samo ga4Id daje wyłącznie analytics_storage) — patrz funkcja zastosuj w skrypcie zgód.
      Te same wartości musi znać aplikacja — patrz app.fitonlinecoach.com.
@@ -416,20 +415,12 @@
   }
   /* warunek ceny „od" pod przyciskiem opieki — drobny druk, ale nie mniejszy niż 12 px */
   .cena-warunek{display:block;margin-top:10px;font-size:.78rem;line-height:1.5;color:var(--muted)}
-  /* Z-E7: „Wypróbuj za darmo" obok „Kup plan". Akcja drugorzędna = obrys zamiast wypełnienia (jak „Odrzuć"
-     w banerze zgód i „Dołącz" w menu), ostry róg = akcja. Siatka: oba przyciski w jednym wierszu i tej samej
-     wysokości; na telefonie (niżej, max-width:767px) jeden pod drugim, tej samej szerokości.
-     Decyzja Tomka 2.10, W74 (wariant B): dopisek „7 dni · bez karty" W przycisku, drugim wierszem jak cena
-     w „Kup plan" (btn-join/btn-care) — osobna linia pod przyciskiem wypychała kartę poza jedno okno telefonu.
-     R28 (Tomek 2.10): oba przyciski WYŚRODKOWANE na karcie (przód i tył), podpis „Kliknij…" pod nimi też na środku. */
-  /* align-self:stretch — .plan-body układa dzieci do lewej (align-items:flex-start), bez tego rząd kurczy się do szerokości
-     przycisków i nie ma czego środkować */
-  .price-row.z-trialem{display:grid;grid-template-columns:auto auto;gap:8px 16px;justify-content:center;align-items:stretch;align-self:stretch}
-  .btn-trial{background:transparent;color:var(--lime);border:1px solid var(--lime)}
-  .btn-trial:hover{background:rgba(153,230,109,.12)}
-  @media(max-width:767px){.price-row.z-trialem{grid-template-columns:auto}}
+  /* „Kup plan" WYŚRODKOWANY na karcie (przód i tył; R28, Tomek 2.10), podpis „Kliknij…" pod nim też na środku.
+     „Wypróbuj za darmo" zdjęty z karty (polecenie Tomka 25.10). align-self:stretch — .plan-body układa dzieci do lewej
+     (align-items:flex-start), bez tego rząd kurczy się do szerokości przycisku i nie ma czego środkować */
+  .price-row.na-srodku{display:grid;grid-template-columns:auto;justify-content:center;align-self:stretch}
   .scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:2;display:flex;
-    flex-direction:column;align-items:center;gap:10px;font-size:.68rem;letter-spacing:.3em;
+    flex-direction:column;align-items:center;gap:10px;font-size:11px;letter-spacing:.3em;
     text-transform:uppercase;color:var(--muted);opacity:0;animation:fadeUp 1s 1.8s forwards}
   .scroll-cue i{width:1px;height:44px;background:linear-gradient(var(--lime),transparent);display:block;
     animation:cue 1.6s ease-in-out infinite}
@@ -869,23 +860,26 @@
     /* ---- własny układ scen na telefon: 1em = 1/24 szerokości (zamiast 1/34), mniej elementów,
        każdy znaczący napis ≥ 11 px przy ekranie 343 px ---- */
     .how .jk-scene{font-size:calc(100cqw / 24)}
+    /* dolne progi napisów (11–12 px) tylko do kadru 250 px (telefon 343×740); węższy kadr (375×667, 288×640) skaluje całą
+       scenę równo — inaczej progi rozpychały napisy na siebie i poza kadr (Tomek 25.10). cqw = szerokość sceny */
+    .how .jk-s3 .jk-tips .jk-ey{font-size:max(.85em,min(11px,4.4cqw))}
     /* 01: bez paska przeglądarki, karta i potwierdzenie na całą szerokość */
     .how .jk-s1{aspect-ratio:24/23;--cx:15.4em;--cy:13.4em}
     .how .jk-s1 .jk-bar{display:none}
     .how .jk-s1 .jk-card{left:1em;right:1em;top:1em;height:15em}
     .how .jk-s1 .jk-card img{width:7.4em}
     .how .jk-s1 .jk-d{left:8.6em;right:1em;top:1.1em;bottom:1em}
-    .how .jk-s1 .jk-ey{font-size:max(.9em,11px);letter-spacing:.08em}
+    .how .jk-s1 .jk-ey{font-size:max(.9em,min(11px,4.4cqw));letter-spacing:.08em}
     .how .jk-s1 .jk-t{font-size:1.55em}
-    .how .jk-s1 .jk-m{font-size:max(.95em,11px)}
+    .how .jk-s1 .jk-m{font-size:max(.95em,min(11px,4.4cqw))}
     .how .jk-s1 .jk-pr{font-size:2em}
-    .how .jk-s1 .jk-pr small{font-size:max(.46em,11px)}
-    .how .jk-s1 .jk-btn{font-size:max(1em,11px);height:2.8em}
+    .how .jk-s1 .jk-pr small{font-size:max(.46em,min(11px,4.4cqw))}
+    .how .jk-s1 .jk-btn{font-size:max(1em,min(11px,4.4cqw));height:2.8em}
     .how .jk-s1 .jk-toast{left:1em;right:1em;top:17em;height:5em}
     .how .jk-s1 .jk-ok{left:1em;top:1em}
     .how .jk-s1 .jk-tt{left:4.9em;top:.9em}
     .how .jk-s1 .jk-tt b{font-size:1.25em}
-    .how .jk-s1 .jk-tt span{font-size:max(.95em,11px)}
+    .how .jk-s1 .jk-tt span{font-size:max(.95em,min(11px,4.4cqw))}
     .how .jk-s1 .jk-cur{width:1.6em}
     /* 02: sam telefon + pod nim JEDNA linia legendy — ta, która pasuje do tego, co właśnie dzieje się na ekranie */
     .how .jk-s2{aspect-ratio:24/29}
@@ -894,8 +888,8 @@
     .how .jk-s2 .jk-lgd .jk-ey{display:none}
     .how .jk-s2 .jk-li{position:absolute;left:0;right:0;top:0;margin:0;justify-content:center;align-items:center;opacity:0}
     .how .jk-s2 .jk-li:nth-of-type(3){opacity:1}
-    .how .jk-s2 .jk-li i{width:1.8em;height:1.8em;font-size:max(1em,11px)}
-    .how .jk-s2 .jk-li span{font-size:max(1.1em,12px);padding:0;white-space:nowrap}
+    .how .jk-s2 .jk-li i{width:1.8em;height:1.8em;font-size:max(1em,min(11px,4.4cqw))}
+    .how .jk-s2 .jk-li span{font-size:max(1.1em,min(12px,4.8cqw));padding:0;white-space:nowrap}
     .how .stp.jk-play .jk-s2 .jk-li,.how .stp.jk-play .jk-s2 .jk-li i,.how .stp.jk-play .jk-s2 .jk-li i::before{animation:none}
     .how .stp.jk-play .jk-s2 .jk-li:nth-of-type(1){animation:a2l1 6.4s linear both}
     .how .stp.jk-play .jk-s2 .jk-li:nth-of-type(2){animation:a2l2 6.4s linear both}
@@ -907,20 +901,20 @@
     .how .jk-s3{aspect-ratio:24/26}
     .how .jk-s3 .jk-vid{left:1em;top:1em;width:22em;height:9.76em}
     .how .jk-s3 .jk-ttl{left:12.6em;top:.9em;width:10.6em}
-    .how .jk-s3 .jk-ttl .jk-ey{font-size:max(.9em,11px);letter-spacing:.1em}
-    .how .jk-s3 .jk-ttl b{font-size:max(1em,11.5px)}
-    .how .jk-s3 .jk-ttl span{font-size:max(.9em,11px)}
+    .how .jk-s3 .jk-ttl .jk-ey{font-size:max(.9em,min(11px,4.4cqw));letter-spacing:.1em}
+    .how .jk-s3 .jk-ttl b{font-size:max(1em,min(11.5px,4.6cqw))}
+    .how .jk-s3 .jk-ttl span{font-size:max(.9em,min(11px,4.4cqw))}
     .how .jk-s3 .jk-ch{--chy:2.1em;left:1em;right:1em;top:9em;bottom:1em}
-    .how .jk-s3 .jk-chh{font-size:max(1.05em,12px)}
-    .how .jk-s3 .jk-chs{font-size:max(.9em,11px)}
+    .how .jk-s3 .jk-chh{font-size:max(1.05em,min(12px,4.8cqw))}
+    .how .jk-s3 .jk-chs{font-size:max(.9em,min(11px,4.4cqw))}
     .how .jk-s3 svg{height:8.35em}
     .how .jk-s3 .jk-bd{right:.25em;top:5.3em;padding:.45em .8em .5em}
-    .how .jk-s3 .jk-bd small{font-size:max(.9em,11px);letter-spacing:.08em}
-    .how .jk-s3 .jk-vid .jk-tag{font-size:max(1.1em,11px)}
+    .how .jk-s3 .jk-bd small{font-size:max(.9em,min(11px,4.4cqw));letter-spacing:.08em}
+    .how .jk-s3 .jk-vid .jk-tag{font-size:max(1.1em,min(11px,4.4cqw))}
     .how .jk-s3 .jk-bd b{font-size:1.2em}
     .how .jk-s3 .jk-tips{left:1em;right:1em;top:12.4em}
     .how .jk-s3 .jk-tips .jk-ey{letter-spacing:.1em}
-    .how .jk-s3 .jk-tips div{font-size:max(1.1em,12px);margin-top:.9em}
+    .how .jk-s3 .jk-tips div{font-size:max(1.1em,min(12px,4.8cqw));margin-top:.9em}
   }
 
   /* ---------- toczący się talerz odsłaniający hasło „nie musi być idealnie" ---------- */
@@ -1050,7 +1044,7 @@
     /* przód karty */
     #plan .plan-visual{min-height:380px}
     #plan .plan-body{padding:26px 44px}
-    #plan .plan-tag{font-size:.68rem;padding:5px 12px;margin-bottom:12px}
+    #plan .plan-tag{font-size:.7rem;padding:5px 12px;margin-bottom:12px}   /* min. 11 px */
     #plan .plan-body h3{font-size:clamp(1.45rem,2vw,1.8rem);margin-bottom:8px}
     #plan .plan-body>p{font-size:.88rem;line-height:1.5;margin-bottom:12px}
     #plan .plan-feats{margin-bottom:10px}
@@ -1059,7 +1053,7 @@
     #plan .pstat .val{font-size:clamp(1.35rem,1.7vw,1.85rem);margin-bottom:4px}
     #plan .pstat .lbl{font-size:.7rem}   /* min. 11 px — audyt 2026-07-29 */
     #plan .btn{padding:14px 32px;font-size:.8rem}
-    #plan .plan-hint{margin-top:8px;font-size:.66rem}
+    #plan .plan-hint{margin-top:8px;font-size:.7rem}   /* min. 11 px (było .66rem = 10,6 px) */
 
     /* tył karty — to on ustala wysokość, więc tnie się najmocniej */
     #plan .plan-back-grid{padding:26px 44px;gap:34px}
@@ -1097,10 +1091,13 @@
     padding:22px 0;cursor:pointer;list-style:none;font-family:'Montserrat',sans-serif;
     font-weight:700;font-size:1.02rem;color:#fff;line-height:1.4;transition:color .2s}
   .faq-item summary::-webkit-details-marker{display:none}
-  /* znak +/– po prawej — zmienia się w „–" po otwarciu pytania */
-  .faq-item summary::after{content:"+";flex:0 0 auto;font-weight:800;font-size:1.25rem;
-    color:var(--lime);line-height:1}
-  .faq-item[open] summary::after{content:"–"}
+  /* plusik z dwóch kresek po prawej — przy otwarciu obraca się płynnie w iks (Tomek 25.10, wzór details.so/accordion);
+     przy zwijaniu (klasa .zwija) wraca od razu, gdy odpowiedź dopiero się zamyka */
+  .faq-item summary::after{content:"";flex:0 0 auto;align-self:flex-start;width:14px;height:14px;margin-top:.3em;
+    background:linear-gradient(var(--lime),var(--lime)) center/100% 2px no-repeat,
+      linear-gradient(var(--lime),var(--lime)) center/2px 100% no-repeat;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+  .faq-item[open]:not(.zwija) summary::after{transform:rotate(45deg)}
   .faq-item summary:hover{color:var(--lime)}
   .faq-item p{color:var(--muted);font-size:.95rem;line-height:1.65;padding:0 34px 22px 0;max-width:640px}
   /* W76: „Kiedy przerwać trening" — akapity jak w FAQ, ale bez dolnego odstępu między nimi; punkty listy z limonkową
@@ -1511,7 +1508,7 @@
     /* cztery liczniki układają się 2×2, żeby liczby zostały czytelne */
     /* na telefonie WSZYSTKIE CZTERY w jednym poziomym pasku — dlatego zwarte odstępy i podpisy */
     /* na wąskiej karcie przycisk zakupu ma węższe marginesy, żeby napis został w jednej linii */
-    #planCta{padding-left:18px;padding-right:18px;letter-spacing:.08em}
+    #planCta,#plan .plan-back .btn-care{padding-left:18px;padding-right:18px;letter-spacing:.08em}   /* tył = ten sam przycisk co przód (25.10) */
     .plan-stats{grid-template-columns:repeat(4,1fr);gap:2px;margin:20px 0;padding:14px 0}
     .pstat .val{font-size:1.3rem;margin-bottom:5px}
     /* podpisy liczników: minimum 11 px (audyt 2026-07-29 — odbiorca 35–55 nie może mrużyć
@@ -1538,6 +1535,9 @@
     .nav-links{position:fixed;inset:0;background:rgba(7,9,8,.97);flex-direction:column;
       justify-content:center;gap:34px;display:none}
     .nav-links.open{display:flex}
+    /* rozmycie paska po przewinięciu robi z nagłówka ramkę dla menu (position:fixed) — menu miało 76 px wysokości i wisiało
+       bez tła; przy otwartym menu bez rozmycia */
+    header.scrolled:has(.nav-links.open){backdrop-filter:none;-webkit-backdrop-filter:none}
     .nav-links a{font-size:1.05rem}
     .burger{display:block}
   }
@@ -1577,6 +1577,11 @@
     .hero-content{align-self:stretch;display:flex;flex-direction:column}
     .hero p.lead{margin-top:12px}
     .hero-actions{align-items:center;margin:auto 0;padding-top:28px}
+    /* 25.10 (Tomek): tekst bliżej „Dołącz” — tekst i przycisk razem na środku ekranu, przerwa między nimi rośnie z wysokością
+       okna (28 px przy 640, do 56 px) zamiast całej wolnej przestrzeni. Telefon 3D liczy się od nadtytułu (dokujTelefon),
+       więc jedzie z tekstem. */
+    .hero-content{justify-content:center}
+    .hero-actions{margin:clamp(0px,calc((100svh - 640px) / 4),28px) 0 0}
     /* „Dlaczego": podpis „Przesuń, żeby zobaczyć więcej" wraca POD TELEFON, opis i kropki pod nim. Telefon jest tak
        duży, żeby nagłówek, telefon i podpis mieściły się razem w oknie pod paskiem (skrypt dlPrzelicz, przystanek „dlaczego").
        .wa-txt znika z układu (contents), jego dzieci stają w kolumnie siatki w kolejności z `order`. */
@@ -1585,9 +1590,7 @@
     #whyLayer .dl-podpis{order:1;margin-top:12px}
     #whyLayer .wa-teksty{order:2;margin-top:26px}
     #whyLayer .wa-ster{order:3}
-    /* plan: karta bierze wysokość WIDOCZNEJ ścianki. Dawniej obie ścianki leżały w jednej komórce siatki, więc przód
-       dostawał wysokość tyłu (1236 px przy 343) i między przyciskiem a notą zdrowotną była pusta dziura. Niewidoczna
-       ścianka leży teraz w absolute; po obróceniu karta rośnie do wysokości tyłu (strona przelicza przystanki). */
+    /* plan: wysokość karty ustala przód, tył mieści się w tej samej ramce (25.10, blok „KARTA PLANU” niżej). */
     /* przód karty + nota w jednym oknie: karta i nota szersze (16 px od brzegu ekranu zamiast 32 — tekst karty i tak stoi
        na linii nagłówka: 16 + 16), mniej łamań linii; zdjęcie niższe (wysokość ustawia skrypt planFoto), zwarte odstępy.
        Czcionki bez zmian (min. 11 px). Zdjęcie wystaje 60 px w górę i w dół: parallax 0,1 przesuwa je do ok. 50 px. */
@@ -1616,9 +1619,9 @@
   :root{--nag:77px;--ekran:calc(100vh - var(--nag))}
   @supports (height:100svh){:root{--ekran:calc(100svh - var(--nag))}}
   @media(min-width:981px){
-    .topblok .manifest,#plan,#faq,#zapis{min-height:var(--ekran);box-sizing:border-box;display:flex;flex-direction:column;
+    .topblok .manifest,#plan,#wideo,#faq,#zapis{min-height:var(--ekran);box-sizing:border-box;display:flex;flex-direction:column;
       justify-content:center;padding-top:32px;padding-bottom:32px}
-    .topblok .manifest > .wrap,#plan > .wrap,#faq > .wrap,#zapis > .wrap{width:100%}
+    .topblok .manifest > .wrap,#plan > .wrap,#wideo > .wrap,#faq > .wrap,#zapis > .wrap{width:100%}
     #zapis{min-height:calc(var(--ekran) - var(--stopka,0px))}
     main > .divider{height:var(--ekran);min-height:0}
     #faq .faq-list{margin-top:28px}
@@ -1632,13 +1635,83 @@
     footer .foot-grid{margin-bottom:28px}
   }
   @media(min-width:981px) and (max-height:760px){#plan .plan-body{padding-top:16px;padding-bottom:16px}}
-  /* karta planu bierze wysokość WIDOCZNEJ ścianki (dawniej tylko telefon, M1): niewidoczna leży poza układem, po obróceniu
-     karta rośnie do wysokości tyłu (przystanki się przeliczają) */
-  .plan-flip:not(.flipped) .plan-back,.plan-flip.flipped .plan-front{position:absolute;left:0;top:0;width:100%}
+  /* KARTA PLANU: przód i tył tej samej wysokości (polecenie Tomka 25.10). Wysokość ustala PRZÓD — zostaje w układzie także
+     po obróceniu (tylko niewidoczny), tył leży na nim w absolute, więc obrót nie zmienia wysokości karty ani sekcji i nie
+     przesuwa przystanków. Zrzuty apki biorą to, co zostaje pod listami (flex 1 1 0): przy dłuższych listach maleją zamiast
+     wypychać przycisk. Bez przewijania w środku karty: na telefonie łapało palec i strony nie dało się przewinąć po obróceniu. */
+  .plan-back{position:absolute;inset:0}
+  .plan-back-grid{overflow:hidden}
+  .plan-back-right{align-self:stretch;min-height:0;margin-top:0;gap:14px}
+  .plan-screens{flex:1 1 0;min-height:0;padding-top:18px}   /* 18 px: środkowy zrzut jest podniesiony o 16 px */
+  .plan-screens img{width:auto;height:100%;max-width:31%;object-fit:cover;object-position:top}
+  @media(min-width:981px){
+    #plan .plan-back-grid{padding:22px 44px}
+    #plan .plan-back .plan-tag{margin-bottom:10px}
+    #plan .plan-back h3{font-size:1.2rem;margin-bottom:6px}
+    #plan .plan-back .pb-h{margin-top:14px}
+    #plan .plan-back .plan-feats li{padding:4px 0;font-size:.84rem;line-height:1.4}
+  }
+  @media(max-width:767px){
+    /* jedna kolumna: listy, pod nimi zrzuty w resztce miejsca, a przycisk i podpis na dole karty — w tym samym miejscu co na
+       przodzie (zrzuty przy małym miejscu znikają, patrz @container niżej) */
+    #plan .plan-back-grid{grid-template-rows:auto minmax(0,1fr);gap:10px;padding:12px 16px 10px}
+    #plan .plan-back .plan-tag{margin-bottom:6px;padding:3px 12px}
+    #plan .plan-back h3{font-size:1.02rem;margin-bottom:2px}
+    #plan .plan-back .pb-h{margin-top:8px}
+    #plan .plan-back .plan-feats li{padding:2px 0;font-size:.72rem;line-height:1.3}
+    /* sprzęt jednym akapitem z kropkami zamiast listy — 5 wierszy zamiast 9 (treść bez zmian, TRESC:sprzet-poczatek) */
+    #plan .plan-back .plan-sprzet{font-size:.72rem;line-height:1.35;color:#CFD8D2}
+    #plan .plan-back .plan-sprzet li{display:inline;padding:0;border:0}
+    #plan .plan-back .plan-sprzet li::before{content:none}
+    #plan .plan-back .plan-sprzet li + li::before{content:"· ";color:var(--lime)}
+    #plan .plan-back-right{gap:6px}
+    #plan .plan-back .plan-hint{margin-top:-4px}   /* 6 − 4 = 2 px pod przyciskiem i 10 px dołu karty — jak na przodzie (25.10) */
+    #plan .plan-screens{padding-top:14px;order:-1}
+  }
+  @media(min-width:768px) and (max-width:980px){
+    /* tablet: listy tyłu obok siebie (dostajesz | potrzebujesz) — jedna pod drugą zabierały zrzutom apki całe miejsce
+       w ramce przodu i zrzuty znikały (25.10) */
+    #plan .plan-back-grid{grid-template-rows:auto minmax(0,1fr);gap:24px;padding:28px 24px 48px}
+    #plan .plan-back .plan-hint{margin-top:-4px}   /* odstępy pod „Kup plan” jak na przodzie: 10 px do podpisu, 49 px do dołu karty */
+    #plan .plan-screens{order:-1}   /* zrzuty nad przyciskiem — „Kup plan” na dole karty, jak na przodzie */
+    #plan .plan-back-grid > div:first-child{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;align-content:start}
+    #plan .plan-back .plan-tag{grid-column:1 / -1;justify-self:start}
+    #plan .plan-back h3:not(.pb-h){grid-column:1;grid-row:2}
+    #plan .plan-back .plan-feats:not(.plan-sprzet){grid-column:1;grid-row:3;margin-bottom:0}
+    #plan .plan-back .pb-h{grid-column:2;grid-row:2;margin-top:0}
+    #plan .plan-back .plan-sprzet{grid-column:2;grid-row:3;margin-bottom:0}
+    #plan .plan-back .plan-feats li{padding:6px 0;line-height:1.4}
+  }
+  /* niski telefon (375×667, 288×640): tył bez ramki „od środka”; najwęższy (288): listy łamią się na tyle wierszy, że tył
+     traci zrzuty i podpis „Kliknij — wróć” (cała karta i tak obraca się dotknięciem), a „Kup plan” zostaje */
+  /* wyższy telefon bez zrzutów (343×740): większe listy zamiast pustego pola nad „Kup plan” */
+  @media(max-width:767px) and (min-height:720px) and (max-height:799px){
+    #plan .plan-back .plan-feats li{padding:3px 0;font-size:.76rem}
+    #plan .plan-back .plan-sprzet{font-size:.76rem;line-height:1.4}
+    #plan .plan-back .pb-h{margin-top:10px}
+  }
+  @media(max-width:767px) and (max-height:700px){
+    #plan .plan-back .plan-tag{display:none}
+    #plan .plan-back-grid{gap:6px;padding:10px 16px}
+  }
+  @media(max-width:320px){
+    #plan .plan-back .plan-screens{display:none}
+    /* „Kup plan” 29 px od dołu karty — tam, gdzie na przodzie (przód ma pod nim podpis, tył już nie) */
+    #plan .plan-back-grid{gap:4px;padding:4px 12px 28px}   /* boki 12 px: „Każde z ponad 50 ćwiczeń…” w 2 linijkach, inaczej lista wchodzi pod „Kup plan” (25.10) */
+    #plan .plan-back-right{gap:2px;justify-content:flex-end}
+    #plan .plan-back .plan-hint{display:none}   /* nie mieścił się (ucięty dołem karty), a przesuwał „Kup plan” względem przodu */
+    #plan .plan-back h3{font-size:.9rem}
+    #plan .plan-back .pb-h{margin-top:4px}
+    #plan .plan-back .plan-feats li{padding:1px 0;line-height:1.18}
+    #plan .plan-back .plan-sprzet{line-height:1.24}
+  }
+  /* zrzuty niższe niż 100 px to okruchy — wtedy znikają (zostają listy i przycisk) */
+  .plan-screens{container-type:size}
+  @container (max-height:100px){.plan-screens img{display:none}}
   @media(max-width:980px){
-    .topblok .manifest,#whyLayer,#dlaczego .how,#plan,#aboutLayer,#hasloRegularnie,#faq,#zapis,footer{min-height:var(--ekran);
+    .topblok .manifest,#whyLayer,#dlaczego .how,#plan,#aboutLayer,#hasloRegularnie,#wideo,#faq,#zapis,footer{min-height:var(--ekran);
       box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-top:20px;padding-bottom:20px}
-    .topblok .manifest > .wrap,#whyLayer > .wrap,#dlaczego .how > .wrap,#plan > .wrap,#aboutLayer > .wrap,#faq > .wrap,
+    .topblok .manifest > .wrap,#whyLayer > .wrap,#dlaczego .how > .wrap,#plan > .wrap,#aboutLayer > .wrap,#wideo > .wrap,#faq > .wrap,
       #zapis > .wrap,footer > .wrap{width:100%}
     main > .divider,#hasloRegularnie{height:var(--ekran);min-height:0}
     /* manifest: akapit nad pasem, na który spadają talerze (podłoga liczona od akapitu, talerzeHero) */
@@ -1653,6 +1726,8 @@
     #whyLayer .dl-scena{margin-top:0}
     /* minmax(0,…): najdłuższe słowo niewidocznego opisu („anglojęzycznych”) rozpychało kolumnę poza ekran */
     #whyLayer .wa-teksty{margin-top:0;grid-template-columns:minmax(0,1fr)}
+    /* &shy; w „anglo-języcznych”: wąska kolumna łamie z dywizem w miejscu sylaby, nie w środku słowa (hyphens:auto
+       nie zna polskiego w każdej przeglądarce) */
     #whyLayer .wa-teksty h3{hyphens:auto;overflow-wrap:break-word}
     #whyLayer .wa-teksty h3{font-size:1.02rem;margin-bottom:8px}
     #whyLayer .wa-teksty p{font-size:.9rem;line-height:1.5}
@@ -1662,11 +1737,11 @@
   }
   .jk-kropki{display:none}
   /* krótka nota pod kartą planu: odnośnik do pełnej noty w FAQ, pole dotyku rośnie w pionie */
-  .zdrowie-nota a{color:var(--lime);text-decoration:underline;text-underline-offset:2px;display:inline-block;padding:12px 0;margin:-12px 0}
+  .zdrowie-nota a{color:var(--lime);text-decoration:underline;text-underline-offset:2px;display:inline-block;padding:14px 0;margin:-14px 0}
   @media(max-width:767px){
     /* „Jak to działa”: kroki 1-2-3 w karuzeli przesuwanej palcem w bok (decyzja Tomka 23.10). Kadr animacji tak duży,
-       żeby nagłówek, krok i kropki zmieściły się w ekranie: --jk-reszta = sekcja bez kadru (skrypt jkKropki), 24/29 = najwyższa
-       scena, 16 px = obramowanie kadru. */
+       żeby nagłówek, krok i kropki zmieściły się w ekranie: --jk-reszta = sekcja bez kadru (skrypt jkKropki), 24/29 = pudełko
+       każdej sceny, 16 px = obramowanie kadru. */
     #dlaczego .how .how-grid{gap:10px}
     #dlaczego .how .sec-label{margin-bottom:12px}
     #dlaczego .how .sec-title{font-size:1.45rem;margin-bottom:6px}
@@ -1681,6 +1756,13 @@
     #dlaczego .how .stp h3{font-size:1.1rem;margin-bottom:4px}
     #dlaczego .how .stp p{font-size:.9rem;line-height:1.45}
     #dlaczego .how .stp .jk-pop{margin:10px auto 0;width:100%;max-width:calc((var(--ekran) - var(--jk-reszta,360px) - 16px) * 24 / 29 + 16px)}
+    /* wszystkie trzy kadry w tym samym pudełku 24/29 (proporcje najwyższej sceny 02, Tomek 25.10); niższe sceny 01 i 03
+       przesunięte w dół o połowę różnicy — treść na środku. translate nie gryzie się z animacjami transform. Tylko telefon —
+       na tablecie (768–980) kroki stoją jeden pod drugim i wyższe pudełko wypychało krok poza ekran */
+    #dlaczego .how .jk-scene{aspect-ratio:24/29}
+    #dlaczego .how .jk-s1>*{translate:0 3em}
+    #dlaczego .how .jk-s3>*{translate:0 1.5em}
+    #dlaczego .how .jk-s3 .jk-ch{bottom:4em}   /* 4em = 1em marginesu + 3em wyższego pudełka */
     .jk-kropki{display:flex;align-items:center;justify-content:center;gap:10px}
     .jk-kropki i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);transition:.25s}
     .jk-kropki i.on{background:var(--lime);transform:scale(1.25)}
@@ -1694,18 +1776,55 @@
     #plan .plan-front .plan-feats{display:none}
     #plan .plan-front .plan-body>p{font-size:.88rem;line-height:1.4}
   }
+  .om-wiecej{display:none}
+  @media(min-width:981px){
+    /* „O mnie” na komputerze: całość ciaśniej, żeby etykieta „04 — O mnie” nie uciekała pod pasek przy niskim oknie (Tomek 25.10) */
+    #aboutLayer .about-grid{gap:64px}
+    #aboutPhoto .frame{max-width:min(100%,calc(100vh - 190px));margin:0 auto}
+    #aboutText .sec-label{margin-bottom:14px}
+    #aboutText .sec-title{font-size:clamp(1.9rem,3.3vw,2.7rem);margin-bottom:14px}
+    #aboutText p{margin-bottom:12px}
+    #aboutLayer .roles{margin:18px 0 12px}
+    #aboutLayer .role-detail{min-height:44px;margin-bottom:16px;padding:10px 18px}
+  }
+  @media(min-width:981px) and (max-height:760px){
+    #aboutText p{font-size:.93rem;line-height:1.55;margin-bottom:10px}
+    #aboutLayer .roles{margin:14px 0 10px}
+    #aboutLayer .role{padding:9px 18px}
+    #aboutLayer .role-detail{margin-bottom:12px}
+  }
+  @media(min-width:981px) and (max-height:690px){
+    /* laptop z niskim oknem (1366×641–685, 1280×600–639 po odjęciu pasków przeglądarki i systemu). Dół z zapasem ≥ 30 px:
+       dopisek .rv przed wjazdem stoi 46 px niżej i przy mniejszym zapasie nie wjeżdżał (był pod dołem okna) */
+    #aboutText .sec-label{margin-bottom:10px}
+    #aboutText .sec-title{font-size:clamp(1.6rem,2.4vw,2rem);margin-bottom:10px}
+    #aboutText p{font-size:.88rem;line-height:1.45;margin-bottom:6px}
+    #aboutLayer .roles{margin:8px 0 6px}
+    #aboutLayer .role-detail{min-height:36px;margin-bottom:8px;padding:6px 18px}
+    #aboutLayer .btn-care{padding-top:10px;padding-bottom:10px}
+  }
   @media(max-width:767px){
-    /* „O mnie”: zdjęcie małe obok nagłówka, tekst pod spodem — sekcja na jednym ekranie (23.10). Na telefonie kurtyny nie ma,
-       więc #aboutText może zniknąć z układu (contents): jego dzieci stają w siatce obok i pod zdjęciem. */
-    #aboutLayer .about-grid{grid-template-columns:34% 1fr;gap:0 16px;align-items:center}
-    #aboutText{display:contents}
-    #aboutPhoto{grid-column:1;grid-row:1 / span 2}
-    #aboutText > *{grid-column:1 / -1}
-    #aboutText > .sec-label{grid-column:2;grid-row:1;align-self:end;margin-bottom:6px}
-    #aboutText > .sec-title{grid-column:2;grid-row:2;align-self:start;font-size:1.45rem;margin-bottom:0}
-    #aboutText > p{font-size:.85rem;line-height:1.45;margin-bottom:7px;max-width:none}
-    #aboutText > p:first-of-type{margin-top:10px}
-    #aboutLayer .roles{margin:4px 0 6px;gap:6px}
+    /* „O mnie” na telefonie: duże zdjęcie na całą szerokość nad tekstem (powrót sprzed 23.10, Tomek 25.10). Zdjęcie bierze
+       miejsce, które zostaje na ekranie po tekście (flex), najwyżej kwadrat; opis zwinięty do początku 1. akapitu, „Czytaj dalej”
+       rozwija resztę — wtedy sekcja rośnie, a zdjęcie zostaje zamrożone na swojej wysokości (skrypt przy #aboutMore). */
+    #aboutLayer > .wrap{flex:1 1 auto;display:flex;flex-direction:column}
+    #aboutLayer .about-grid{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:16px}
+    #aboutPhoto{flex:1 1 0;min-height:120px;max-height:calc(100vw - 64px)}
+    #aboutPhoto .frame{height:100%}
+    #aboutPhoto .frame img{height:100%;object-fit:cover;object-position:50% 30%}
+    #aboutText .sec-label{margin-bottom:8px}
+    #aboutText .sec-title{font-size:1.45rem;margin-bottom:10px}
+    #aboutText p{font-size:.85rem;line-height:1.45;margin-bottom:7px;max-width:none}
+    .om-opis{overflow:hidden;max-height:calc(3 * 1.45 * .85rem);transition:max-height .45s ease;
+      -webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
+    .om-opis.otwarty{-webkit-mask-image:none;mask-image:none}
+    /* zwinięty opis ucina akapity, więc obserwator .rv (próg 15%) by ich nie pokazał — tu bez wjazdu, widać je od razu */
+    #aboutOpis p{opacity:1;transform:none}
+    /* pole dotyku 44 px, w układzie zajmuje ok. 24 px (ujemne marginesy jak w odnośniku noty pod planem); z-index — górny
+       pas przycisku leży na wygaszonym końcu opisu i to on ma łapać dotyk */
+    .om-wiecej{position:relative;z-index:1;display:inline-flex;align-items:center;min-height:44px;margin:-10px 0 -10px;padding:0;border:0;background:none;
+      font:inherit;font-size:.85rem;font-weight:600;color:var(--lime);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+    #aboutLayer .roles{margin:10px 0 6px;gap:6px}
     #aboutLayer .role{padding:7px 12px;font-size:.69rem;letter-spacing:.08em}
     #aboutLayer .role-detail{min-height:36px;margin-bottom:8px;padding:6px 12px;font-size:.8rem}
     #aboutLayer .btn-care{padding-top:8px;padding-bottom:8px}
@@ -1725,22 +1844,34 @@
     footer .foot-logo{height:56px}
     footer .foot-rejestr{margin-bottom:14px}
   }
-  /* niski ekran telefonu (iPhone SE, 288 × 640): karta bez zdjęcia — inaczej plan nie mieści się na ekranie */
+  /* niski ekran telefonu (iPhone SE, 288 × 640): ciaśniej, żeby sekcje mieściły się na ekranie. Karta planu ma tu znów
+     zdjęcie (25.10): bez „Wypróbuj za darmo” zostaje na nie miejsce, a wyższa karta mieści tył z listami (planFoto). */
   @media(max-width:767px) and (max-height:700px){
-    #plan .plan-front .plan-visual{display:none}
-    #aboutText > p{font-size:.82rem;line-height:1.4;margin-bottom:5px}
     #aboutLayer .role-detail{min-height:30px;padding:4px 12px}
+    /* hero: mniejszy dolny margines — treść (już pełna wysokość) schodzi niżej, wolne miejsce nad nadtytułem i pod „Dołącz”
+       wyrównane (288×640: było 16 / 55 px) */
+    .hero{padding-bottom:20px}
+    /* „Czytaj dalej” nie przyklejone do przycisku opieki (375×667: 6 px) */
+    .om-wiecej{margin-bottom:0}
+    /* „O mnie” na niskim telefonie (375×667, 288×640): role (Trener / Fizjoterapeuta / Dietetyk) chowają się w części
+       rozwijanej — bez tego zdjęcie było tylko paskiem ok. 150 px. Przycisk opieki i dopisek zostają widoczne. */
+    .om-opis:not(.otwarty) ~ .roles,.om-opis:not(.otwarty) ~ .role-detail{display:none}
+    #aboutLayer .roles{opacity:1;transform:none}
     #zapis h2{font-size:1.25rem}
     #zapis .zapis-korzysci li{font-size:.78rem;line-height:1.4}
     #zapis .nl-grid > div > p{font-size:.85rem}
     #zapis .zapis-zgoda{font-size:.7rem;line-height:1.4}
     #zapis .zapis button{margin-top:8px}
   }
+  @media(max-width:360px) and (max-height:700px){
+    /* 288 × 640: dopisek w 3 wierszach — zdjęcie może być niższe, żeby „O mnie” zmieściło się na ekranie */
+    #aboutPhoto{min-height:88px}
+  }
   @media(max-width:360px){
     #plan .sec-label{margin-bottom:6px}
     #plan .sec-title{font-size:1.2rem;margin-bottom:8px}
     #plan .plan-slider{margin-top:8px}
-    #plan .btn-care{padding-top:7px;padding-bottom:7px}
+    #plan .btn-care{padding-top:8px;padding-bottom:8px}   /* 8 px: przycisk 44,7 px (zasada: pole dotyku ≥ 44 px) */
     #plan .zdrowie-nota{margin-top:8px;line-height:1.5}
     #dlaczego .how .sec-title{font-size:1.25rem}
     #dlaczego .how .why-content,#dlaczego .how > .wrap{padding-left:20px;padding-right:20px}
@@ -1751,6 +1882,36 @@
     #whyLayer .wa-teksty p{font-size:.84rem}
     #whyLayer .why-content{padding-left:20px;padding-right:20px}
     #whyLayer .dl-podpis{display:none}   /* kropki wystarczą; na 288 px podpis wypychał sekcję poza ekran */
+  }
+  /* „Dlaczego” na wyższym telefonie (343×740, 390×844): mniej pustki nad i pod treścią (Tomek 25.10) — szersza kolumna
+     telefonu (dlPrzelicz powiększa go do szerokości kolumny), większy tytuł, opis i odstępy. Stoi PO bloku ≤360 px, bo
+     343×740 ma miejsce w pionie; niskie telefony (375×667, 288×640) bez zmian. Tytuł 1,6rem: „JEDEN SPÓJNY PLAN.” w 1 wierszu przy 343. */
+  @media(max-width:767px) and (min-height:720px){
+    #whyLayer .why-head .sec-label{margin-bottom:16px}
+    #whyLayer .sec-title{font-size:1.6rem}
+    #whyLayer .wa-grid{grid-template-columns:50% 1fr;column-gap:14px;margin-top:32px}
+    #whyLayer .wa-teksty h3{font-size:1.1rem;margin-bottom:10px}
+    #whyLayer .wa-teksty p{font-size:.95rem;line-height:1.55}
+    #whyLayer .wa-ster{margin-top:20px}
+    #whyLayer .dl-podpis{display:block;margin-top:14px}
+  }
+  @media(min-width:380px) and (max-width:767px) and (min-height:800px){
+    #whyLayer .sec-title{font-size:1.75rem}
+    #whyLayer .wa-grid{margin-top:40px}
+    #whyLayer .wa-teksty h3{font-size:1.2rem}
+    #whyLayer .wa-teksty p{font-size:1.04rem}
+    #whyLayer .wa-ster{margin-top:24px}
+  }
+  /* niski telefon (375×667, 288×640): też mniej pustki — większe odstępy i podpis „Przesuń…” z powrotem; przy 375 szersza
+     kolumna telefonu (przy 288 kolumna opisu byłaby za wąska) */
+  @media(max-width:767px) and (max-height:719px){
+    #whyLayer .why-head .sec-label{margin-bottom:16px}
+    #whyLayer .wa-grid{margin-top:28px}
+    #whyLayer .wa-ster{margin-top:18px}
+    #whyLayer .dl-podpis{display:block;margin-top:12px}
+  }
+  @media(min-width:361px) and (max-width:767px) and (max-height:719px){
+    #whyLayer .wa-grid{grid-template-columns:50% 1fr;column-gap:14px;margin-top:32px}
   }
 </style>
 
@@ -1766,7 +1927,7 @@
     { "@type": "WebSite", "@id": "https://fitonlinecoach.com/#website", "url": "https://fitonlinecoach.com/", "name": "FitOnlineCoach", "inLanguage": "pl-PL", "publisher": { "@id": "https://fitonlinecoach.com/#org" } },
     { "@type": "Organization", "@id": "https://fitonlinecoach.com/#org", "name": "FitOnlineCoach", "legalName": "FitOnlineCoach prosta spółka akcyjna", "url": "https://fitonlinecoach.com/", "logo": "https://fitonlinecoach.com/assets/icon_512.png", "image": "https://fitonlinecoach.com/assets/og-image.jpg", "email": "kontakt@fitonlinecoach.com", "telephone": "+48662255215", "vatID": "PL9542914095", "taxID": "9542914095", "address": { "@type": "PostalAddress", "streetAddress": "ul. Żyzna 2", "postalCode": "40-314", "addressLocality": "Katowice", "addressCountry": "PL" }, "identifier": [{ "@type": "PropertyValue", "propertyID": "KRS", "value": "0001262434" }, { "@type": "PropertyValue", "propertyID": "REGON", "value": "545549296" }], "founder": { "@id": "https://fitonlinecoach.com/#tomek" }, "sameAs": ["https://www.youtube.com/@FitOnlineCoach", "https://instagram.com/tomek.wiesner"] },
     { "@type": "Person", "@id": "https://fitonlinecoach.com/#tomek", "name": "Tomasz Wiesner", "jobTitle": "Trener personalny, fizjoterapeuta i dietetyk", "worksFor": { "@id": "https://fitonlinecoach.com/#org" }, "sameAs": ["https://www.linkedin.com/in/tomek-wiesner-70537333a/"] },
-    { "@type": "Product", "name": "Plan treningowy „Początek”", "description": "4 tygodnie treningu, 3 dni w tygodniu, 12 treningów, 50 ćwiczeń z poradnikiem wideo. Dla osób zaczynających lub wracających do treningu.", "brand": { "@id": "https://fitonlinecoach.com/#org" }, "image": "https://fitonlinecoach.com/assets/plan_poczatek_karta.jpg", "offers": { "@type": "Offer", "price": "79.00", "priceCurrency": "PLN", "availability": "https://schema.org/InStock", "url": "https://app.fitonlinecoach.com/plany/poczatek" } }
+    { "@type": "Product", "name": "Plan treningowy „Początek”", "description": "4 tygodnie treningu, 3 dni w tygodniu, 12 treningów, ponad 50 ćwiczeń z poradnikiem wideo. Dla osób zaczynających lub wracających do treningu.", "brand": { "@id": "https://fitonlinecoach.com/#org" }, "image": "https://fitonlinecoach.com/assets/plan_poczatek_karta.jpg", "offers": { "@type": "Offer", "price": "79.00", "priceCurrency": "PLN", "availability": "https://schema.org/InStock", "url": "https://app.fitonlinecoach.com/plany/poczatek" } }
   ]
 }
 </script>
@@ -1976,7 +2137,7 @@
               <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania, a dobra technika zmniejsza ryzyko kontuzji.</p>
             </div>
             <div class="dl-tresc">
-              <h3>Masz dość anglojęzycznych tutoriali?</h3>
+              <h3>Masz dość anglo&shy;języcznych tutoriali?</h3>
               <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
             </div>
             <div class="dl-tresc">
@@ -2054,7 +2215,7 @@
                       <div class="jk-brw">
                         <div class="jk-st">9:41</div>
                         <img loading="lazy" decoding="async" class="jk-lg" src="assets/logo-320.webp" alt="">
-                        <img loading="lazy" decoding="async" class="jk-hi" src="assets/jak/plan.webp" alt="">
+                        <img loading="lazy" decoding="async" class="jk-hi" src="assets/jak/deska-bokiem.webp" alt="">
                         <h4>Trening, który <em>rozumiesz</em></h4>
                         <div class="jk-su">Plany treningowe z poradnikiem wideo do każdego ćwiczenia.</div>
                         <div class="jk-bt">Kup plan</div>
@@ -2126,8 +2287,8 @@
                     <span>Poradnik po polsku</span>
                   </div>
                   <div class="jk-vid">
-                    <img loading="lazy" decoding="async" src="assets/jak/pompki-podwyzszenie.webp" alt="" width="720" height="320">
-                    <video muted playsinline preload="none" data-src="assets/jak/pompki-podwyzszenie.mp4"></video>
+                    <img loading="lazy" decoding="async" src="assets/jak/pompki-skrzynia.webp" alt="" width="720" height="320">
+                    <video muted playsinline preload="none" data-src="assets/jak/pompki-skrzynia.mp4"></video>
                     <span class="jk-tag"><b></b>Poradnik wideo</span>
                     <i class="jk-vbar"></i>
                   </div>
@@ -2172,8 +2333,7 @@
             <div class="plan-body">
               <span class="plan-tag" id="planTag">Dla początkujących</span>
               <h3 id="planTitle">Początek</h3>
-              <p id="planDesc">Plan dla osób, które chcą wystartować z treningiem — spokojnie, bezpiecznie
-                i ze zrozumieniem tego, co robią.</p>
+              <p id="planDesc">Cztery tygodnie prostych, konkretnych treningów angażujących całe ciało.</p>
               <ul class="plan-feats" id="planFeats">
                 <li>Poradnik wideo do każdego ćwiczenia</li>
                 <li>Wszystko po polsku, krok po kroku</li>
@@ -2185,10 +2345,10 @@
                 <!-- „treningi", nie „treningów" — dłuższa forma nie mieści się na 288 px (audyt W7);
                      „ćwiczeń" zamiast anglicyzmu „video" (audyt W5) -->
                 <div class="pstat"><span class="val" id="statWorkouts" data-odo="12"></span><span class="lbl" id="lblWorkouts"><span class="lbl-pelny">treningi</span><span class="lbl-krotki">tr</span></span></div>
-                <div class="pstat"><span class="val" id="statExercises" data-odo="50"></span><span class="lbl" id="lblExercises"><span class="lbl-pelny">ćwiczeń</span><span class="lbl-krotki">ćw</span></span></div>
+                <div class="pstat"><span class="val" id="statExercises" data-odo="50" data-suffix="+"></span><span class="lbl" id="lblExercises"><span class="lbl-pelny">ćwiczeń</span><span class="lbl-krotki">ćw</span></span></div>
                 <div class="pstat"><span class="val" id="statMinutes" data-odo="700"></span><span class="lbl" id="lblMinutes"><span class="lbl-pelny">minut</span><span class="lbl-krotki">min</span></span></div>
               </div>
-              <div class="price-row z-trialem">
+              <div class="price-row na-srodku">
                 <!-- Ten sam układ co przycisk opieki indywidualnej: górny wiersz akcja,
                      dolny cena. Link prowadzi do kasy w aplikacji (`?kup=1` otwiera zakup od
                      razu; bez konta apka przekierowuje na /start i wraca). Znacznik MUSI zostać
@@ -2196,14 +2356,6 @@
                 <a class="btn btn-lime btn-join btn-care" id="planCta" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">
                   <span class="bj-main" id="planCtaGlowny">Kup plan</span>
                   <span class="bj-sub" id="planCtaCena">79 zł — jednorazowo</span>
-                </a>
-                <!-- Z-E7: bezpłatny tydzień. `?trial=1` — apka po rejestracji/logowaniu sama uruchamia
-                     tydzień za darmo (fitonlinecoach-app src/app/plany/[id]/page.tsx, startTrial). Napis
-                     max ~22 znaki, jedna linia; adres przelicza też setPlan z `url` planu.
-                     Decyzja Tomka 2.10, W74: wariant B — „7 dni · bez karty" drugim wierszem w przycisku. -->
-                <a class="btn btn-join btn-care btn-trial" id="planTrial" href="https://app.fitonlinecoach.com/plany/poczatek?trial=1" target="_blank" rel="noopener">
-                  <span class="bj-main">Wypróbuj za darmo</span>
-                  <span class="bj-sub">7 dni · bez karty</span>
                 </a>
               </div>
               <span class="plan-hint">Kliknij — szczegóły planu →</span>
@@ -2219,7 +2371,7 @@
               <h3>Co dostajesz?</h3>
               <ul class="plan-feats">
                 <li>4 tygodnie treningu — 3 dni w tygodniu (pełne ciało)</li>
-                <li>Każde z 50 ćwiczeń ma wideo pokazowe i instruktaż techniki</li>
+                <li>Każde z ponad 50 ćwiczeń ma wideo pokazowe i instruktaż techniki</li>
                 <li>Kalendarz treningów dopasowany do Twojego tygodnia</li>
                 <li>Zapis wyników i sugerowane obciążenia</li>
               </ul>
@@ -2249,15 +2401,11 @@
                 <img src="assets/screen_trening.jpg" alt="Ekran aplikacji: dzisiejszy trening" loading="lazy" decoding="async">
                 <img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async">
               </div>
-              <div class="price-row z-trialem">
+              <div class="price-row na-srodku">
                 <!-- rewers karty — ten sam dwuwierszowy układ co na przodzie i przy opiece -->
                 <a class="btn btn-lime btn-join btn-care" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">
                   <span class="bj-main">Kup plan</span>
                   <span class="bj-sub">79 zł — jednorazowo</span>
-                </a>
-                <a class="btn btn-join btn-care btn-trial" href="https://app.fitonlinecoach.com/plany/poczatek?trial=1" target="_blank" rel="noopener">
-                  <span class="bj-main">Wypróbuj za darmo</span>
-                  <span class="bj-sub">7 dni · bez karty</span>
                 </a>
               </div>
               <span class="plan-hint">Kliknij — wróć do planu →</span>
@@ -2310,6 +2458,8 @@
           <div id="aboutText">
             <div class="sec-label rv">04 — O mnie</div>
             <h2 class="sec-title rv rv2">Cześć,<br>jestem Tomek.</h2>
+            <!-- opis: na telefonie zwinięty do początku 1. akapitu, „Czytaj dalej” rozwija resztę (Tomek 25.10) -->
+            <div class="om-opis" id="aboutOpis">
             <p class="rv rv3">Jako trener personalny, fizjoterapeuta i dietetyk patrzę na Twój trening
               z trzech stron naraz — dzięki temu plan jest skuteczny, bezpieczny i możliwy do pogodzenia
               z normalnym życiem.</p>
@@ -2317,6 +2467,8 @@
               dlatego masz pewność, że moje plany treningowe to coś więcej niż Ctrl+C / Ctrl+V.</p>
             <p class="rv rv3">Wierzę w złoty środek — mądry ruch, proste zasady odżywiania
               i systematyczność, którą utrzymasz latami.</p>
+            </div>
+            <button class="om-wiecej" id="aboutMore" type="button" aria-expanded="false" aria-controls="aboutOpis">Czytaj dalej</button>
             <div class="roles rv rv4" id="roles">
               <button class="role" type="button" aria-pressed="false" data-detail="Szkolenia EXOS, EPI – NCSC, IFBB i inne"><span>Trener personalny</span></button>
               <button class="role" type="button" aria-pressed="false" data-detail="mgr fizjoterapii — AWF Katowice"><span>Fizjoterapeuta</span></button>
@@ -2432,10 +2584,9 @@
       <details class="faq-item">
         <!-- najdroższy produkt był na stronie tylko ceną — obiekcja „za co tyle?" (audyt 3.09) -->
         <summary><span>Czym różni się opieka indywidualna od gotowego planu?</span></summary>
-        <p>Gotowy plan kupujesz raz i realizujesz samodzielnie w aplikacji — bez czatu z&nbsp;trenerem. Pytania o&nbsp;działanie aplikacji i&nbsp;płatności wyślij na kontakt@fitonlinecoach.com. W opiece
-          indywidualnej plan powstaje po wywiadzie zdrowotnym i treningowym specjalnie pod
-          Ciebie, a w trakcie masz stały kontakt z trenerem na czacie i zmiany planu, gdy
-          czegoś potrzebujesz. Zapisy na opiekę ruszą wkrótce — o starcie napiszemy w newsletterze.</p>
+        <p>Gotowy plan kupujesz raz i realizujesz samodzielnie w aplikacji. W opiece indywidualnej plan powstaje
+          po wywiadzie zdrowotnym i treningowym, specjalnie dla Ciebie, a w trakcie masz stały kontakt z trenerem
+          na czacie i zmiany planu, gdy czegoś potrzebujesz.</p>
       </details>
       <details class="faq-item">
         <summary><span>Jaki sprzęt jest potrzebny?</span></summary>
@@ -2448,58 +2599,34 @@
              Poprzednia wersja wymieniała „mata, gumy, sztanga, kettle, hantle i drążek"
              i była nieprawdziwa: brakowało m.in. DWÓCH jednakowych kettli, sprzętu cardio,
              skrzyni i piłki lekarskiej, a „mata" w planie w ogóle nie występuje. -->
-        <p>To zależy od planu. Plan „Początek" robisz na siłowni — pełną listę sprzętu
-          widzisz na karcie planu i w aplikacji, zanim kupisz. Plany do wykonania w domu,
-          praktycznie bez sprzętu, są w przygotowaniu.</p>
+        <p>To zależy od planu. Pełną listę sprzętu widzisz na karcie planu i w aplikacji, zanim kupisz.</p>
       </details>
       <details class="faq-item">
         <summary><span>Jak długo mam dostęp do planu?</span></summary>
         <p>Bezterminowo — płacisz raz, a plan zostaje z Tobą. Chcesz przejść go drugi raz?
           Restart masz za darmo.</p>
       </details>
-      <details class="faq-item">
-        <summary><span>Czy mogę zwrócić plan po zakupie?</span></summary>
-        <!-- 2026-10-07 (decyzja Tomka D14): do opinii prawnika (czy Plan to treść cyfrowa i czy czat w cenie nie robi
-             z zakupu umowy mieszanej) każdy kupujący Plan ma 14 dni na odstąpienie — tak samo §4 regulaminu i mail po
-             zakupie („Mimo tej zgody… zachowujesz”). Pierwsze zdanie dosłownie ze specyfikacji. Po pozytywnej opinii
-             wraca wersja z utratą prawa po dostarczeniu (F43, commit 2148e35) — razem ze zmianą §4 i przełącznika
-             PLAN_TRESC_CYFROWA_POTWIERDZONA w apce (src/lib/warunki-maila.ts). -->
-        <p>Tak. Do odwołania każdy kupujący Plan ma 14 dni na odstąpienie od umowy z pełnym zwrotem — także
-          po rozpoczęciu treningów. 14 dni liczysz od dnia opłacenia planu. Przed płatnością zaznaczasz zgodę
-          na dostarczenie planu od razu — mimo tej zgody te 14 dni zachowujesz, co potwierdzamy też w mailu
-          po zakupie. Wystarczy, że napiszesz na kontakt@fitonlinecoach.com (wzór formularza jest
-          w regulaminie, ale nie musisz z niego korzystać). Dostęp do kupionego planu nie wygasa po czasie,
-          więc nic Cię nie goni.</p>
-      </details>
       <details class="faq-item" id="faq-zdrowie">
         <summary><span>Mam kontuzję albo problemy zdrowotne — czy mogę trenować?</span></summary>
-        <!-- 2026-10-04 (przegląd prawny, F71): ta sama nota co pod kartą planu (P05) — łagodniejsze „dobrze skonsultować
-             się ze specjalistą" przeczyło nocie i §6 regulaminu. Osobny znacznik „-faq", bo synchronizuj-tresci.py
-             podmienia tylko PIERWSZE wystąpienie znacznika; dopóki nie ma go w CELE skryptu, zmieniaj ręcznie razem
-             z notą. Zdanie o badaniach zostaje (decyzja Tomka z 29.07.2026). -->
-        <p><!--TRESC:nota-zdrowotna-faq-->Przed pierwszym treningiem porozmawiaj z lekarzem, jeśli chorujesz na serce, masz nadciśnienie, cukrzycę leczoną insuliną lub lekami obniżającymi cukier albo świeży uraz — a także w ciąży i do roku po porodzie. Przy innych chorobach przewlekłych, kontuzjach i po długiej przerwie od ruchu skonsultuj się z lekarzem lub fizjoterapeutą. Jeśli lekarz odradza wysiłek, nie zaczynaj.<!--/TRESC--> Regularne badania to część zdrowego trybu życia.</p>
+        <!-- 25.10 (decyzja Tomka): na stronie WŁASNY tekst Tomka (2 poprawki: bez formy płciowej, „co do”), bez zdania
+             „Jeśli lekarz odradza wysiłek, nie zaczynaj” — świadomie, mimo rekomendacji. Apka zostaje przy wspólnej nocie
+             z TRESCI-WSPOLNE.md; synchronizuj-tresci.py już tego miejsca nie zmienia. Pod kartą planu krótka nota + link tutaj. -->
+        <p>Przed pierwszym treningiem porozmawiaj z lekarzem, jeśli chorujesz na serce, masz cukrzycę albo świeży uraz.
+          W ciąży oraz krótko po porodzie lub gdy wracasz do aktywności po długiej przerwie także. Jeśli masz jakiekolwiek
+          wątpliwości co do swojego zdrowia, bezpośrednia konsultacja z lekarzem, fizjoterapeutą lub trenerem to świetny pomysł.
+          Regularne badania to część zdrowego trybu życia.</p>
       </details>
-      <!-- Decyzja Tomka 2.10, W76 (zlecenia Z-G1, Z-G3): „Kiedy przerwać trening" — ta sama treść co okienko
-           w aplikacji (src/lib/kiedy-przerwac.ts). Wpisuje ją skrypt G:\cloude\synchronizuj-tresci.py
-           z G:\cloude\TRESCI-WSPOLNE.md (format html-kiedy) — NIE edytuj tekstu między znacznikami.
-           W FAQ, bo strona to nie trening: kto szuka, znajdzie obok pytania o kontuzje. -->
+      <!-- 25.10 (decyzja Tomka): na stronie krótki tekst Tomka — bez zdania o 112 i bez punktu o łydce, świadomie, mimo
+           rekomendacji. Apka (okienko „Kiedy przerwać trening”) zostaje przy pełnej liście z TRESCI-WSPOLNE.md;
+           synchronizuj-tresci.py już tego miejsca nie zmienia. -->
       <details class="faq-item faq-kiedy">
         <summary><span>Kiedy przerwać trening?</span></summary>
-        <div class="kiedy-przerwac"><!--TRESC:kiedy-przerwac-->
-          <p>Przerwij ćwiczenie i odpocznij, jeśli pojawi się:</p>
-          <ul>
-            <li>ból, ucisk lub pieczenie w klatce piersiowej — także promieniujące do ramienia, szyi albo żuchwy,</li>
-            <li>duszność dużo większa niż zwykle przy takim wysiłku,</li>
-            <li>zawroty głowy, mroczki przed oczami albo uczucie, że zaraz zemdlejesz,</li>
-            <li>kołatanie albo wyraźnie nierówne bicie serca,</li>
-            <li>ostry ból stawu albo ból, który narasta z każdym powtórzeniem,</li>
-            <li>ból i obrzęk jednej łydki,</li>
-            <li>nagły, silny ból pleców po drobnym wysiłku, kaszlu albo podniesieniu czegoś.</li>
-          </ul>
-          <p><strong>Ból w klatce, który nie mija po kilku minutach odpoczynku, albo omdlenie — dzwoń 112.</strong></p>
-          <p>Jeśli objawy minęły, nie wracaj dziś do treningu i porozmawiaj z lekarzem przed następnym.</p>
+        <div class="kiedy-przerwac">
           <p>Normalne są: zadyszka, zmęczenie mięśni w trakcie i bóle mięśniowe 1–2 dni po treningu.</p>
-        <!--/TRESC--></div>
+          <p>Przerwij ćwiczenie i odpocznij, jeśli pojawi się: ból w klatce piersiowej, duszności, zawroty głowy, kołatanie serca,
+            ostry ból stawu, nagły ból pleców.</p>
+          <p>W przypadku wystąpienia powyższych objawów, przed kolejnym treningiem skonsultuj się ze specjalistą.</p>
+        </div>
       </details>
     </div>
   </div>
@@ -2842,14 +2969,6 @@
     if (adres.indexOf('kup=1') === -1 && adres.indexOf('/start') === -1
         && adres.indexOf('/plany') === -1) return;
     try {
-      /* „Wypróbuj za darmo" (?trial=1) to NIE początek zakupu — osobne zdarzenie, inaczej zawyżałby
-         liczbę rozpoczętych zakupów. Źródło reklamy jedzie w parametrze (Meta bierze je z kampanii). */
-      if (adres.indexOf('trial=1') !== -1) {
-        if (ga4Wczytane || adsWczytane) gtag('event', 'start_trial', {link_url: adres,
-          zrodlo: new URLSearchParams(location.search).get('utm_source') || '(brak)'});
-        if (pixelWczytany && window.fbq) fbq('track', 'StartTrial');
-        return;
-      }
       if (ga4Wczytane || adsWczytane) gtag('event', 'begin_checkout', {link_url: adres});
       if (pixelWczytany && window.fbq) fbq('track', 'InitiateCheckout');
     } catch (_) { /* pomiar nigdy nie może zepsuć kliknięcia */ }
@@ -3773,9 +3892,9 @@
       const nad = stackMode() ? dlScena.parentElement.offsetTop : 0;
       if (innerWidth !== dlSzer) { dlSzer = innerWidth; dlVh = innerHeight; }
       /* telefon (23.10, „jedna sekcja = jeden ekran”): telefon w lewej kolumnie obok opisów, cała sekcja w oknie pod paskiem:
-         wysokość okna − pasek − odstępy sekcji (2 × 20) − nagłówek − odstęp nad siatką (18) */
+         wysokość okna − pasek − odstępy sekcji (2 × 20) − nagłówek − odstęp nad siatką (18–40 px, z CSS) */
       const pod = dlTel.matches
-        ? dlVh - header.offsetHeight - 40 - dlGlowa.offsetHeight - 18
+        ? dlVh - header.offsetHeight - 40 - dlGlowa.offsetHeight - parseFloat(getComputedStyle(dlScena.parentElement).marginTop)
         : window.innerHeight - 108 - nad;
       dlSkala = ogr(Math.min((dlScena.clientWidth - (dlTel.matches ? 0 : 24)) / dlU.w, pod / dlU.h), dlTel.matches ? 0.1 : 0.3, T3.SMAX);   /* 288 px: nagłówek w 4 wierszach, telefon ok. 0,2 */
       dlTelefon.style.width = `${(dlU.w * dlSkala).toFixed(2)}px`;
@@ -3910,6 +4029,22 @@
     };
     dlEkranEl.addEventListener('pointerup', dlKoniec);
     dlEkranEl.addEventListener('pointercancel', dlKoniec);
+    /* Przesunięcie palcem po OPISACH obok telefonu zmienia ekran tak samo jak po telefonie (Tomek 25.10). pan-y zostawia
+       pionowe przewijanie strony (pionowy gest kończy się pointercancel); poziomy gest = |dx| > |dy| i co najmniej 40 px.
+       Mysz pomijamy — przeciąganie myszą po tekście to zaznaczanie. */
+    const dlOpisy = document.querySelector('#whyLayer .wa-txt');
+    if (dlOpisy) {
+      let p0 = null;
+      dlOpisy.style.touchAction = 'pan-y';
+      dlOpisy.addEventListener('pointerdown', e => { p0 = e.pointerType === 'mouse' ? null : [e.clientX, e.clientY]; });
+      dlOpisy.addEventListener('pointercancel', () => { p0 = null; });
+      dlOpisy.addEventListener('pointerup', e => {
+        if (!p0) return;
+        const ddx = e.clientX - p0[0], ddy = e.clientY - p0[1];
+        p0 = null;
+        if (Math.abs(ddx) > 40 && Math.abs(ddx) > Math.abs(ddy)) dlPokaz(0, ddx < 0 ? 1 : -1);
+      });
+    }
   }
 
   const vphone = document.getElementById('vphone');
@@ -4775,6 +4910,33 @@
     void roleDetail.offsetHeight;
     roleDetail.classList.add('show');
   }));
+  /* „Czytaj dalej” w „O mnie” (telefon, Tomek 25.10): opis rośnie płynnie do pełnej wysokości. Zdjęcie na czas rozwinięcia
+     zamrożone na swojej wysokości — inaczej flex ścisnąłby je, gdy tekst przestaje mieścić się na ekranie. Wzrost strony
+     przelicza przystanki sam (ResizeObserver na body w bloku PRZYSTANKI). */
+  const omOpis = document.getElementById('aboutOpis'), omWiecej = document.getElementById('aboutMore'),
+    omFoto = document.getElementById('aboutPhoto'), omTel = matchMedia('(max-width:767px)');
+  let omT;
+  const omUstaw = otworz => {
+    clearTimeout(omT);
+    if (otworz) { omFoto.style.height = omFoto.offsetHeight + 'px'; omFoto.style.flex = 'none'; }   /* najpierw odczyt, potem flex */
+    omOpis.style.maxHeight = omOpis.scrollHeight + 'px';
+    void omOpis.offsetHeight;
+    omOpis.classList.toggle('otwarty', otworz);
+    if (!otworz) omOpis.style.maxHeight = '';
+    omWiecej.setAttribute('aria-expanded', String(otworz));
+    omWiecej.textContent = otworz ? 'Zwiń' : 'Czytaj dalej';
+    omT = setTimeout(() => {               /* po animacji (.45 s): rozwinięty bez sufitu, zwinięty — zdjęcie znów dopasowane do ekranu */
+      if (otworz) omOpis.style.maxHeight = 'none'; else { omFoto.style.flex = ''; omFoto.style.height = ''; }
+    }, 480);
+  };
+  omWiecej.addEventListener('click', () => {
+    const otworz = !omOpis.classList.contains('otwarty');
+    /* „Zwiń” niżej w rozwiniętej sekcji: najpierw na górę sekcji — po skurczeniu strony telefon przyciągnąłby się do „hasła” */
+    const omL = document.getElementById('aboutLayer'), omG = omL.getBoundingClientRect().top, nag = document.getElementById('header').offsetHeight;
+    if (!otworz && omG < nag - 2) scrollTo(0, omG + scrollY - nag);
+    omUstaw(otworz);
+  });
+  omTel.addEventListener('change', () => { if (!omTel.matches && omOpis.classList.contains('otwarty')) omUstaw(false); });
   /* Mikro-interakcje ról (efekt 2): najechanie/skala robi CSS (:hover — bezpieczne, bez drżenia).
      Tu tylko krótka reakcja na WCIŚNIĘCIE (klik/dotyk). */
   document.querySelectorAll('.role').forEach(btn => {
@@ -4796,7 +4958,7 @@
          700 min = suma czasów 12 treningów (liczby od działu planów, zatwierdza CEO:
          T1 45/55/65 · T2 50/60/70 · T3 50/60/65 · T4 55/60/65). NIE przeliczać samodzielnie. */
       weeks: 4, workouts: 12, exercises: 50, minutes: 700,
-      desc: 'Plan dla osób, które chcą wystartować z treningiem — spokojnie, bezpiecznie i ze zrozumieniem tego, co robią.',
+      desc: 'Cztery tygodnie prostych, konkretnych treningów angażujących całe ciało.',   /* pierwsze zdanie opisu z apki (Tomek 25.10) */
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Dostęp 24/7 w Twoim telefonie'],
       img: 'assets/plan_poczatek_karta.jpg', alt: 'Tomek w russian twist z piłką lekarską; na podłodze sali logo FitOnlineCoach',
       /* Przycisk dwuwierszowy jak przy opiece indywidualnej (decyzja Tomka 3.08):
@@ -4825,8 +4987,6 @@
       const cta = document.getElementById('planCta');
       document.getElementById('planCtaGlowny').textContent = p.cta;
       document.getElementById('planCtaCena').textContent = p.ctaCena || '';
-      /* bezpłatny tydzień dotyczy każdego gotowego planu (decyzja Tomka 3.08) — ten sam adres z trial=1 */
-      if (p.url) document.getElementById('planTrial').href = p.url.replace('kup=1', 'trial=1');
       if (p.url) { cta.href = p.url; cta.classList.remove('disabled'); }
       else { cta.removeAttribute('href'); cta.classList.add('disabled'); }
       const img = document.getElementById('planImg');
@@ -4870,16 +5030,21 @@
     /* 23.10 (jedna sekcja = jeden ekran): sekcja ma odstępy 2 × 20 px i wysokość ekranu, treść stoi w .wrap */
     const okno = pVh - header.offsetHeight - 40, wiz = planWiz.offsetHeight, A = okno - (planFront.offsetHeight - wiz),
       n = nota ? nota.offsetHeight + parseFloat(getComputedStyle(nota).marginTop) : 0,
-      S = planFlip.classList.contains('flipped') ? 0 : okno - (planSekcja.querySelector('.wrap').offsetHeight - wiz);
-    /* przód: cała sekcja (nagłówek + karta + nota) w jednym ekranie — zdjęcie bierze to, co zostaje (co najmniej FOTO_MIN);
-       tył: karta z notą albo sama karta jak dotąd */
+      S = okno - (planSekcja.querySelector('.wrap').offsetHeight - wiz);
+    /* cała sekcja (nagłówek + karta + nota) w jednym ekranie — zdjęcie bierze to, co zostaje (co najmniej FOTO_MIN);
+       obrót karty nic tu nie zmienia: tył ma wysokość przodu (25.10) */
     planWiz.style.height = Math.round(ogr(S > 0 ? S : A - n >= FOTO_NOTA ? A - n : A, FOTO_MIN, 340)) + 'px';
   };
   planFoto();
   window.addEventListener('resize', planFoto);
   /* krótka nota pod kartą (23.10): „Więcej w FAQ” od razu rozwija pytanie z pełną notą */
   const notaWiecej = document.getElementById('notaWiecej'), faqZdrowie = document.getElementById('faq-zdrowie');
-  if (notaWiecej && faqZdrowie) notaWiecej.addEventListener('click', () => { faqZdrowie.open = true; });
+  if (notaWiecej && faqZdrowie) notaWiecej.addEventListener('click', () => {
+    const a = faqZdrowie._anim;   /* pytanie akurat się zwija (animacja FAQ niżej) — przerwij, inaczej koniec animacji je zamknie */
+    if (a) { a.cancel(); faqZdrowie._anim = null; faqZdrowie.classList.remove('zwija'); faqZdrowie.style.overflow = ''; }
+    (faqZdrowie._animT || []).forEach(x => x.cancel()); faqZdrowie._animT = null;
+    faqZdrowie.open = true;
+  });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(planFoto);
 
   /* Odwracanie karty planu: klik w dowolne miejsce pokazuje drugą stronę ze szczegółami
@@ -4894,6 +5059,56 @@
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); obrocKarte(); }
   });
   }
+
+  /* FAQ (25.10): płynne rozwijanie i zwijanie odpowiedzi — animacja wysokości całego <details> (Web Animations,
+     działa też w Safari; samo CSS ::details-content nie). Klik i Enter/Spacja na pytaniu to to samo zdarzenie click.
+     „Ogranicz ruch" = zwykłe <details> bez animacji. Przystanki przelicza ResizeObserver na body. */
+  const faqRuch = matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll('.faq-item').forEach(d => {
+    const s = d.querySelector('summary');
+    s.addEventListener('click', e => {
+      if (faqRuch.matches || !d.animate) return;
+      e.preventDefault();
+      const otworz = !d.open || d.classList.contains('zwija');
+      const od = d.offsetHeight;                 /* bieżąca wysokość, także w środku przerwanej animacji */
+      if (d._anim) d._anim.cancel();
+      d.classList.toggle('zwija', !otworz);
+      d.open = true;
+      const ramka = d.offsetHeight - d.clientHeight;
+      const doW = otworz ? d.offsetHeight : s.offsetHeight + ramka;
+      d.style.overflow = 'hidden';
+      const a = d._anim = d.animate({ height: [od + 'px', doW + 'px'] }, { duration: 300, easing: 'ease' });
+      /* tekst odpowiedzi wyłania się z rozmycia (przy zwijaniu odwrotnie i zostaje schowany do końca animacji) */
+      (d._animT || []).forEach(x => x.cancel());
+      d._animT = [...d.children].filter(x => x !== s).map(x => x.animate(otworz
+        ? { opacity: [0, 1], filter: ['blur(6px)', 'blur(0px)'] } : { opacity: [1, 0], filter: ['blur(0px)', 'blur(6px)'] },
+        { duration: 300, easing: 'ease', fill: otworz ? 'none' : 'forwards' }));
+      a.onfinish = () => {
+        if (!otworz) d.open = false;
+        d._animT.forEach(x => x.cancel()); d._animT = null;
+        d.classList.remove('zwija');
+        d.style.overflow = ''; d._anim = null;
+        if (!otworz && window.FOC_PRZYSTANKI) FOC_PRZYSTANKI.pokaz(s);
+      };
+    });
+  });
+  /* FAQ rośnie tylko w dół (25.10): wyśrodkowana treść przy rozwijaniu rosła w obie strony i kliknięte pytanie uciekało
+     w górę o 36–92 px. Treść stoi od góry, z odstępem nad nią takim, jaki dałoby wyśrodkowanie ZWINIĘTEGO FAQ — zwinięte
+     wygląda jak dawniej. Liczone przy zmianie okna (wynik nie zależy od tego, co jest akurat rozwinięte). */
+  const faqSek = document.getElementById('faq'), faqWrap = faqSek && faqSek.querySelector('.wrap');
+  const faqGora = () => {
+    if (!faqWrap) return;
+    faqSek.style.paddingTop = ''; faqSek.style.justifyContent = '';
+    const cs = getComputedStyle(faqSek), M = parseFloat(cs.minHeight), P = parseFloat(cs.paddingTop);
+    if (cs.display !== 'flex' || !(M > 0)) return;
+    let zw = faqWrap.offsetHeight;   /* wysokość treści przy wszystkich zwiniętych */
+    faqSek.querySelectorAll('.faq-item[open]').forEach(d => { zw -= d.offsetHeight - d.querySelector('summary').offsetHeight - (d.offsetHeight - d.clientHeight); });
+    faqSek.style.paddingTop = Math.max(P, (M - zw) / 2) + 'px'; faqSek.style.justifyContent = 'flex-start';
+  };
+  faqGora();
+  addEventListener('resize', faqGora);
+  addEventListener('load', faqGora);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(faqGora);
 
   /* Liczba poradników na YouTube — plik assets/yt.json odświeża automat codziennie
      (_deploy/.github/workflows/yt-count.yml). Odmieniamy po polsku, bo liczba się zmienia:
@@ -5121,9 +5336,18 @@
       const t = docTop(el), h = el.offsetHeight, cs = getComputedStyle(el);
       if (h <= A) return dodaj(id, t + h / 2 - nag - A / 2, false);
       const ct = t + parseFloat(cs.paddingTop), cb = t + h - parseFloat(cs.paddingBottom);
-      if (cb - ct + 2 * m <= A) return dodaj(id, (ct + cb) / 2 - nag - A / 2, false);
-      const a = ct - nag - m, b = cb + m - vh;
-      if (b - a < .25 * A) return dodaj(id, a);
+      /* FAQ stoi od góry z odstępem z wyśrodkowania zwiniętego (inline padding, skrypt faqGora): wyższa sekcja zawsze ma
+         przystanek na górze (jak zwinięta) i osobny na dole — przystanek na środku treści przesuwał po rozwinięciu stuknięte
+         pytanie (przyciąganie telefonu, 390×844: 53–92 px) */
+      const odGory = !!el.style.paddingTop;
+      if (!odGory && cb - ct + 2 * m <= A) return dodaj(id, (ct + cb) / 2 - nag - A / 2, false);
+      const a = odGory ? t - nag : ct - nag - m, b = cb + m - vh;
+      if (b - a < 24) return dodaj(id, a);   /* dół tuż pod górą (sekcja wyższa o kilka px): jeden przystanek na górze — dół wypadał NAD nim */
+      /* dotyk: krótka strefa = dwa twarde przystanki, dół nigdy nie scalany — jeden przystanek albo wysoki znacznik chowały
+         dół sekcji (rozwinięte „O mnie”, dwa pytania FAQ przy 390×844: snap mandatory nie da stanąć pomiędzy) */
+      if (dot && b - a <= vh - P.ZAKLADKA_DOTYK) { dodaj(id, a); dodaj(id + '_dol', b); S[S.length - 1].staly = true; return; }
+      /* mysz: sekcja ledwo wyższa niż ekran (np. 2–3 otwarte pytania FAQ) = dwa twarde przystanki, góra i dół — jeden chował dół */
+      if (b - a < .25 * A) { dodaj(id, a); dodaj(id + '_dol', b); return; }
       dodaj(id, a, true, b); dodaj(id + '_dol', b);
     };
     const man = q('.topblok .manifest');   /* sekcja = jeden ekran (23.10); słowa zapalają się do jej przystanku (onScroll) */
@@ -5203,7 +5427,7 @@
       const M = P.SCAL_DOTYK * vh; R = [];
       for (const s of W) {
         const p = R[R.length - 1];
-        if (!p || s.y - p.y >= (s.id.endsWith('_dol') ? P.SCAL_DOL * vh : M)) { R.push(s); continue; }
+        if (!p || s.staly || s.y - p.y >= (s.id.endsWith('_dol') ? P.SCAL_DOL * vh : M)) { R.push(s); continue; }
         if (s.id === 'koniec') { if (p.id !== 'hero') R.pop(); R.push(s); continue; }
         if (s.strefa !== undefined) p.strefa = Math.max(p.strefa || 0, s.strefa);
       }
@@ -5407,8 +5631,19 @@
     const pl = plan = przystanki();
     /* #top = hero w przypiętym bloku: jego offsetTop zależy od przewinięcia, więc wprost 0 */
     const yA = id === 'top' ? 0 : docTop(el) - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
-    /* przystanek o nazwie sekcji (np. nagłówek „plan” nad kadrem karty), inaczej najbliższy */
-    const cel = (pl.S.find(s => s.id === id) || { y: najblizszy(pl.S, yA) }).y;
+    /* przystanek o nazwie sekcji (np. nagłówek „plan” nad kadrem karty); element w środku sekcji (pytanie FAQ z noty pod
+       planem) — ostatni przystanek nad nim: w jego strefie tuż nad elementem, inaczej sam przystanek, jeśli widać z niego
+       co najmniej 60 px elementu (najbliższy chował pytanie pod pasek); w ostateczności najbliższy */
+    /* element bez własnego przystanku, nie wyższy niż ekran (newsletter na komputerze: przystanek „koniec” = zapis + stopka) —
+       przystanek, z którego widać go najwięcej (co najmniej 60 %); scroll-margin #zapis podnosił yA nad „koniec” i kotwica
+       stawała na FAQ (25.10) */
+    const eT = docTop(el), eH = el.offsetHeight, widac = s => Math.min(eT + eH, s.y + pl.vh) - Math.max(eT, s.y + pl.nag);
+    let w = eH <= pl.vh - pl.nag && pl.S.reduce((b, s) => !b || widac(s) > widac(b) ? s : b, null);
+    if (w && widac(w) < .6 * eH) w = null;
+    const nad = pl.S.filter(s => s.y <= yA - pl.nag + 1).pop(), cel = pl.S.find(s => s.id === id) ? pl.S.find(s => s.id === id).y
+      : w ? w.y
+      : nad && nad.strefa !== undefined ? Math.max(nad.y, Math.min(yA - pl.nag - P.MARGINES, nad.strefa))
+      : nad && yA - nad.y + 60 < pl.vh ? nad.y : najblizszy(pl.S, yA);
     history.pushState(null, '', location.pathname + location.search + '#' + id);
     const fokus = () => {
       if (!el.matches('a[href],button,input,select,textarea,summary,[tabindex]')) el.setAttribute('tabindex', '-1');
@@ -5417,6 +5652,7 @@
     loguj({ typ: 'kotwica', id, cel });
     if (!dotyk()) return jedz(cel, { czas: ogr(450 + .15 * Math.abs(cel - scrollY), 600, 1200), powod: 'kotwica #' + id, potem: fokus });
     wczytajObrazki(cel);
+    rysuj();   /* znaczniki od razu z nowego planu — np. rozwinięte właśnie pytanie FAQ, zanim przeliczy je ResizeObserver */
     scrollTo({ top: cel, behavior: 'smooth' });
     if (Math.abs(cel - scrollY) < 1) fokus();
     else if ('onscrollend' in window) addEventListener('scrollend', fokus, { once: true });
@@ -5437,8 +5673,15 @@
   }, { passive: true });
   const poPrzewinieciu = () => {
     const g = dg; if (!g || g.dy === undefined) return; dg = null;
-    if (!dotyk() || !plan || !aktywny() || Math.abs(g.dy) < P.DOPCH_PX || Math.abs(g.dy) <= 1.5 * Math.abs(g.dx) || Math.abs(scrollY - g.y) > 3) return;
+    if (!dotyk() || !plan || !aktywny() || Math.abs(g.dy) < P.DOPCH_PX || Math.abs(g.dy) <= 1.5 * Math.abs(g.dx)) return;
     const S = plan.S, dir = Math.sign(g.dy);
+    if (Math.abs(scrollY - g.y) > 3) {
+      /* palec minął bliski dół krótkiej strefy (staly, np. rozwinięte „O mnie” przy 412×915: 106 px) i snap pojechał za
+         niego — wracamy na ten przystanek, jak na każdy twardy */
+      const pom = S.find(s => s.staly && (dir > 0 ? s.y > g.y + 2 && s.y < scrollY - 2 : s.y < g.y - 2 && s.y > scrollY + 2));
+      if (pom) { loguj({ typ: 'powrot-dol', od: Math.round(scrollY), do: pom.y }); scrollTo({ top: pom.y, behavior: 'smooth' }); }
+      return;
+    }
     if (!S.some(s => Math.abs(s.y - g.y) <= 3) || strefa(S, g.y, dir)) return;
     const cel = nastepny(S, g.y, dir); if (cel === null) return;
     loguj({ typ: 'dopchniecie', od: Math.round(g.y), do: cel, dy: Math.round(g.dy) });
@@ -5463,7 +5706,19 @@
   mqR.addEventListener('change', przelicz); mqDotyk.addEventListener('change', przelicz);
   przelicz();
 
-  window.FOC_PRZYSTANKI = { plan: () => plan, log, P, przelicz, get ruch() { return !!ruch; } };
+  /* po zwinięciu pytania FAQ (skrypt FAQ): strona stoi między przystankami (mysz) albo przyciąganie przeniosło ją do innej
+     sekcji (telefon) — jedzie na najbliższy przystanek, z którego widać zwinięte pytanie */
+  const pokaz = el => {
+    if (!bazowo() || ruch) return;
+    plan = przystanki(); rysuj();
+    const y = scrollY, eT = docTop(el), eB = eT + el.offsetHeight, widac = sy => eT >= sy + plan.nag - 1 && eB <= sy + plan.vh + 1;
+    if ((plan.S.some(s => Math.abs(s.y - y) <= 3) || strefa(plan.S, y, 0)) && widac(y)) return;
+    const k = plan.S.filter(s => widac(s.y)); if (!k.length) return;
+    const cel = k.reduce((b, s) => Math.abs(s.y - y) < Math.abs(b.y - y) ? s : b).y;
+    loguj({ typ: 'pokaz', od: Math.round(y), do: cel });
+    if (dotyk()) scrollTo({ top: cel, behavior: 'smooth' }); else jedz(cel, { powod: 'faq zwiniete' });
+  };
+  window.FOC_PRZYSTANKI = { plan: () => plan, log, P, przelicz, pokaz, get ruch() { return !!ruch; } };
 })();
 /*<PRZYSTANKI*/</script>
 
