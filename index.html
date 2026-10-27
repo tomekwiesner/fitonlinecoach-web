@@ -348,10 +348,18 @@
      Pod spodem zdjęcie z tej samej sceny, nad nim płótno (komputer z dokowaniem: .gl-hero). Poświata: --blask = 0,075 bryły. */
   .hero-phone picture{display:contents}
   .hero-phone .fon-still,.hero-phone .gl3d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
-  /* Poświata zdjęcia dopiero po jego zdekodowaniu i po nadaniu rozmiaru (klasa .blask-on, skrypt przy dokujTelefon):
-     Safari na iPhonie liczył drop-shadow przed wczytaniem zdjęcia i przy pierwszym wejściu rysował limonkowy PROSTOKĄT (Tomek 23.10). */
+  /* Poświata zdjęcia = osobna warstwa wycięta maską z kształtu tego samego zdjęcia i rozmyta (blur R/2 = drop-shadow R), NIE drop-shadow
+     na <img>: Safari na iPhonie liczył drop-shadow przed wczytaniem zdjęcia i rysował limonkowy PROSTOKĄT (Tomek 23.10; wrócił 26.10,
+     gdy nowa wersja zdjęć wczytywała się od zera). Niewczytana maska = przezroczysta, więc prostokąta nie ma w żadnej chwili.
+     Adres maski (--blask-img) wpisuje skrypt po zdekodowaniu zdjęcia, razem z klasą .blask-on (przy dokujTelefon). */
+  .hero-phone{--blask-img:linear-gradient(transparent,transparent)}
+  .hero-phone .fon-blask{position:absolute;inset:0;pointer-events:none;filter:blur(calc(var(--blask,30px) / 2));opacity:0;transition:opacity .25s}
+  .hero-phone .fon-blask i{position:absolute;inset:0;background:rgba(153,230,109,.42);
+    -webkit-mask:var(--blask-img) center/100% 100% no-repeat;mask:var(--blask-img) center/100% 100% no-repeat}
+  .hero-phone.blask-on .fon-blask{opacity:1}
+  .hero-phone.gl-hero .fon-blask{opacity:0;transition:opacity 0s .2s}
   .hero-phone .fon-still{opacity:0}
-  .hero-phone.blask-on .fon-still{opacity:1;transition:opacity .25s;filter:drop-shadow(0 0 var(--blask,30px) rgba(153,230,109,.42))}
+  .hero-phone.blask-on .fon-still{opacity:1;transition:opacity .25s}
   .hero-phone .gl3d{opacity:0;transition:opacity .2s;filter:drop-shadow(0 0 var(--blask,30px) rgba(153,230,109,.42))}
   .hero-phone.gl-hero .gl3d{opacity:1}
   .hero-phone.gl-hero .fon-still{opacity:0;transition:opacity 0s .2s}
@@ -1292,7 +1300,7 @@
   .vp-track{display:flex;height:100%;width:100%;transition:transform .6s cubic-bezier(.62,.03,.2,1)}
   .vp-track.vp-snap{transition:none}
   .vp-slide{flex:0 0 100%;height:100%}
-  .vp-slide video{width:100%;height:100%;object-fit:cover;display:block;background:#0b0f0d}
+  .vp-slide video{width:100%;height:100%;object-fit:contain;display:block;background:#0b0f0d}   /* cała klatka 16:9 w ekranie 874×402 (pasy po bokach jak w iPhonie) — przy cover ginęło logo z prawego górnego rogu (Tomek 26.10) */
   /* Szklane okienka WYPRZEDZAJĄCE telefon: homografia prostokątów na z = 40 / 55 mm przed ekranem, więc
      pochylają się razem z telefonem. Szerokość jak w dawnym pudełku (max-width 232), nie z wąskiego hosta. */
   .vp-pop{position:absolute;left:0;top:0;width:max-content;transform-origin:0 0;z-index:4;border-radius:16px;padding:13px 17px;max-width:232px;
@@ -1300,23 +1308,30 @@
     -webkit-backdrop-filter:blur(13px) saturate(1.25);border:1px solid rgba(200,230,210,.24);
     box-shadow:0 26px 54px -18px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.14);
     color:#eaf3ec;font-size:.98rem;line-height:1.32;font-weight:600;will-change:transform}
-  .vp-pop-eyebrow{display:block;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  .vp-pop-eyebrow{display:block;font-size:.6875rem;letter-spacing:.14em;text-transform:uppercase;
     color:var(--lime);font-weight:700;margin-bottom:5px}
-  .vp-pop-a{pointer-events:none}
-  .vp-pop-b{display:inline-flex;align-items:center;
-    gap:12px;text-decoration:none;background:rgba(153,230,109,.16);border-color:rgba(153,230,109,.55);
-    transition:background .2s ease, box-shadow .2s ease}
-  .vp-pop-b:hover{background:rgba(153,230,109,.28);box-shadow:0 30px 60px -16px rgba(0,0,0,.8),0 0 0 1px rgba(153,230,109,.4)}
-  /* bez filmów na YouTube (0 albo brak yt.json): bez licznika i bez okienka „Oglądaj na YouTube” (Tomek 26.10) */
-  #wideo:not(.yt-jest) .yt-tak,#wideo:not(.yt-jest) .vp-pop-b,#wideo.yt-jest .yt-nie{display:none}
-  .vp-pop-b b{color:#eef8e9}
+  /* oba okienka to linki (playlisty YT), ten sam szklany wygląd; ▶ mówi, że prowadzą do filmów */
+  .vp-pop-a,.vp-pop-b{display:inline-flex;align-items:center;gap:12px;text-decoration:none;transition:background .2s ease, box-shadow .2s ease}
+  .vp-pop-a:hover,.vp-pop-b:hover{background:rgba(16,24,20,.7);box-shadow:0 30px 60px -16px rgba(0,0,0,.8),0 0 0 1px rgba(153,230,109,.4)}
+  .vp-pop-a:focus-visible,.vp-pop-b:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+  /* telefon: okienka maleją razem z telefonem 3D (ok. 100×40 px) — niewidoczny margines dotyku dookoła, żeby cel miał ≥ 44 px */
+  .vp-pop-a::before,.vp-pop-b::before{content:"";position:absolute;inset:-26px -14px}
+  /* bez filmów na YouTube (0 albo brak yt.json): tytuł bez licznika (Tomek 26.10) */
+  #wideo:not(.yt-jest) .yt-tak,#wideo.yt-jest .yt-nie{display:none}
   .vp-pop-ic{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;
     background:var(--lime);color:#0c130c;font-size:.82rem;padding-left:2px}
-  .vp-pop-txt{font-size:.9rem;font-weight:600;line-height:1.25;color:#dfeede}
+  .vp-pop-txt{line-height:1.3}
   @media(prefers-reduced-motion:reduce){.vp-track{transition:none}}
   .vp-host{position:absolute;transition:none}
-  .vp-host .fon-still,.vp-host .gl3d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;
-    filter:drop-shadow(0 0 var(--blask,46px) rgba(153,230,109,.30))}
+  .vp-host .fon-still,.vp-host .gl3d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+  .vp-host .gl3d{filter:drop-shadow(0 0 var(--blask,46px) rgba(153,230,109,.30))}
+  /* poświata zdjęcia: warstwa z maską z kształtu zdjęcia + blur, jak w hero (drop-shadow na <img> = prostokąt w Safari na iPhonie, 26.10) */
+  .vp-host{--blask-img:linear-gradient(transparent,transparent)}
+  .vp-host .fon-blask{position:absolute;inset:0;pointer-events:none;filter:blur(calc(var(--blask,46px) / 2));opacity:0;transition:opacity .25s}
+  .vp-host .fon-blask i{position:absolute;inset:0;background:rgba(153,230,109,.30);
+    -webkit-mask:var(--blask-img) center/100% 100% no-repeat;mask:var(--blask-img) center/100% 100% no-repeat}
+  .vp-host.blask-on .fon-blask{opacity:1}
+  html.gl-on .vp-host:has(> .gl3d) .fon-blask{opacity:0;transition:opacity 0s .2s}
   .vp-host .gl3d{opacity:0;transition:opacity .2s}
   html.gl-on .vp-host .gl3d{opacity:1}
   html.gl-on .vp-host:has(> .gl3d) .fon-still{opacity:0;transition:opacity 0s .2s}   /* zdjęcie znika tylko pod płótnem: przy „O mnie” tuż obok płótno bywa jeszcze u talerza */
@@ -1537,6 +1552,8 @@
        bez tła; przy otwartym menu bez rozmycia */
     header.scrolled:has(.nav-links.open){backdrop-filter:none;-webkit-backdrop-filter:none}
     .nav-links a{font-size:1.05rem}
+    /* pole dotyku 44 px (napis ma 20): pionowy padding linku w linii nie zmienia układu menu */
+    .nav-links a:not(.nav-cta){padding:12px 0}
     .burger{display:block}
   }
   /* Kurtyna WYŁĄCZONA na telefonie i przy „ogranicz ruch": zwykłe sekcje jedna pod drugą
@@ -1715,6 +1732,58 @@
     /* manifest: akapit nad pasem, na który spadają talerze (podłoga liczona od akapitu, talerzeHero) */
     .topblok .manifest{padding-bottom:150px}
   }
+  /* ---------- PANELE: przewijanie „jak Google Health” (decyzje Tomka 25.10 i 26.10) ----------
+     Każde dziecko <main> stoi przypięte, następne wjeżdża od dołu i je zakrywa (cień na krawędzi = głębia kurtyny). Panel
+     mieszczący się w ekranie stoi pod paskiem menu; wyższy (blok górny, kurtyny 300/260vh, rozwinięte FAQ, niskie okno)
+     przypina się DOŁEM: top = ekran − wysokość (--h ustawia skrypt PANELE), więc nic się nie ucina, a przystanki zostają
+     te same. Ekran = 100svh jak w --ekran (przy dvh i schowanym pasku adresu wcześniejsza sekcja wystawała nad następną).
+     Do 980 px kurtyny to po dwa panele: „Jak to działa” zakrywa „Dlaczego”, hasło zakrywa „O mnie” (warstwa wierzchnia z 0,
+     bo jako przypięta zasłaniałaby z-index 2). Zakryty w całości (.przykryta, skrypt) odpina się: stoi tam, gdzie bez paneli —
+     tuż nad następnym, poza ekranem (obserwatory filmów, silnika 3D i kroków widzą go jako niewidoczny), a clip-path chowa
+     pas pod paskiem menu. Bez przesunięcia (było −200vh): „Znajdź na stronie”, scrollIntoView i czytnik ekranu liczą cel
+     z prawdziwego położenia, jak przy ?panele=0. html.mierz = pomiar bez przypięcia (FOC_PANELE.uklad).
+     Treść wchodzi pod koniec wjazdu; bez osi przewijania (starsze przeglądarki) zostaje stare .rv.
+     Bez z-index na panelach (sticky = osobna warstwa, kolejność z kodu). Wyłącznik: adres z ?panele=0 (porównanie „było / jest”). */
+  @media (prefers-reduced-motion:no-preference){
+    html.panele{--dol:100vh}
+    @supports (height:100svh){html.panele{--dol:100svh}}
+    html.panele main > *{position:sticky;top:min(var(--nag),calc(var(--dol) - var(--h,0px)))}
+    :where(html.panele main > *){background-color:var(--black)}
+    /* stopka zakrywa ostatnią sekcję tak samo, choć stoi poza <main> (rola stopki dla czytników): przypięcie trzyma się
+       w granicach <main>, więc <main> sięga do dołu stopki pustym ::after jej wysokości, a stopka nachodzi na niego ujemnym
+       marginesem — układ i przystanki bez zmian. Bez tego FAQ / newsletter odjeżdżały przy końcu strony zwykłym przewinięciem. */
+    html.panele main::after{content:"";display:block;height:var(--stopka,0px)}
+    html.panele footer{position:relative;margin-top:calc(-1 * var(--stopka,0px))}
+    :where(html.panele footer){background-color:var(--black)}
+    html.panele .przykryta{top:-100000px!important;clip-path:inset(50%)}
+    /* komputer: newsletter + stopka = ostatni ekran. Gdy razem są wyższe niż ekran pod paskiem (1280×600), newsletter
+       przypina się tak wysoko, żeby stopka stanęła pod nim, a nie na nim (jak bez paneli: zgoda i klauzula widoczne) */
+    @media(min-width:981px){html.panele #zapis{top:min(var(--nag),calc(var(--dol) - var(--h,0px) - var(--stopka,0px)))}}
+    html.mierz{overflow-anchor:none}
+    html.mierz.panele main > *{top:-100000px!important}
+    @media(max-width:980px){
+      html.panele #whyLayer,html.panele #aboutLayer{position:sticky;top:min(var(--nag),calc(var(--dol) - var(--h,0px)));z-index:0}
+      html.mierz.panele #whyLayer,html.mierz.panele #aboutLayer{top:-100000px!important}
+      html.panele #dlaczego .how{position:relative}
+      :where(html.panele #dlaczego .how,html.panele #hasloRegularnie){background-color:var(--black)}
+    }
+    /* wejście treści: ostatnie 45 % wjazdu panelu. Zakres --od..--do (px przewinięcia) liczy skrypt PANELE: view-timeline na
+       przypiętym panelu Chrome liczy z przesunięciem przypięcia (przy 288 px wejście „Planu” wypadało 1692 px za późno) */
+    @supports (animation-timeline:scroll()){
+      html.panele :is(main > section,main .layer) > .wrap,html.panele main > .divider > h2{animation:wjazdTresci linear both;
+        animation-timeline:scroll(root);animation-range:var(--od,0px) var(--do,0px)}
+      /* .rv (wjazd przejściem przy pierwszym pokazaniu) zastąpione wejściem z przewijania — bez podwójnego ruchu */
+      html.panele main > :not(:first-child) .rv{opacity:1;transform:none;transition:none}
+      /* cień krawędzi narasta w pierwszych 120 px wjazdu (--wj, skrypt PANELE): w spoczynku dół sekcji bez przyciemnienia.
+         Tylko z osią przewijania: bez niej cień leżałby stale na dole stojącej sekcji */
+      html.panele main > * + *{box-shadow:0 -24px 48px rgba(0,0,0,.55);animation:cienWjazdu linear both;animation-timeline:scroll(root);
+        animation-range:var(--wj,0px) calc(var(--wj,0px) + 120px)}
+      @media(max-width:980px){html.panele :is(#dlaczego .how,#hasloRegularnie,footer){box-shadow:0 -24px 48px rgba(0,0,0,.55);animation:cienWjazdu linear both;
+        animation-timeline:scroll(root);animation-range:var(--wj,0px) calc(var(--wj,0px) + 120px)}}
+    }
+  }
+  @keyframes wjazdTresci{from{opacity:0;translate:0 28px}}
+  @keyframes cienWjazdu{from{box-shadow:0 -24px 48px transparent}}
   @media(max-width:767px){
     /* „Dlaczego”: telefon 3D w lewej kolumnie, opisy obok (skrypt dlPrzelicz dopasowuje telefon do okna) */
     #whyLayer .why-head .sec-label{margin-bottom:12px}
@@ -1807,9 +1876,15 @@
        rozwija resztę — wtedy sekcja rośnie, a zdjęcie zostaje zamrożone na swojej wysokości (skrypt przy #aboutMore). */
     #aboutLayer > .wrap{flex:1 1 auto;display:flex;flex-direction:column}
     #aboutLayer .about-grid{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:16px}
-    #aboutPhoto{flex:1 1 0;min-height:120px;max-height:calc(100vw - 64px)}
-    #aboutPhoto .frame{height:100%}
-    #aboutPhoto .frame img{height:100%;object-fit:cover;object-position:50% 30%}
+    /* zdjęcie wypełnia ramkę w absolute, ramka bierze miejsce z flex: przy height:100% Safari na iPhonie liczył ramkę
+       z naturalnej (kwadratowej) wysokości zdjęcia i zdjęcie wchodziło pod „04 — O mnie” (Tomek 26.10) */
+    #aboutPhoto{flex:1 1 0;min-height:120px;max-height:calc((100vw - 32px) * 1.4);display:flex;flex-direction:column}   /* do 1,4× szerokości: miejsce po schowanych rolach bierze zdjęcie, nie pustka nad nim */
+    #aboutPhoto .frame{flex:1 1 0;min-height:0}
+    #aboutPhoto .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+    /* role (Trener / Fizjoterapeuta / Dietetyk) w części rozwijanej „Czytaj dalej” na każdym telefonie (Tomek 26.10) —
+       więcej miejsca na zdjęcie; wcześniej tylko na niskich ekranach */
+    .om-opis:not(.otwarty) ~ .roles,.om-opis:not(.otwarty) ~ .role-detail{display:none}
+    #aboutLayer .roles{opacity:1;transform:none}
     #aboutText .sec-label{margin-bottom:8px}
     #aboutText .sec-title{font-size:1.45rem;margin-bottom:10px}
     #aboutText p{font-size:.85rem;line-height:1.45;margin-bottom:7px;max-width:none}
@@ -1851,10 +1926,6 @@
     .hero{padding-bottom:20px}
     /* „Czytaj dalej” nie przyklejone do przycisku opieki (375×667: 6 px) */
     .om-wiecej{margin-bottom:0}
-    /* „O mnie” na niskim telefonie (375×667, 288×640): role (Trener / Fizjoterapeuta / Dietetyk) chowają się w części
-       rozwijanej — bez tego zdjęcie było tylko paskiem ok. 150 px. Przycisk opieki i dopisek zostają widoczne. */
-    .om-opis:not(.otwarty) ~ .roles,.om-opis:not(.otwarty) ~ .role-detail{display:none}
-    #aboutLayer .roles{opacity:1;transform:none}
     #zapis h2{font-size:1.25rem}
     #zapis .zapis-korzysci li{font-size:.78rem;line-height:1.4}
     #zapis .nl-grid > div > p{font-size:.85rem}
@@ -2040,6 +2111,7 @@
   <!-- Telefon hero: zdjęcie modelu z tej samej sceny WebGL (render_podglady.mjs hero). Rozmiar i położenie ustawia skrypt
        (dokujTelefon), do tego czasu host ma 0×0. Druga poza tam, gdzie nie ma dokowania (telefon, niskie okno, „ogranicz ruch"). -->
   <div class="hero-phone" id="heroPhone" aria-hidden="true">
+    <div class="fon-blask"><i></i></div>
     <picture><source media="(max-width:980px),(max-height:700px),(prefers-reduced-motion:reduce)" srcset="assets/3d/fon_hero_m.webp?v=20261026"><img class="fon-still" alt="" src="assets/3d/fon_hero_start.webp?v=20261026" srcset="assets/3d/fon_hero_start.webp?v=20261026 1x, assets/3d/fon_hero_start_2x.webp?v=20261026 2x"></picture>
   </div>
   <div class="wrap hero-content" id="heroContent">
@@ -2116,7 +2188,7 @@
                     <div class="dl-foto"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
                   </article>
                   <article class="dl-slajd">
-                    <div class="dl-foto"><img src="assets/screen_okno.jpg" alt="Ekran aplikacji: okno ćwiczenia z filmem i wskazówkami trenera" loading="lazy" decoding="async"></div>
+                    <div class="dl-foto"><img src="assets/screen_arch.jpg" alt="Ekran aplikacji: instruktaż wideo arch up ze strzałkami pokazującymi ruch" loading="lazy" decoding="async"></div>
                   </article>
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
@@ -2503,20 +2575,20 @@
         <div class="dl-body">
           <div class="dl-ekran">
             <div class="vp-track" id="vpTrack" aria-hidden="true">
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_1.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_2.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_3.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_4.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d1.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d2.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d3.mp4"></video></div>
+              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d4.mp4"></video></div>
             </div>
           </div>
         </div>
-        <!-- szklane pop-upy wyprzedzające telefon (więcej 3D) -->
-        <div class="vp-pop vp-pop-a"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</div>
-        <a class="vp-pop vp-pop-b" href="https://www.youtube.com/@FitOnlineCoach" data-yt-link target="_blank" rel="noopener">
-          <span class="vp-pop-ic" aria-hidden="true">▶</span>
-          <!-- te same klasy co w nagłówku sekcji — liczbę i odmianę wpisuje skrypt z assets/yt.json;
-               adres playlisty też (data-yt-link), dopóki nie ma playlisty prowadzi na kanał -->
-          <span class="vp-pop-txt"><b><span class="yt-count"></span> <span class="yt-noun">Poradniki</span> wideo</b><br>Oglądaj na YouTube</span>
+        <!-- szklane pop-upy wyprzedzające telefon (więcej 3D) = linki do playlist na YouTube (Tomek 26.10): „Technika ćwiczeń”
+             (instruktaże) i „Biblioteka ćwiczeń” (filmy pokazowe z planów); do startu sprzedaży playlisty są niepubliczne (z linku działają) -->
+        <a class="vp-pop vp-pop-a" href="https://www.youtube.com/playlist?list=PLNaYUUQuWmNg" target="_blank" rel="noopener">
+          <span class="vp-pop-ic" aria-hidden="true">▶</span><span class="vp-pop-txt"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</span>
+        </a>
+        <a class="vp-pop vp-pop-b" href="https://www.youtube.com/playlist?list=PLTRiTAUWaC5U" target="_blank" rel="noopener">
+          <span class="vp-pop-ic" aria-hidden="true">▶</span><span class="vp-pop-txt"><span class="vp-pop-eyebrow">Biblioteka ćwiczeń</span>Poznaj ćwiczenia.</span>
         </a>
       </div>
     </div>
@@ -3515,6 +3587,109 @@
   ustawEkran();
   addEventListener('resize', ustawEkran);
 
+  /* PANELE (style „PANELE”): przypięte sekcje zakrywane przez następne. --h = wysokość (wyższy panel przypina się dołem),
+     .przykryta = panel zakryty w całości (wcześniejszy od tego, który zakrywa pas tuż pod paskiem menu). Zakrycie liczy
+     samo scrollY z progów (góra panelu bez przypięcia − pasek − 1 px) w zdarzeniu scroll, bez odczytu układu — zdarzenie
+     przychodzi klatkę po przewinięciu, stąd zapas w górę (okryj). uklad(fn) = pomiar bez przypięcia: offsetTop przypiętego zawiera przesunięcie, więc przystanki,
+     kotwice i kurtyny mierzą przez nią — tylko przy przeliczeniach, nigdy co klatkę (dwa przeliczenia układu). */
+  (() => {
+    const html = document.documentElement, main = document.querySelector('main');
+    const uklad = fn => {
+      if (html.classList.contains('mierz')) return fn();   /* wywołanie w wywołaniu: klasę zdejmuje zewnętrzne */
+      html.classList.add('mierz'); try { return fn(); } finally { html.classList.remove('mierz'); }
+    };
+    window.FOC_PANELE = { uklad };
+    if (/[?&]panele=0\b/.test(location.search) || !main) return;
+    html.classList.add('panele');
+    const kol = matchMedia('(max-width:980px)'), q = s => document.querySelector(s);
+    /* kolejność na ekranie; do 980 px kurtyny to po dwa panele („O mnie” stoi nad hasłem: column-reverse) */
+    const lista = () => [...main.children].flatMap(e => !kol.matches ? [e] : e.id === 'dlaczego' ? [q('#whyLayer'), q('#dlaczego .how')]
+      : e.id === 'o-mnie' ? [q('#aboutLayer'), q('#hasloRegularnie')] : [e]).filter(e => e && e.offsetHeight);
+    let L = [], K = [], progi = [], k = -1, tL = 0, yOst = 0, zapas = 0, S = [], nag = 0, vh = innerHeight, szer = innerWidth, fT = 0;
+    const stopka = q('footer'), dok = e => { let t = 0; for (let x = e; x; x = x.offsetParent) t += x.offsetTop; return t; };
+    /* K = co odpiąć: panel przypięty sam albo przez sekcję (do 980 px „Jak to działa” i hasło stoją w niej position:relative —
+       top przesuwałby je, a przypięta sekcja trzymałaby je w miejscu) */
+    const doOdpiecia = e => getComputedStyle(e).position === 'sticky' ? e : e.closest('main > *') || e;
+    /* w dół zakrycie dokładnie z progów; w górę zdejmowane z zapasem pół ekranu: przeglądarka rysuje przewiniętą klatkę, zanim
+       przyjdzie zdarzenie (szybkie machnięcie w górę: przez klatkę pas tła nad zjeżdżającym panelem). Po przewinięciu znów
+       dokładnie — panel zdjęty z zapasem stoi jeszcze pod następnym, więc na ekranie nic się nie zmienia */
+    const okryj = dokl => {
+      const y = scrollY, z = dokl === true || y >= yOst ? 0 : zapas; yOst = y;
+      let n = 0;
+      while (n + 1 < progi.length && y >= progi[n + 1] + z) n++;
+      if (n !== k) { k = n; K.forEach((e, i) => e.classList.toggle('przykryta', i < n)); }
+    };
+    /* wejście treści: ostatnie 45 % wjazdu panelu, koniec, gdy góra panelu dojdzie do paska menu (tam pierwszy przystanek
+       sekcji, także wyższej niż ekran) — albo wcześniej, na pierwszym przystanku, na którym panel zajmuje co najmniej 30 % ekranu
+       (S z PRZYSTANKÓW; telefon poziomo: przystanek „Plan” 153 px pod paskiem, treść stała przygaszona) */
+    /* --wj = przewinięcie, przy którym góra panelu jest na dole ekranu: od niego narasta cień krawędzi (w spoczynku panel stoi
+       tuż pod ekranem, a jego cień przyciemniał dół bieżącej sekcji). Sekcja z dwoma panelami (do 980 px) nosi cień sama
+       i bierze --wj pierwszego z nich — stąd pętla od końca */
+    const wejscie = () => { for (let i = L.length - 1; i > 0; i--) {
+      const e = L[i], t = progi[i] + nag + 1, A = vh - nag, s = S.find(s => s.y > t - vh + .3 * A && s.y < t - nag), d = s ? s.y : t - nag;
+      e.style.setProperty('--od', Math.round(d - .45 * A) + 'px');
+      e.style.setProperty('--do', Math.round(d) + 'px');
+      [e, e.closest('main > *')].forEach(x => x.style.setProperty('--wj', Math.round(t - vh) + 'px'));
+    }
+    if (stopka) stopka.style.setProperty('--wj', Math.round(fT - vh) + 'px');   /* stopka do 980 px też nosi cień */
+    /* Chrome czasem zostawia animacji stary zakres po zmianie dziedziczonej zmiennej (telefon poziomo: „Plan” stał przygaszony,
+       krycie 0,34 = zakres sprzed przystanków) — bieżący zakres ze stylów także wprost w animacji */
+    if (document.getAnimations) document.getAnimations().forEach(a => { if (!/^(wjazdTresci|cienWjazdu)$/.test(a.animationName)) return;
+      try { const c = getComputedStyle(a.effect.target); a.rangeStart = c.animationRangeStart; a.rangeEnd = c.animationRangeEnd; } catch (_) {} }); };
+    const licz = () => {
+      K.forEach(e => e.classList.remove('przykryta'));
+      L.forEach(e => { e.style.removeProperty('--od'); e.style.removeProperty('--do'); });
+      L = lista(); K = L.map(doOdpiecia);
+      nag = header.offsetHeight; zapas = .5 * (vh - nag);
+      progi = uklad(() => { fT = stopka ? dok(stopka) : 0; return L.map(e => dok(e) - nag - 1); });
+      wejscie();
+      k = -1; okryj(true);
+    };
+    FOC_PANELE.przystanki = s => { S = s; wejscie(); };
+    /* przejazd PRZYSTANKÓW (scrollTo w rAF): zakrycie w tej samej klatce — zdarzenie scroll przyszłoby po malowaniu */
+    FOC_PANELE.okryj = okryj;
+    /* --h od razu (przypięcie), progi po uspokojeniu (rozwijane FAQ zmienia wysokość co klatkę) */
+    const ro = new ResizeObserver(w => {
+      w.forEach(e => e.target.tagName === 'FOOTER' ? ustawEkran() : e.target.style.setProperty('--h', e.target.offsetHeight + 'px'));
+      clearTimeout(tL); tL = setTimeout(licz, 100);
+    });
+    /* stopka: --stopka = wysokość pustego końca <main> (style PANELE), także gdy zmienia ją dojście czcionek */
+    [...main.children, q('#whyLayer'), q('#aboutLayer'), q('footer')].forEach(e => e && ro.observe(e));
+    licz();
+    addEventListener('scroll', okryj, { passive: true });
+    if ('onscrollend' in window) addEventListener('scrollend', () => okryj(true));
+    else { let tK = 0; addEventListener('scroll', () => { clearTimeout(tK); tK = setTimeout(() => okryj(true), 150); }, { passive: true }); }   /* Safari */
+    const mqDotyk = matchMedia('(hover: none) and (pointer: coarse)');
+    addEventListener('resize', () => {
+      /* dotyk: sama wysokość zmieniona o < 25 % = pasek adresu (jak w PRZYSTANKACH) — bez przeliczania w trakcie gestu */
+      if (mqDotyk.matches && innerWidth === szer && Math.abs(innerHeight - vh) < .25 * vh) return;
+      szer = innerWidth; vh = innerHeight; clearTimeout(tL); tL = setTimeout(licz, 100);
+    });
+    /* Tab do zakrytego panelu: zakrycie zdjęte, zanim element dostanie fokus (faza przechwytywania — kroki „Jak to działa”
+       mierzą przy fokusie swój pop-up); przeglądarka widzi element w oknie i sama nie przewija */
+    document.addEventListener('focus', e => {
+      if (!e.target.closest || !e.target.closest('.przykryta')) return;
+      K.forEach(x => x.classList.remove('przykryta')); k = -1;
+    }, true);
+    /* fokus na elemencie, którego nie widać (pod następnym panelem, pod paskiem albo poza oknem): przystanek, z którego widać go
+       w całości. focusin przychodzi po obsłudze fokusu samego elementu (kroki same przewijają do kurtyny) */
+    /* w trakcie przejazdu (szybki Tab) sprawdzenie czeka na jego koniec — przejazd nadpisałby przewinięcie do elementu;
+       gdy w tym czasie ruszy następny przejazd (użytkownik przewija dalej), rezygnuje */
+    const widoczny = (t, jazda) => {
+      if (document.activeElement !== t) return;
+      const m = FOC_PRZYSTANKI.ruch;
+      if (m) { if (!jazda || m === jazda) setTimeout(() => widoczny(t, m), 150); return; }
+      const r = t.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+      const w = x >= 0 && x < innerWidth && y >= 0 && y < innerHeight && document.elementFromPoint(x, y);
+      if (!w || !(w === t || t.contains(w) || w.contains(t))) FOC_PRZYSTANKI.pokaz(t);
+    };
+    /* powrót do karty/okna: przeglądarka ponownie ogłasza fokus na tym samym elemencie — to nie Tab, nie przewijamy */
+    let przedWyjsciem = null;
+    addEventListener('blur', e => { if (e.target === window) przedWyjsciem = document.activeElement; });
+    document.addEventListener('focusin', e => { const p = przedWyjsciem; przedWyjsciem = null; if (e.target === p) return;
+      if (e.target.getBoundingClientRect && window.FOC_PRZYSTANKI) widoczny(e.target); });
+  })();
+
   /* reveal on scroll */
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
@@ -3572,8 +3747,9 @@
     /* tryb kurtyny: krok pod zamkniętą (albo odjechaną) kurtyną jest przykryty „dlaczego" → fokus z klawiatury najpierw
        przewija do otwartej kurtyny (p = .95), a fokus na treści „dlaczego" przy rozsuniętej — do zamkniętej (p = 0) */
     const stos = document.querySelector('.stack:not(.stack-about)');
-    const kurtP = () => (scrollY - stos.offsetTop) / (stos.offsetHeight - innerHeight);
-    const doKurtyny = p => scrollTo({ top: stos.offsetTop + (stos.offsetHeight - innerHeight) * p, behavior: 'instant' });
+    const stosTop = () => FOC_PANELE.uklad(() => stos.offsetTop);   /* przypięty panel: offsetTop bez przesunięcia (PANELE) */
+    const kurtP = () => (scrollY - stosTop()) / (stos.offsetHeight - innerHeight);
+    const doKurtyny = p => scrollTo({ top: stosTop() + (stos.offsetHeight - innerHeight) * p, behavior: 'instant' });
     document.getElementById('whyLayer').addEventListener('focusin', e => {
       if (stackMode() && e.target.matches(':focus-visible') && kurtP() > .38) doKurtyny(0);
     });
@@ -4072,7 +4248,8 @@
     still.className = 'fon-still'; still.alt = ''; still.decoding = 'async';
     still.dataset.src = 'assets/3d/fon_wideo.webp?v=20260926';
     vphone.querySelector('.dl-body').replaceWith(host);
-    host.append(still, ekran, ...popy);
+    const blask = document.createElement('div'); blask.className = 'fon-blask'; blask.append(document.createElement('i'));
+    host.append(blask, still, ekran, ...popy);
     let vpS = 0, vpGl = null, vpApi = null, vpBlisko = false, popWym = [], vpX = 0, vpVw = 1e9;
     const celKat = () => ({ ry: W.KAT.ry + vpx * W.KURSOR[0], rx: W.KAT.rx - vpy * W.KURSOR[1], rz: W.KAT.rz });
     /* ekran i okienka w pozie kat; narożniki ekranu przestawione [PG, PD, LD, LG], bo nakładka leży poziomo */
@@ -4088,7 +4265,12 @@
     };
     /* zdjęcie także przy działającym silniku: jedno płótno należy do hosta o największym udziale, więc przy przejściu z „O mnie”
        telefon bywa w 40% na ekranie bez płótna i bez zdjęcia byłby gołym ekranem */
-    const zdjecie = () => { if (vpBlisko && vpS && !still.src) still.src = still.dataset.src; };
+    const zdjecie = () => {
+      if (!vpBlisko || !vpS || still.src) return;
+      still.src = still.dataset.src;
+      (still.decode ? still.decode() : Promise.resolve()).catch(() => {}).then(() => requestAnimationFrame(() => {   /* poświata po zdekodowaniu (CSS .fon-blask) */
+        host.style.setProperty('--blask-img', `url("${still.currentSrc || still.src}")`); host.classList.add('blask-on'); }));
+    };
     /* host silnika istnieje tylko przy odkrytej sekcji (vpS > 0) i działającym silniku */
     const rejestruj = () => {
       if ((!!vpApi && vpS > 0) === !!vpGl) return;
@@ -4363,7 +4545,10 @@
       if (!heroPhone.classList.contains('blask-on')) {   /* zdjęcie z poświatą dopiero po zdekodowaniu (CSS .blask-on) */
         const im = heroPhone.querySelector('.fon-still');
         (im && im.decode ? im.decode() : Promise.resolve()).catch(() => {})
-          .then(() => requestAnimationFrame(() => heroPhone.classList.add('blask-on')));
+          .then(() => requestAnimationFrame(() => {
+            if (im) heroPhone.style.setProperty('--blask-img', `url("${im.currentSrc || im.src}")`);   /* maska poświaty = to samo zdjęcie (telefon albo komputer) */
+            heroPhone.classList.add('blask-on');
+          }));
       }
     }
     const poza = !plynne ? H.M : hpGlHost ? { ry: tiltY, rx: tiltX } : H.START, b = FOC_FIZ.ukladTel([poza], H.F);
@@ -4723,13 +4908,14 @@
         ? heroStack.offsetTop + heroStack.offsetHeight - vh : vh * 0.72;
       cw = document.documentElement.clientWidth;
       /* podłoga = dół akapitu manifestu + dolny odstęp sekcji (na komputerze to samo co góra „Dlaczego"; telefon ma pod nią pas tła, M1) */
-      const uk = { cw, vh, pinEnd, floorBase: (manWrap ? manWrap.getBoundingClientRect().bottom + parseFloat(getComputedStyle(manWrap.parentElement).paddingBottom)
+      /* prostokąt + przewinięcie = położenie w dokumencie, więc bez przypięcia bloku górnego (PANELE) */
+      const uk = FOC_PANELE.uklad(() => ({ cw, vh, pinEnd, floorBase: (manWrap ? manWrap.getBoundingClientRect().bottom + parseFloat(getComputedStyle(manWrap.parentElement).paddingBottom)
           : dl.getBoundingClientRect().top) + sy - 14,
-        naglowek: Math.round(header.getBoundingClientRect().bottom), w: talerze.map(t => t.offsetWidth), telefon: !stackMode() };
+        naglowek: Math.round(header.getBoundingClientRect().bottom), w: talerze.map(t => t.offsetWidth), telefon: !stackMode() }));
       const t = czas();
       r = FOC_FIZ.rzutHero(uk); r.uk = uk;
       nw = els.slice(3, 6).map(n => n.offsetWidth);
-      oy = box.getBoundingClientRect().top + sy;
+      oy = FOC_PANELE.uklad(() => box.getBoundingClientRect().top) + sy;
       yPod = uk.floorBase - uk.naglowek;
       /* pierwsze lądowanie zapala plamę światła */
       tLad = Math.min(...r.tory.map(tr => { const p = tr.sim.p; let j = 0; while (p[j * 3 + 1] > 0) j++; return j / FOC_FIZ.stale.HZ; }));
@@ -4928,7 +5114,7 @@
   omWiecej.addEventListener('click', () => {
     const otworz = !omOpis.classList.contains('otwarty');
     /* „Zwiń” niżej w rozwiniętej sekcji: najpierw na górę sekcji — po skurczeniu strony telefon przyciągnąłby się do „hasła” */
-    const omL = document.getElementById('aboutLayer'), omG = omL.getBoundingClientRect().top, nag = document.getElementById('header').offsetHeight;
+    const omL = document.getElementById('aboutLayer'), omG = FOC_PANELE.uklad(() => omL.getBoundingClientRect().top), nag = document.getElementById('header').offsetHeight;
     if (!otworz && omG < nag - 2) scrollTo(0, omG + scrollY - nag);
     omUstaw(otworz);
   });
@@ -5139,7 +5325,6 @@
       document.querySelectorAll('.yt-count').forEach(el => { el.textContent = n; });
       document.querySelectorAll('.yt-adj').forEach(el => { el.textContent = f.adj; });
       document.querySelectorAll('.yt-noun').forEach(el => { el.textContent = f.noun; });
-      if (d.url) document.querySelectorAll('[data-yt-link]').forEach(a => { a.href = d.url; });
       document.getElementById('wideo')?.classList.add('yt-jest');
     })
     .catch(() => {});   /* brak pliku = jak 0 filmów: sekcja zostaje, bez liczby i bez YouTube */
@@ -5305,6 +5490,9 @@
     ZAKLADKA_DOTYK: 137   /* dotyk: długa strefa co (ekran − 137 px) — tyle zostaje na ekranie z poprzedniego przystanku (+ pasek menu) */
   };
   const docTop = el => { let t = 0; for (let e = el; e; e = e.offsetParent) t += e.offsetTop; return t; };
+  /* pomiary położeń bez przypięcia paneli (PANELE: offsetTop przypiętego zawiera przesunięcie) */
+  const uklad = window.FOC_PANELE ? FOC_PANELE.uklad : f => f();
+  const okryj = window.FOC_PANELE && FOC_PANELE.okryj || (() => {});
   const widoczny = el => el && !el.hidden && el.offsetHeight > 0;
   const log = [], loguj = w => { w.t = Math.round(performance.now()); log.push(w); if (log.length > 400) log.shift(); return w; };
   let vhCalc = innerHeight, szer = innerWidth, plan = null;
@@ -5312,7 +5500,7 @@
 
   /* ---- przystanki z układu: {S: [{id, y, twardy, strefa?}], drzwi: [[a, b]], vh, nag} ----
      y liczone z offsetTop (nie z prostokąta: .rv przed wjazdem jest przesunięte o 46 px) */
-  const przystanki = () => {
+  const przystanki = () => uklad(() => {
     const dot = dotyk(), vh = dot ? vhCalc : innerHeight, nag = header ? header.offsetHeight : 0, A = vh - nag, m = P.MARGINES;
     const stopka = q('footer'), maxY = Math.max(0, (stopka ? docTop(stopka) + stopka.offsetHeight : html.scrollHeight) - vh);
     const stack = innerWidth > 980 && !mqR.matches;   /* ta sama reguła co stackMode() strony */
@@ -5437,7 +5625,7 @@
       R = W.filter((s, i) => s.twardy || ((!W[i - 1] || s.y - W[i - 1].y >= M) && (!W[i + 1] || W[i + 1].y - s.y >= M)));
     }
     return { S: R, drzwi, vh, nag, maxY };
-  };
+  });
   /* strefa swobodnego przewijania dla y w kierunku dir (0 = obojętnie) */
   const strefa = (S, y, dir) => {
     for (const s of S) if (s.strefa !== undefined) {
@@ -5478,7 +5666,8 @@
     html.classList.toggle('przyst-css', wl);
   };
   let tPrz = 0;
-  const przelicz = () => { clearTimeout(tPrz); tPrz = setTimeout(() => { plan = bazowo() ? przystanki() : null; rysuj(); }, 120); };
+  const przelicz = () => { clearTimeout(tPrz); tPrz = setTimeout(() => { plan = bazowo() ? przystanki() : null; rysuj();
+    if (window.FOC_PANELE && FOC_PANELE.przystanki) FOC_PANELE.przystanki(plan ? plan.S : []); }, 120); };   /* wejście treści do przystanku */
 
   /* ---- przejazd (mysz, kotwice): rAF + scrollTo; scroll-behavior:auto na czas ruchu (html ma smooth, rozmywałby każdy krok) ---- */
   const krzywe = { krok: p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2,
@@ -5486,8 +5675,8 @@
   let ruch = null, blokadaDo = 0, tDojazd = -1e9;
   const anuluj = powod => { if (!ruch) return; cancelAnimationFrame(ruch.raf); ruch.wpis.przerwane = powod; ruch = null; html.style.scrollBehavior = ''; };
   /* leniwe obrazki przy celu od razu (zdjęcie „O mnie" nie zdążało) */
-  const wczytajObrazki = cel => document.querySelectorAll('img[loading="lazy"]').forEach(i => {
-    const t = docTop(i); if (t < cel + 2 * innerHeight && t + i.offsetHeight > cel - innerHeight) i.loading = 'eager'; });
+  const wczytajObrazki = cel => uklad(() => document.querySelectorAll('img[loading="lazy"]').forEach(i => {
+    const t = docTop(i); if (t < cel + 2 * innerHeight && t + i.offsetHeight > cel - innerHeight) i.loading = 'eager'; }));
   const jedz = (cel, { czas, krzywa = krzywe.krok, postoj = P.POSTOJ, powod = '', potem = null } = {}) => {
     anuluj('nowy');
     const y0 = scrollY, d = cel - y0, dur = czas ?? P.CZAS(d);
@@ -5500,7 +5689,7 @@
     const f = now => {
       if (ruch !== r) return;
       const p = ogr((now - t0) / dur, 0, 1);
-      scrollTo(0, y0 + d * krzywa(p));
+      scrollTo(0, y0 + d * krzywa(p)); okryj();
       if (p < 1) { r.raf = requestAnimationFrame(f); return; }
       ruch = null; html.style.scrollBehavior = ''; tDojazd = performance.now(); blokadaDo = tDojazd + postoj;
       wpis.koniec = Math.round(tDojazd - t0);
@@ -5621,14 +5810,15 @@
     e.preventDefault();
     const pl = plan = przystanki();
     /* #top = hero w przypiętym bloku: jego offsetTop zależy od przewinięcia, więc wprost 0 */
-    const yA = id === 'top' ? 0 : docTop(el) - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
+    const eT = uklad(() => docTop(el)), eH = el.offsetHeight;
+    const yA = id === 'top' ? 0 : eT - (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
     /* przystanek o nazwie sekcji (np. nagłówek „plan” nad kadrem karty); element w środku sekcji (pytanie FAQ z noty pod
        planem) — ostatni przystanek nad nim: w jego strefie tuż nad elementem, inaczej sam przystanek, jeśli widać z niego
        co najmniej 60 px elementu (najbliższy chował pytanie pod pasek); w ostateczności najbliższy */
     /* element bez własnego przystanku, nie wyższy niż ekran (newsletter na komputerze: przystanek „koniec” = zapis + stopka) —
        przystanek, z którego widać go najwięcej (co najmniej 60 %); scroll-margin #zapis podnosił yA nad „koniec” i kotwica
        stawała na FAQ (25.10) */
-    const eT = docTop(el), eH = el.offsetHeight, widac = s => Math.min(eT + eH, s.y + pl.vh) - Math.max(eT, s.y + pl.nag);
+    const widac = s => Math.min(eT + eH, s.y + pl.vh) - Math.max(eT, s.y + pl.nag);
     let w = eH <= pl.vh - pl.nag && pl.S.reduce((b, s) => !b || widac(s) > widac(b) ? s : b, null);
     if (w && widac(w) < .6 * eH) w = null;
     const nad = pl.S.filter(s => s.y <= yA - pl.nag + 1).pop(), cel = pl.S.find(s => s.id === id) ? pl.S.find(s => s.id === id).y
@@ -5702,14 +5892,14 @@
   const pokaz = el => {
     if (!bazowo() || ruch) return;
     plan = przystanki(); rysuj();
-    const y = scrollY, eT = docTop(el), eB = eT + el.offsetHeight, widac = sy => eT >= sy + plan.nag - 1 && eB <= sy + plan.vh + 1;
+    const y = scrollY, eT = uklad(() => docTop(el)), eB = eT + el.offsetHeight, widac = sy => eT >= sy + plan.nag - 1 && eB <= sy + plan.vh + 1;
     if ((plan.S.some(s => Math.abs(s.y - y) <= 3) || strefa(plan.S, y, 0)) && widac(y)) return;
     const k = plan.S.filter(s => widac(s.y)); if (!k.length) return;
     const cel = k.reduce((b, s) => Math.abs(s.y - y) < Math.abs(b.y - y) ? s : b).y;
     loguj({ typ: 'pokaz', od: Math.round(y), do: cel });
     if (dotyk()) scrollTo({ top: cel, behavior: 'smooth' }); else jedz(cel, { powod: 'faq zwiniete' });
   };
-  window.FOC_PRZYSTANKI = { plan: () => plan, log, P, przelicz, pokaz, get ruch() { return !!ruch; } };
+  window.FOC_PRZYSTANKI = { plan: () => plan, log, P, przelicz, pokaz, get ruch() { return ruch; } };
 })();
 /*<PRZYSTANKI*/</script>
 
