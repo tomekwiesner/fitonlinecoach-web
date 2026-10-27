@@ -1793,9 +1793,8 @@
     #whyLayer .dl-scena{margin-top:0}
     /* minmax(0,…): najdłuższe słowo niewidocznego opisu („anglojęzycznych”) rozpychało kolumnę poza ekran */
     #whyLayer .wa-teksty{margin-top:0;grid-template-columns:minmax(0,1fr)}
-    /* &shy; w „anglo-języcznych”: wąska kolumna łamie z dywizem w miejscu sylaby, nie w środku słowa (hyphens:auto
-       nie zna polskiego w każdej przeglądarce) */
-    #whyLayer .wa-teksty h3{hyphens:auto;overflow-wrap:break-word}
+    /* słowa tytułów bez dzielenia (Tomek 27.10): najdłuższe słowo musi zmieścić się w kolumnie obok telefonu */
+    #whyLayer .wa-teksty h3{overflow-wrap:break-word}
     #whyLayer .wa-teksty h3{font-size:1.02rem;margin-bottom:8px}
     #whyLayer .wa-teksty p{font-size:.9rem;line-height:1.5}
     #whyLayer .wa-ster{justify-content:flex-start;margin-top:14px}
@@ -2207,7 +2206,7 @@
               <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania, a dobra technika zmniejsza ryzyko kontuzji.</p>
             </div>
             <div class="dl-tresc">
-              <h3>Masz dość anglo&shy;języcznych tutoriali?</h3>
+              <h3>Masz dość angielskich tutoriali?</h3>
               <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
             </div>
             <div class="dl-tresc">
