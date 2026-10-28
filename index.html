@@ -1440,6 +1440,7 @@
   .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;margin-bottom:60px}
   .foot-logo{height:72px;width:auto}
   .socials{display:flex;gap:12px}
+  @media(max-width:340px){.socials{gap:4px}}
   .socials a{width:46px;height:46px;border:1px solid var(--line);display:flex;align-items:center;
     justify-content:center;transition:.25s;border-radius:2px}
   .socials a:hover{border-color:var(--lime);background:var(--lime)}
@@ -1987,16 +1988,15 @@
 
 <!-- ===== Dane strukturalne (JSON-LD) — pakiet SEO z wątku Social media FOC =====
      Adres, KRS, NIP i REGON z sekcji 3a FITONLINECOACH-STATUS.md (dane spółki od 26.08.2026).
-     Oferta wskazuje stronę planu W APLIKACJI, bo tam jest zakup. sameAs: YouTube i Instagram przy MARCE, LinkedIn przy OSOBIE — to profil
-     osobisty, nie firmowy, więc na węźle Organization byłby błędem. Konta marki
-     IG/FB/TikTok dopisać, gdy powstaną. -->
+     Oferta wskazuje stronę planu W APLIKACJI, bo tam jest zakup. sameAs: tylko konta marki (YouTube, Instagram @fitonlinecoach.pl) — prywatnych profili Tomka nie linkujemy
+     (decyzja Tomka 28.10). -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@graph": [
     { "@type": "WebSite", "@id": "https://fitonlinecoach.com/#website", "url": "https://fitonlinecoach.com/", "name": "FitOnlineCoach", "inLanguage": "pl-PL", "publisher": { "@id": "https://fitonlinecoach.com/#org" } },
-    { "@type": "Organization", "@id": "https://fitonlinecoach.com/#org", "name": "FitOnlineCoach", "legalName": "FitOnlineCoach prosta spółka akcyjna", "url": "https://fitonlinecoach.com/", "logo": "https://fitonlinecoach.com/assets/icon_512.png", "image": "https://fitonlinecoach.com/assets/og-image.jpg", "email": "kontakt@fitonlinecoach.com", "telephone": "+48662255215", "vatID": "PL9542914095", "taxID": "9542914095", "address": { "@type": "PostalAddress", "streetAddress": "ul. Żyzna 2", "postalCode": "40-314", "addressLocality": "Katowice", "addressCountry": "PL" }, "identifier": [{ "@type": "PropertyValue", "propertyID": "KRS", "value": "0001262434" }, { "@type": "PropertyValue", "propertyID": "REGON", "value": "545549296" }], "founder": { "@id": "https://fitonlinecoach.com/#tomek" }, "sameAs": ["https://www.youtube.com/@FitOnlineCoach", "https://instagram.com/tomek.wiesner"] },
-    { "@type": "Person", "@id": "https://fitonlinecoach.com/#tomek", "name": "Tomasz Wiesner", "jobTitle": "Trener personalny, fizjoterapeuta i dietetyk", "worksFor": { "@id": "https://fitonlinecoach.com/#org" }, "sameAs": ["https://www.linkedin.com/in/tomek-wiesner-70537333a/"] },
+    { "@type": "Organization", "@id": "https://fitonlinecoach.com/#org", "name": "FitOnlineCoach", "legalName": "FitOnlineCoach prosta spółka akcyjna", "url": "https://fitonlinecoach.com/", "logo": "https://fitonlinecoach.com/assets/icon_512.png", "image": "https://fitonlinecoach.com/assets/og-image.jpg", "email": "kontakt@fitonlinecoach.com", "telephone": "+48662255215", "vatID": "PL9542914095", "taxID": "9542914095", "address": { "@type": "PostalAddress", "streetAddress": "ul. Żyzna 2", "postalCode": "40-314", "addressLocality": "Katowice", "addressCountry": "PL" }, "identifier": [{ "@type": "PropertyValue", "propertyID": "KRS", "value": "0001262434" }, { "@type": "PropertyValue", "propertyID": "REGON", "value": "545549296" }], "founder": { "@id": "https://fitonlinecoach.com/#tomek" }, "sameAs": ["https://www.youtube.com/@FitOnlineCoach", "https://www.instagram.com/fitonlinecoach.pl/", "https://www.facebook.com/FitOnlineCoachPL", "https://x.com/fitonlinecoach", "https://www.tiktok.com/@fitonlinecoach"] },
+    { "@type": "Person", "@id": "https://fitonlinecoach.com/#tomek", "name": "Tomasz Wiesner", "jobTitle": "Trener personalny, fizjoterapeuta i dietetyk", "worksFor": { "@id": "https://fitonlinecoach.com/#org" } },
     { "@type": "Product", "name": "Plan treningowy „Początek”", "description": "4 tygodnie treningu, 3 dni w tygodniu, 12 treningów, ponad 50 ćwiczeń z poradnikiem wideo. Dla osób zaczynających lub wracających do treningu.", "brand": { "@id": "https://fitonlinecoach.com/#org" }, "image": "https://fitonlinecoach.com/assets/plan_poczatek_karta.jpg", "offers": { "@type": "Offer", "price": "79.00", "priceCurrency": "PLN", "availability": "https://schema.org/InStock", "url": "https://app.fitonlinecoach.com/plany/poczatek" } }
   ]
 }
@@ -2012,14 +2012,20 @@
   <p class="gsub">Budujemy dla Ciebie nową stronę — plany treningowe z pełnym wsparciem wideo.
     Zaglądaj, startujemy niebawem.</p>
   <div class="socials">
-    <a href="https://instagram.com/tomek.wiesner" target="_blank" rel="noopener" aria-label="Instagram">
+    <a href="https://www.instagram.com/fitonlinecoach.pl/" target="_blank" rel="noopener" aria-label="Instagram">
       <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2-.1-1.2-.1-1.6-.1-4.8s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4 1.2-.1 1.6-.1 4.8-.1zm0 2c-3.1 0-3.5 0-4.7.1-1.1.1-1.4.2-1.7.3-.4.2-.7.3-1 .6-.3.3-.5.6-.6 1-.1.3-.3.6-.3 1.7-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.4.3 1.7.2.4.3.7.6 1 .3.3.6.5 1 .6.3.1.6.3 1.7.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.4-.2 1.7-.3.4-.2.7-.3 1-.6.3-.3.5-.6.6-1 .1-.3.3-.6.3-1.7.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.4-.3-1.7-.2-.4-.3-.7-.6-1-.3-.3-.6-.5-1-.6-.3-.1-.6-.3-1.7-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.3a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.8-2.9a1.3 1.3 0 1 1-2.6 0 1.3 1.3 0 0 1 2.6 0z"/></svg>
     </a>
     <a href="https://www.youtube.com/@FitOnlineCoach" target="_blank" rel="noopener" aria-label="YouTube">
       <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.5 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>
     </a>
-    <a href="https://www.linkedin.com/in/tomek-wiesner-70537333a/" target="_blank" rel="noopener" aria-label="LinkedIn">
-      <svg viewBox="0 0 24 24"><path d="M20.4 20.4h-3.5v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.2 2.4 4.2 5.4v6.3zM5.3 7.4a2 2 0 1 1 0-4.1 2 2 0 0 1 0 4.1zm1.8 13H3.6V9h3.5v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 1 .8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7c0-1-.8-1.7-1.8-1.7z"/></svg>
+    <a href="https://www.facebook.com/FitOnlineCoachPL" target="_blank" rel="noopener" aria-label="Facebook">
+      <svg viewBox="0 0 24 24"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg>
+    </a>
+    <a href="https://x.com/fitonlinecoach" target="_blank" rel="noopener" aria-label="X">
+      <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+    </a>
+    <a href="https://www.tiktok.com/@fitonlinecoach" target="_blank" rel="noopener" aria-label="TikTok">
+      <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
     </a>
   </div>
   <p class="glegal">
@@ -2781,14 +2787,20 @@
         <li><a href="https://app.fitonlinecoach.com/regulamin" target="_blank" rel="noopener">Regulamin</a></li>
       </ul>
       <div class="socials">
-        <a href="https://instagram.com/tomek.wiesner" target="_blank" rel="noopener" aria-label="Instagram">
+        <a href="https://www.instagram.com/fitonlinecoach.pl/" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2-.1-1.2-.1-1.6-.1-4.8s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4 1.2-.1 1.6-.1 4.8-.1zm0 2c-3.1 0-3.5 0-4.7.1-1.1.1-1.4.2-1.7.3-.4.2-.7.3-1 .6-.3.3-.5.6-.6 1-.1.3-.3.6-.3 1.7-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.4.3 1.7.2.4.3.7.6 1 .3.3.6.5 1 .6.3.1.6.3 1.7.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.4-.2 1.7-.3.4-.2.7-.3 1-.6.3-.3.5-.6.6-1 .1-.3.3-.6.3-1.7.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.4-.3-1.7-.2-.4-.3-.7-.6-1-.3-.3-.6-.5-1-.6-.3-.1-.6-.3-1.7-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.3a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.8-2.9a1.3 1.3 0 1 1-2.6 0 1.3 1.3 0 0 1 2.6 0z"/></svg>
         </a>
         <a href="https://www.youtube.com/@FitOnlineCoach" target="_blank" rel="noopener" aria-label="YouTube">
           <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.5 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>
         </a>
-        <a href="https://www.linkedin.com/in/tomek-wiesner-70537333a/" target="_blank" rel="noopener" aria-label="LinkedIn">
-          <svg viewBox="0 0 24 24"><path d="M20.4 20.4h-3.5v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9v5.7H9.4V9h3.4v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.6 0 4.2 2.4 4.2 5.4v6.3zM5.3 7.4a2 2 0 1 1 0-4.1 2 2 0 0 1 0 4.1zm1.8 13H3.6V9h3.5v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 1 .8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7c0-1-.8-1.7-1.8-1.7z"/></svg>
+        <a href="https://www.facebook.com/FitOnlineCoachPL" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg>
+        </a>
+        <a href="https://x.com/fitonlinecoach" target="_blank" rel="noopener" aria-label="X">
+          <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@fitonlinecoach" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
         </a>
       </div>
     </div>
