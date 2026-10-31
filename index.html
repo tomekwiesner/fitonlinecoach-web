@@ -1297,10 +1297,15 @@
      i okienka z homografii (origin 0 0, bez przejść). Poświata z obrysu bryły. Płótno i zdjęcie nie łapią wskaźnika. */
   .vphone-wrap{display:flex;justify-content:center;margin:0 auto 46px}
   .vphone{position:relative;width:560px;height:275px}
-  .vp-track{display:flex;height:100%;width:100%;transition:transform .6s cubic-bezier(.62,.03,.2,1)}
-  .vp-track.vp-snap{transition:none}
-  .vp-slide{flex:0 0 100%;height:100%}
-  .vp-slide video{width:100%;height:100%;object-fit:contain;display:block;background:#0b0f0d}   /* cała klatka 16:9 w ekranie 874×402 (pasy po bokach jak w iPhonie) — przy cover ginęło logo z prawego górnego rogu (Tomek 26.10) */
+  /* „Telefon w ruchu”: widać jeden film (.on); przy zmianie telefon obraca się w dłoni (skrypt), a ekran na chwilę przygasa,
+     żeby podmiana w połowie obrotu nie była ostrym cięciem. Ukryte filmy visibility:hidden = bez warstw kompozytora, a mają
+     renderer (przy display:none Safari odtwarza film „niewidoczny” i po zdjęciu ukrycia pokazuje czarną klatkę). */
+  .vp-track{position:relative;height:100%;width:100%}
+  .vp-slide{position:absolute;inset:0}
+  .vp-slide:not(.on){visibility:hidden}
+  /* cała klatka 16:9 w ekranie 874×402 (pasy po bokach jak w iPhonie, kolor pasów = tło .fon-ekran) — przy cover ginęło logo z prawego górnego rogu (Tomek 26.10).
+     Pudełko 16:9 bez tła: film nie sięga pod wyspę, więc wyspa nie wymaga własnej warstwy (zmierzone w LayerTree). */
+  .vp-slide video{height:100%;aspect-ratio:16/9;margin:0 auto;object-fit:contain;display:block}
   /* Szklane okienka WYPRZEDZAJĄCE telefon: homografia prostokątów na z = 40 / 55 mm przed ekranem, więc
      pochylają się razem z telefonem. Szerokość jak w dawnym pudełku (max-width 232), nie z wąskiego hosta. */
   .vp-pop{position:absolute;left:0;top:0;width:max-content;transform-origin:0 0;z-index:4;border-radius:16px;padding:13px 17px;max-width:232px;
@@ -1321,21 +1326,21 @@
   .vp-pop-ic{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;
     background:var(--lime);color:#0c130c;font-size:.82rem;padding-left:2px}
   .vp-pop-txt{line-height:1.3}
-  @media(prefers-reduced-motion:reduce){.vp-track{transition:none}}
   .vp-host{position:absolute;transition:none}
   .vp-host .fon-still,.vp-host .gl3d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
-  .vp-host .gl3d{filter:drop-shadow(0 0 var(--blask,46px) rgba(153,230,109,.30))}
-  /* poświata zdjęcia: warstwa z maską z kształtu zdjęcia + blur, jak w hero (drop-shadow na <img> = prostokąt w Safari na iPhonie, 26.10) */
+  /* poświata: warstwa z maską z kształtu zdjęcia + blur, jak w hero, także pod płótnem 3D: filter:drop-shadow na płótnie to dodatkowa
+     warstwa przeliczana w każdej klatce obrotu (na zdjęciu = prostokąt w Safari na iPhonie, 26.10); ta stoi, telefon obraca się nad nią */
   .vp-host{--blask-img:linear-gradient(transparent,transparent)}
   .vp-host .fon-blask{position:absolute;inset:0;pointer-events:none;filter:blur(calc(var(--blask,46px) / 2));opacity:0;transition:opacity .25s}
   .vp-host .fon-blask i{position:absolute;inset:0;background:rgba(153,230,109,.30);
     -webkit-mask:var(--blask-img) center/100% 100% no-repeat;mask:var(--blask-img) center/100% 100% no-repeat}
   .vp-host.blask-on .fon-blask{opacity:1}
-  html.gl-on .vp-host:has(> .gl3d) .fon-blask{opacity:0;transition:opacity 0s .2s}
   .vp-host .gl3d{opacity:0;transition:opacity .2s}
   html.gl-on .vp-host .gl3d{opacity:1}
   html.gl-on .vp-host:has(> .gl3d) .fon-still{opacity:0;transition:opacity 0s .2s}   /* zdjęcie znika tylko pod płótnem: przy „O mnie” tuż obok płótno bywa jeszcze u talerza */
   .fon-ekran.fon-poziomy{width:874px;height:402px}
+  /* dotyk: szkło nad filmem to osobna warstwa przemalowywana przy każdym ruchu telefonu; limit sekcji = 8 warstw (foc-telefon-3d-strona) */
+  @media (hover:none) and (pointer:coarse){.vp-host .ekran-szklo{display:none}}
   /* „Zatrzymaj / Odtwórz" (WCAG 2.2.2): pauzuje filmy w telefonie i ruchomy pasek pod hero.
      Pastylka jak inne przełączniki na stronie; cel dotyku min. 44×44 px; wybór pamiętany
      w sessionStorage (klasa `ruch-stop` na <html>). */
@@ -2573,16 +2578,16 @@
     <!-- dwa tytuły: .yt-nie widać od razu (0 filmów na YouTube albo brak pliku yt.json), .yt-tak dopiero po klasie
          .yt-jest na sekcji (skrypt z assets/yt.json, liczba ≥ 1) — sekcja stoi od początku, więc strona nie przeskakuje -->
     <h2 class="rv rv2"><span class="yt-tak"><span class="yt-count"></span> <span class="yt-adj">Darmowe</span> <span class="yt-noun">poradniki</span> wideo</span><span class="yt-nie">Poradnik wideo do każdego ćwiczenia</span></h2>
-    <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem SAM „przewija" (swajp)
-         do kolejnego — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
+    <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem sam obraca się w dłoni
+         i w połowie obrotu zmienia film na kolejny — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
          które „wyprzedzają" telefon i dodają głębi 3D: pierwszy niesie tekst spod tytułu, drugi
-         jest jednocześnie przyciskiem na YouTube. Ekstruzję boku, klon pętli i skalę dodaje JS. -->
+         jest jednocześnie przyciskiem na YouTube. Ekstruzję boku, obrót i skalę dodaje JS. -->
     <div class="vphone-wrap rv rv3">
       <div class="vphone" id="vphone">
         <div class="dl-body">
           <div class="dl-ekran">
             <div class="vp-track" id="vpTrack" aria-hidden="true">
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d1.mp4"></video></div>
+              <div class="vp-slide on"><video muted loop playsinline preload="none" src="assets/instruktaz_d1.mp4"></video></div>
               <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d2.mp4"></video></div>
               <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d3.mp4"></video></div>
               <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d4.mp4"></video></div>
@@ -4264,7 +4269,11 @@
     const blask = document.createElement('div'); blask.className = 'fon-blask'; blask.append(document.createElement('i'));
     host.append(blask, still, ekran, ...popy);
     let vpS = 0, vpGl = null, vpApi = null, vpBlisko = false, popWym = [], vpX = 0, vpVw = 1e9;
-    const celKat = () => ({ ry: W.KAT.ry + vpx * W.KURSOR[0], rx: W.KAT.rx - vpy * W.KURSOR[1], rz: W.KAT.rz });
+    /* vpOff = obrót przy zmianie filmu (vpPoza niżej), dokładany do kursora; razem w zakresie bez zapasu 2° */
+    let vpOff = [0, 0];
+    const klamra = (v, [a, b]) => Math.min(b - 2, Math.max(a + 2, v));
+    const celKat = () => ({ ry: klamra(W.KAT.ry + vpx * W.KURSOR[0] + vpOff[0], W.RY),
+      rx: klamra(W.KAT.rx - vpy * W.KURSOR[1] + vpOff[1], W.RX), rz: W.KAT.rz });
     /* ekran i okienka w pozie kat; narożniki ekranu przestawione [PG, PD, LD, LG], bo nakładka leży poziomo */
     const naloz = kat => {
       if (!vpS) return;
@@ -4328,28 +4337,32 @@
       });
       vpSekcja.addEventListener('mouseleave', () => { vpx = 0; vpy = 0; vpStosuj(); });
     }
-    /* auto-swajp: klon 1. slajdu na końcu = płynna, jednokierunkowa pętla */
-    const vpN = vpTrack.children.length;
-    vpTrack.appendChild(vpTrack.children[0].cloneNode(true));
-    let vpIdx = 0;
-    let vpPoZmianie = () => {};          /* podmieniane niżej na `vpGraj` */
-    const vpDalej = () => {
-      vpIdx++;
-      vpTrack.classList.remove('vp-snap');
-      vpTrack.style.transform = `translateX(${-vpIdx * 100}%)`;
-      vpPoZmianie();
+    /* „Telefon w ruchu”: co ZMIANA ms telefon obraca się w dłoni o ZRYW° (na przemian w lewo i w prawo; przy kursorze z boku
+       w stronę środka), w chwili OBROT ekran jest przygaszony i film się zmienia, potem lekki odbój i powrót do pozy. Kąt prowadzi
+       sprężyna silnika (vpStosuj), więc ruch jest miękki, a między zmianami telefon stoi i silnik nic nie rysuje. Bez silnika (zdjęcie)
+       zostaje samo przygaszenie ekranu. Zegar chodzi tylko przy widocznej sekcji, bez „Zatrzymaj” i bez „ogranicz ruch”. */
+    const ZMIANA = 3800, OBROT = 260, ODBOJ = 480, ZRYW = 12, vpSlajdy = [...vpTrack.children];
+    let vpIdx = 0, vpZnak = -1, vpTimery = [], vpOdmowa = false, vpGraj = () => {};   /* vpGraj niżej */
+    const vpPokaz = i => { vpSlajdy[vpIdx].classList.remove('on'); vpIdx = i; vpSlajdy[i].classList.add('on'); vpGraj(); };
+    const vpPo = (ms, f) => vpTimery.push(setTimeout(f, ms));
+    const vpPoza = z => { vpOff = [vpZnak * ZRYW * z, 4 * z]; vpStosuj(); };
+    /* przygaszenie na samym filmie (i tak jest warstwą): stary gaśnie 160 ms, nowy rozjaśnia się 160 ms */
+    const vpMig = a => vpFilmy()[vpIdx].animate([{ opacity: a }, { opacity: 1.2 - a }], { duration: 160, easing: a > 0.5 ? 'ease-in' : 'ease-out' });
+    const vpZmien = () => {
+      vpTimery = [];
+      const bok = vpx * W.KURSOR[0];
+      vpZnak = Math.abs(bok) > 3 ? -Math.sign(bok) : -vpZnak;
+      vpPoza(1);
+      vpPo(OBROT - 160, () => vpMig(1));
+      vpPo(OBROT, () => { vpPokaz((vpIdx + 1) % vpSlajdy.length); vpMig(0.2); vpPoza(-0.3); });
+      vpPo(ODBOJ, () => vpPoza(0));
+      vpPo(ZMIANA, vpZmien);
     };
-    vpTrack.addEventListener('transitionend', () => {
-      if (vpIdx >= vpN) {                 /* dojechaliśmy do klonu → cichy powrót na start */
-        vpTrack.classList.add('vp-snap');
-        vpIdx = 0;
-        vpTrack.style.transform = 'translateX(0%)';
-        void vpTrack.offsetWidth;         /* wymuś reflow, żeby snap nie animował */
-        vpTrack.classList.remove('vp-snap');
-        vpPoZmianie();
-      }
-    });
-    if (!reduced) setInterval(() => { if (!vpPauza) vpDalej(); }, 3800);   /* każdy film ~3,2 s + 0,6 s swajp */
+    const vpRuch = () => {
+      const tak = vpWidac && !vpPauza && !reduced && !vpOdmowa;
+      if (tak && !vpTimery.length) vpPo(ZMIANA - ODBOJ, vpZmien);
+      if (!tak && vpTimery.length) { vpTimery.forEach(clearTimeout); vpTimery = []; vpOff = [0, 0]; vpStosuj(); }
+    };
 
     /* ===== FILMY WCZYTUJĄ SIĘ DOPIERO PRZY DOJEŻDŻANIU DO SEKCJI =====
        Wcześniej znaczniki miały `autoplay` obok `preload="none"` — i `autoplay` wygrywał,
@@ -4360,9 +4373,7 @@
        ⚠ Samo zdjęcie `autoplay` ZABIJA filmy — w całym pliku nie było ani jednego `play()`.
        Dlatego dwa etapy, żeby klient nie czekał na wczytanie:
        1. 1200 px PRZED sekcją zaczynamy wczytywać (`preload="auto"` + `load()`),
-       2. dopiero gdy sekcja wchodzi w kadr — odtwarzamy, i to TYLKO widoczny slajd.
-       Obserwatorzy stoją TUTAJ, po `cloneNode` wyżej — inaczej piąty, sklonowany film
-       nigdy by nie ruszył. */
+       2. dopiero gdy sekcja wchodzi w kadr — odtwarzamy, i to TYLKO widoczny slajd. */
     const vpFilmy = () => [...vpTrack.querySelectorAll('video')];
     const vpCel = vphone.closest('section') || vpWrap;
 
@@ -4373,25 +4384,24 @@
     }, { rootMargin: '1200px 0px' }).observe(vpCel);
 
     let vpWidac = false;
-    const vpGraj = () => {
+    vpGraj = () => {
       vpFilmy().forEach((v, i) => {
-        /* dokładnie jeden film naraz — porównanie przez resztę z dzielenia sprawiało,
-           że przy pierwszym slajdzie grał też jego klon z końca pętli (dwa dekodowania
-           tego samego pliku). `vpIdx` przechodzi 0..vpN, a klon ma indeks vpN. */
-        const biezacy = i === vpIdx;
-        /* przy „ogranicz ruch" (WCAG 2.3.3) i po „Zatrzymaj" filmy stoją na pierwszej klatce */
-        if (vpWidac && biezacy && !reduced && !vpPauza) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+        /* dokładnie jeden film naraz (widoczny slajd); przy „ogranicz ruch" (WCAG 2.3.3) i po „Zatrzymaj" filmy stoją */
+        /* odmowa odtwarzania (iPhone w trybie niskiego zużycia energii): telefon staje, zamiast obracać się z czarnym ekranem */
+        if (vpWidac && i === vpIdx && !reduced && !vpPauza) { const pr = v.play(); if (pr && pr.catch) pr.catch(e => { if (e.name === 'NotAllowedError') { vpOdmowa = true; vpRuch(); } }); }
         else v.pause();
       });
+      vpRuch();
     };
-    new IntersectionObserver(wpisy => {
-      vpWidac = wpisy.some(w => w.isIntersecting);
-      vpGraj();
-    }, { rootMargin: '200px 0px' }).observe(vpCel);
-    vpPoZmianie = vpGraj;
+    /* sekcja na ekranie i nie zakryta. -1 px: sekcja tuż pod ekranem (przystanek przed nią) dotyka go krawędzią, a dotknięcie liczy się jako przecięcie.
+       Klasa .przykryta sprawdzana wprost: przy zakryciu sekcja stoi 77 px w oknie, a tylko Chrome wlicza jej clip-path do obserwatora. */
+    let vpNaEkranie = false;
+    const vpSprawdz = () => { vpWidac = vpNaEkranie && !vpCel.classList.contains('przykryta'); vpGraj(); };
+    new IntersectionObserver(wpisy => { vpNaEkranie = wpisy.some(w => w.isIntersecting); vpSprawdz(); }, { rootMargin: '-1px 0px' }).observe(vpCel);
+    new MutationObserver(vpSprawdz).observe(vpCel, { attributes: true, attributeFilter: ['class'] });
 
     /* ===== „ZATRZYMAJ / ODTWÓRZ" (WCAG 2.2.2) =====
-       Pauzuje filmy, ich auto-przewijanie i ruchomy pasek pod hero (klasa `ruch-stop`
+       Pauzuje filmy, obrót telefonu i ruchomy pasek pod hero (klasa `ruch-stop`
        na <html> → `animation-play-state:paused` w stylach). Wybór w sessionStorage,
        żeby po powrocie na stronę nie trzeba było klikać drugi raz. */
     const ruchBtn = document.getElementById('ruchBtn');
@@ -4405,7 +4415,7 @@
       vpGraj();
     };
     if (ruchBtn) ruchBtn.addEventListener('click', () => {
-      vpPauza = !vpPauza;
+      vpPauza = !vpPauza; vpOdmowa = false;   /* stuknięcie = gest, po nim przeglądarka zwykle pozwala grać */
       try { sessionStorage.setItem('foc_ruch', vpPauza ? 'stop' : 'graj'); } catch (_) {}
       ruchStosuj();
     });
