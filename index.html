@@ -1265,8 +1265,8 @@
   .vp-pop-a::before,.vp-pop-b::before{content:"";position:absolute;inset:-26px -14px}
   /* bez filmów na YouTube (0 albo brak yt.json): tytuł bez licznika (Tomek 26.10) */
   #wideo:not(.yt-jest) .yt-tak,#wideo.yt-jest .yt-nie{display:none}
-  .vp-pop-ic{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;
-    background:var(--lime);color:#0c130c;font-size:.82rem;padding-left:2px}
+  .vp-pop-ic{width:34px;height:34px;flex:0 0 34px}
+  .vp-pop-ic svg{display:block;width:100%;height:100%}   /* znaczek odtwarzania v2, ten sam co w apce (Tomek 8.11) */
   .vp-pop-txt{line-height:1.3}
   .vp-host{position:absolute;transition:none}
   .vp-host .fon-still,.vp-host .gl3d{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
@@ -1292,6 +1292,7 @@
     text-transform:uppercase;cursor:pointer;transition:border-color .25s,color .25s}
   .ruch-btn:hover,.ruch-btn[aria-pressed="true"]{border-color:var(--lime);color:var(--text)}
   .ruch-btn .ruch-ic{font-size:.8em;color:var(--lime)}
+  .ruch-btn .ruch-ic svg{display:block;width:1.6em;height:1.6em}
   html.ruch-stop .marquee-track{animation-play-state:paused}
 
   /* Drobny druk: nota zdrowotna pod planem i nota o opiniach. Wyciszony szary,
@@ -2482,10 +2483,10 @@
         <!-- szklane pop-upy wyprzedzające telefon (więcej 3D) = linki do playlist na YouTube (Tomek 26.10): „Technika ćwiczeń”
              (instruktaże) i „Biblioteka ćwiczeń” (filmy pokazowe z planów); do startu sprzedaży playlisty są niepubliczne (z linku działają) -->
         <a class="vp-pop vp-pop-a" href="https://www.youtube.com/playlist?list=PLNaYUUQuWmNg" target="_blank" rel="noopener">
-          <span class="vp-pop-ic" aria-hidden="true">▶</span><span class="vp-pop-txt"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</span>
+          <span class="vp-pop-ic" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#99E66D"/><path d="M27.11 23.33v17.34L41.77 32z" fill="#0B0F0D"/></svg></span><span class="vp-pop-txt"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</span>
         </a>
         <a class="vp-pop vp-pop-b" href="https://www.youtube.com/playlist?list=PLTRiTAUWaC5U" target="_blank" rel="noopener">
-          <span class="vp-pop-ic" aria-hidden="true">▶</span><span class="vp-pop-txt"><span class="vp-pop-eyebrow">Biblioteka ćwiczeń</span>Poznaj ćwiczenia.</span>
+          <span class="vp-pop-ic" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#99E66D"/><path d="M27.11 23.33v17.34L41.77 32z" fill="#0B0F0D"/></svg></span><span class="vp-pop-txt"><span class="vp-pop-eyebrow">Biblioteka ćwiczeń</span>Poznaj ćwiczenia.</span>
         </a>
       </div>
     </div>
@@ -4310,7 +4311,7 @@
       if (ruchBtn) {
         ruchBtn.setAttribute('aria-pressed', String(vpPauza));
         ruchBtn.querySelector('.ruch-txt').textContent = vpPauza ? 'Odtwórz' : 'Zatrzymaj';
-        ruchBtn.querySelector('.ruch-ic').textContent = vpPauza ? '▶' : '❚❚';
+        ruchBtn.querySelector('.ruch-ic').innerHTML = vpPauza ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.33 5.5v13L19.33 12z"/></svg>' : '❚❚';
       }
       vpGraj();
     };
