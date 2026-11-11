@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "include": [
+    "/assets/ekran/ekran-filmy.mp4",
+    "/assets/instruktaz_d1.mp4",
+    "/assets/instruktaz_d2.mp4",
+    "/assets/instruktaz_d3.mp4",
+    "/assets/instruktaz_d4.mp4",
+    "/assets/jak/pompki-apka.mp4",
+    "/assets/trening1/01-cardio.mp4",
+    "/assets/trening1/02-chin-up-hold.mp4",
+    "/assets/trening1/03-australian-pull-up.mp4",
+    "/assets/trening1/04-kneeling-push-up.mp4",
+    "/assets/trening1/05-walking-lunges.mp4",
+    "/assets/trening1/06-half-burpee.mp4"
+  ],
+  "exclude": []
+}
