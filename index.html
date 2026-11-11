@@ -330,6 +330,10 @@
   .hero-phone .gl3d{opacity:0;transition:opacity .2s;filter:drop-shadow(0 0 var(--blask,30px) rgba(153,230,109,.42))}
   .hero-phone.gl-hero .gl3d{opacity:1}
   .hero-phone.gl-hero .fon-still{opacity:0;transition:opacity 0s .2s}
+  /* D34: żywy ekran z filmem apki tylko nad płótnem silnika (komputer); bez tła — do pierwszego obrazu filmu widać teksturę ekranu */
+  .hero-phone .fon-ekran{visibility:hidden;background:none}
+  .hero-phone.gl-hero .fon-ekran{visibility:visible}
+  .fon-ekran video{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
   .hero .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.78rem;font-weight:600;
     letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:28px;
     opacity:0;animation:fadeUp .8s .2s forwards}
@@ -1136,6 +1140,53 @@
   .yt .wrap{position:relative;z-index:2}
   .yt h2{font-size:clamp(2rem,4.6vw,3.6rem);color:#fff;margin-bottom:18px}
   .yt h2 .yt-count{color:var(--lime)}
+  /* D19 wariant A (Tomek 10.11 16:27): bez telefonu 3D i szklanych okienek. Nagłówek, jedno zdanie, dwie karty playlist z prawdziwą
+     okładką z YouTube (kopia w assets/yt, żeby strona nie łączyła się z Google przed zgodą), pod nimi jedno zdanie o aplikacji.
+     Telefon: karty jedna pod drugą (okładka obok tekstu); od 981 px dwie kolumny z dużą okładką. */
+  .yt .yt-lead{margin:0 auto 24px}
+  .yt-lista{list-style:none;display:grid;gap:12px;max-width:560px;margin:0 auto;padding:0;text-align:left}
+  .yt-karta{display:flex;align-items:center;gap:14px;padding:10px;border:1px solid var(--line);border-radius:14px;
+    background:rgba(255,255,255,.035);color:var(--text);text-decoration:none;transition:border-color .2s,background .2s}
+  .yt-karta:hover{border-color:rgba(153,230,109,.5);background:rgba(255,255,255,.06)}
+  .yt-karta:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+  .yt-min{position:relative;flex:0 0 120px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#0b100d}
+  .yt-min img{width:100%;height:100%;object-fit:cover;display:block}
+  .yt-play{position:absolute;right:6px;bottom:6px;width:26px;height:26px}
+  .yt-play svg{display:block;width:100%;height:100%}
+  .yt-opis{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .yt-tytul{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.95rem;line-height:1.15;text-transform:uppercase;color:#fff}
+  .yt-meta{font-size:.8125rem;font-weight:600;color:var(--muted)}
+  .yt-ile{color:var(--text)}
+  .yt-plan{max-width:560px;margin:20px auto 0;font-size:.875rem;line-height:1.5;color:var(--muted);text-wrap:balance}
+  .yt-plan b{color:var(--text);font-weight:600}
+  .yt .ruch-btn{margin-top:12px;font-size:.75rem}
+  .yt .ruch-btn .ruch-ic{font-size:1em}   /* ikona ❚❚ była 9 px (.8em z 11,5 px) */
+  @media(max-width:980px){
+    .yt h2{font-size:clamp(1.5rem,7.4vw,2rem);margin-bottom:12px}
+    .yt .yt-lead{font-size:.9rem;line-height:1.45;margin-bottom:18px}
+    .yt .sec-label{margin-bottom:14px}
+    .yt-karta{padding:8px;gap:12px}
+    .yt-min{flex-basis:clamp(96px,32vw,140px)}
+    .yt-plan{font-size:.8125rem;margin-top:16px}
+  }
+  @media(max-width:340px){   /* 288 × 640: cała sekcja w jednym ekranie */
+    .yt .sec-label{letter-spacing:.16em}.yt .sec-label::after{display:none}   /* „05 — Poradniki wideo” w jednym wierszu */
+    .yt h2{margin-bottom:8px}
+    .yt .yt-lead{margin-bottom:14px}
+    .yt-lista{gap:10px}
+    .yt-plan{margin-top:12px}
+    .yt .ruch-btn{margin-top:6px}
+  }
+  @media(min-width:981px){
+    #wideo h2{font-size:clamp(1.9rem,5.2vh,3.2rem)}
+    .yt-lista{grid-template-columns:repeat(2,minmax(0,1fr));max-width:min(820px,96vh);gap:20px}
+    .yt-karta{flex-direction:column;align-items:stretch;padding:12px 12px 18px}
+    .yt-min{flex:none}
+    .yt-play{width:48px;height:48px;right:12px;bottom:12px}
+    .yt-opis{padding:0 6px;gap:5px}
+    .yt-tytul{font-size:1.15rem}
+    .yt-plan{max-width:720px;margin-top:26px;font-size:.95rem}
+  }
   /* ---------- „DLACZEGO": iPhone 16 Pro z trzema ekranami (B.7) ----------
      Host .dl-telefon = suma obrysów 3 póz (liczy skrypt): zdjęcie, płótno, żywy ekran DOM (.fon-ekran) z homografii.
      Płótno i zdjęcia nie łapią wskaźnika; nakładka sterowana co klatkę, bez przejść. */
@@ -1181,6 +1232,16 @@
      stoi w miejscu. Wcześniej nie było tego widać, bo dolne 42 % ekranu zajmował tekst. */
   .dl-foto img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;
     pointer-events:none}
+  /* D15: ekran „pierwszy trening” (402×874 jak każdy slajd): tytuł, film 16:9, lista ćwiczeń; bieżące ćwiczenie na limonce (limonka = tło).
+     Dwa <video> na zmianę: drugi ładuje następne ćwiczenie w tle (bez czarnej klatki przy zmianie). */
+  .tr1{padding:92px 22px 0}
+  .tr1-tyt{font:700 22px/1.2 'Montserrat',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#B9C4BD;margin:0 0 16px}
+  .tr1-film{position:relative;flex:none;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000}
+  .tr1-film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;opacity:0}
+  .tr1-film video.on{opacity:1}
+  .tr1-lista{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .tr1-lista li{font:600 24px/1.25 'Inter',sans-serif;color:#E8EDEA;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,.05)}
+  .tr1-lista li.on{background:var(--lime);color:#121A16}
   /* limonkowa kreska nad hasłem — ten sam znak co przy wyliczeniach na karcie planu,
      spina ekran w jedną kompozycję zamiast dzielić go na pół.
      Rozmiary pisma są przy `.wa-teksty` niżej (opisy stoją obok telefonu, nie w nim). */
@@ -1358,6 +1419,62 @@
   @media(max-width:640px){.orbit-stage{height:406px}
     .orbit-card{width:min(75vw,262px);padding:20px 20px;gap:11px}
     .orbit-card .oc-body{font-size:.92rem;line-height:1.5}}
+  /* D20 (Tomek 10.11 „tak, pokaż podgląd”, KOD-07 B): sekcja gotowa przed pierwszą opinią. Bez opinii zostaje ukryta jak
+     dotąd — :not([hidden]), bo display:flex przebiłby atrybut hidden. Po odsłonięciu jeden ekran jak FAQ (przystanek „opinie”
+     już jest w PRZYSTANKACH). 1–2 opinie stoją obok siebie (.rzad, skrypt opinii; telefon: przewijanie w bok) — pojedyncza
+     karta na orbicie krążyła sama i chowała się za brzeg. Długa opinia (apka przyjmuje do 2000 znaków) ucięta wizualnie
+     po 8 wierszach, czytnik ekranu czyta całość. */
+  #opinie:not([hidden]){min-height:var(--ekran);box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;
+    padding-top:32px;padding-bottom:32px}
+  #opinie > .wrap{width:100%}
+  .oc-body{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:8;overflow:hidden}
+  .orbit-stage.rzad{height:auto;-webkit-mask-image:none;mask-image:none}
+  .rzad .orbit{position:static;display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:12px 4px 44px;
+    scrollbar-width:none}
+  .rzad .orbit-card{position:static;flex:0 0 auto;scroll-snap-align:center}
+  .rzad .orbit-card:first-child{margin-left:auto}
+  .rzad .orbit-card:last-child{margin-right:auto}
+  @media(max-width:980px){#opinie:not([hidden]){padding-top:20px;padding-bottom:20px}}
+  @media(max-width:767px){
+    #opinie .sec-label{margin-bottom:10px}
+    #opinie .sec-title{font-size:1.45rem;margin-bottom:0}
+    #opinie .rev-nota{margin-top:10px}
+    .orbit-stage{height:330px;margin-top:12px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
+      mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+    .orbit-card{width:min(70vw,240px)}   /* przednia karta (×1,08) mieści się w kadrze — przy 75vw wchodziła w wygaszony brzeg */
+    .rzad .orbit-card{width:min(calc(100% - 56px),320px)}   /* druga karta wystaje z prawej — widać, że można przesunąć */
+  }
+  @media(max-width:767px) and (max-height:700px){.rzad .orbit{padding-bottom:24px}}
+
+  /* ---------- D08: „Kiedy skończysz plan?” (Tomek 10.11: „tak, pokaż prototyp”) ----------
+     Pastylki = wybór 3 dni (zasada kształtów), kalendarz liczy 12 treningów od jutra. Zaznaczone dni idą TYLKO do adresu
+     linków „Kup plan” (&dni=pn,sr,pt — apka A5), nigdy do adresu strony (warunek prawa A5). Jeden ekran jak sekcje obok. */
+  .kiedy{border-top:1px solid var(--line)}
+  #kiedy{min-height:var(--ekran);box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding:32px 0}
+  #kiedy > .wrap{width:100%;max-width:760px}
+  .kd-dni{display:grid;grid-template-columns:repeat(7,minmax(44px,1fr));gap:8px;max-width:460px;margin:6px auto 0}
+  .kd-dzien{min-height:44px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:transparent;color:#fff;
+    font:600 .9rem/1 'Montserrat',sans-serif;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+  .kd-dzien:hover:not(:disabled){border-color:var(--lime)}
+  .kd-dzien[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--black)}
+  .kd-dzien:disabled{opacity:.35;cursor:default}
+  .kd-wynik{margin:16px auto 0;max-width:460px;color:#fff;font-size:1.05rem;line-height:1.45;text-align:center;min-height:2.9em}
+  .kd-kal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:460px;margin:10px auto 18px;font-size:.8rem;
+    text-align:center}
+  .kd-kal span{padding:5px 0;border-radius:6px;color:#CFD8D2}
+  .kd-kal .kd-nagl{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .kd-kal .kd-poza{color:rgba(255,255,255,.25)}
+  .kd-kal .kd-tr{background:var(--lime);color:var(--black);font-weight:700}
+  .kd-kal .kd-meta{box-shadow:0 0 0 2px var(--black),0 0 0 4px #fff}
+  .kd-nota{max-width:460px;margin:12px auto 0;font-size:.74rem;line-height:1.5;color:var(--muted);text-align:center}
+  @media(max-width:980px){#kiedy{padding:20px 0}}
+  @media(max-width:767px){#kiedy .sec-label{margin-bottom:10px}#kiedy .sec-title{font-size:1.45rem;margin-bottom:0}
+    .kd-wynik{font-size:.95rem}}
+  @media(max-width:420px){.kd-dni{grid-template-columns:repeat(4,1fr)}}
+  /* niski telefon (288 × 640): ciaśniejszy kalendarz, żeby sekcja została jednym ekranem; pastylki dalej 44 px */
+  @media(max-width:767px) and (max-height:700px){.kd-dni{gap:6px}.kd-wynik{margin-top:10px}
+    .kd-kal{margin:6px auto 10px;gap:2px}.kd-kal span{padding:2px 0}.kd-nota{margin-top:8px}}
+  @media(max-width:320px){#kiedy .sec-title{font-size:1.3rem}}
 
   /* ---------- FORMULARZ NEWSLETTERA (`.zapis`, sekcja na dole strony) ----------
      Pole NAD przyciskiem — także na komputerze: przy 288 px napis „ZAPISZ SIĘ →" obok
@@ -2189,8 +2306,20 @@
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
                   </article>
-                  <article class="dl-slajd">
-                    <div class="dl-foto"><img src="assets/screen_arch.jpg" alt="Ekran aplikacji: instruktaż wideo wznosów ramion i nóg w leżeniu przodem ze strzałkami pokazującymi ruch" loading="lazy" decoding="async"></div>
+                  <!-- D15 (Tomek 10.11 16:24 przez CEO, „a”): podgląd pierwszego treningu zamiast slajdu „Masz dość angielskich tutoriali?”.
+                       Pętle bez dźwięku z pokazówek (dział wideo, pętle z 10.11), nazwy jak w apce (namePl).
+                       Jeden film naraz, po kolei; gra tylko ten ekran i tylko w kadrze (skrypt: tr1). -->
+                  <article class="dl-slajd tr1" id="tr1">
+                    <p class="tr1-tyt">Wybrane ćwiczenia z&nbsp;treningu A — tydzień&nbsp;1</p>
+                    <div class="tr1-film" aria-hidden="true"><video muted playsinline preload="none"></video><video muted playsinline preload="none"></video></div>
+                    <ol class="tr1-lista" aria-label="Ćwiczenia pierwszego treningu">
+                      <li class="on" data-film="assets/trening1/01-cardio">Kardio</li>
+                      <li data-film="assets/trening1/02-chin-up-hold">Podciąganie — utrzymanie pozycji</li>
+                      <li data-film="assets/trening1/03-australian-pull-up">Australijskie podciąganie</li>
+                      <li data-film="assets/trening1/04-kneeling-push-up">Pompki na kolanach</li>
+                      <li data-film="assets/trening1/05-walking-lunges">Wykroki chodzone</li>
+                      <li data-film="assets/trening1/06-half-burpee">Połowa padnij-powstań</li>
+                    </ol>
                   </article>
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
@@ -2209,8 +2338,8 @@
               <p>Każde ćwiczenie w&nbsp;planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać, bez zgadywania. Dobra technika zmniejsza ryzyko kontuzji.</p>
             </div>
             <div class="dl-tresc">
-              <h3>Masz dość angielskich tutoriali?</h3>
-              <p>FitOnlineCoach mówi do Ciebie po polsku, w&nbsp;zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
+              <h3>Zobacz swój pierwszy trening</h3>
+              <p>Tak zaczyna się plan „Początek”: ćwiczenia z&nbsp;pierwszego treningu. Widzisz, co zrobisz, zanim zaczniesz.</p>
             </div>
             <div class="dl-tresc">
               <h3>Nie masz czasu na trening?</h3>
@@ -2496,6 +2625,36 @@
 </section>
 
 
+<!-- ===== KIEDY SKOŃCZYSZ PLAN (D08, Tomek 10.11: „tak, pokaż prototyp” + „te zaznaczone dni muszą się potem pokazać
+     w aplikacji jeśli klient kupi plan”) =====
+     Wybór 3 dni → daty 12 treningów od jutra (skrypt D08 na dole). „Kup plan” dostaje &dni=… tylko z zaznaczonych dni
+     (apka A5 od 11.11: zapamiętuje je w telefonie na 7 dni i podpowiada w kreatorze po zakupie). Bez numeru sekcji —
+     przenumerujSekcje liczy tylko etykiety z numerem. PRZY ZAMKNIĘCIU SPRZEDAŻY: cenę i link zdjąć tu tak samo jak na karcie planu. -->
+<section class="kiedy" id="kiedy">
+  <div class="wrap">
+    <div class="sec-label rv center">Twój tydzień</div>
+    <h2 class="sec-title rv rv2 center">Kiedy skończysz <span class="lime">plan</span>?</h2>
+    <div class="kd-dni rv rv3" role="group" aria-label="Dni treningów">
+      <button type="button" class="kd-dzien" data-d="pn" aria-pressed="false" aria-label="poniedziałek">pn</button>
+      <button type="button" class="kd-dzien" data-d="wt" aria-pressed="false" aria-label="wtorek">wt</button>
+      <button type="button" class="kd-dzien" data-d="sr" aria-pressed="false" aria-label="środa">śr</button>
+      <button type="button" class="kd-dzien" data-d="cz" aria-pressed="false" aria-label="czwartek">cz</button>
+      <button type="button" class="kd-dzien" data-d="pt" aria-pressed="false" aria-label="piątek">pt</button>
+      <button type="button" class="kd-dzien" data-d="sb" aria-pressed="false" aria-label="sobota">sb</button>
+      <button type="button" class="kd-dzien" data-d="nd" aria-pressed="false" aria-label="niedziela">nd</button>
+    </div>
+    <p class="kd-wynik rv rv3" id="kdWynik" aria-live="polite">Zaznacz 3&nbsp;dni, w&nbsp;które możesz trenować.</p>
+    <div class="kd-kal rv rv3" id="kdKal" aria-hidden="true"></div>
+    <div class="price-row na-srodku rv rv4">
+      <a class="btn btn-lime btn-join btn-care" href="https://app.fitonlinecoach.com/plany/poczatek?kup=1" target="_blank" rel="noopener">
+        <span class="bj-main">Kup plan</span>
+        <span class="bj-sub">79 zł — jednorazowo</span>
+      </a>
+    </div>
+    <p class="kd-nota rv rv4">*Liczone od jutra, 3&nbsp;treningi w&nbsp;tygodniu. Jeśli kupisz plan w&nbsp;tej samej przeglądarce w&nbsp;ciągu 7&nbsp;dni, aplikacja podpowie te dni.</p>
+  </div>
+</section>
+
 <!-- ===== O MNIE nad DIVIDEREM deszczu (druga kurtyna) ===== -->
 <div class="stack stack-about" id="o-mnie">
   <div class="stack-pin">
@@ -2564,34 +2723,23 @@
     <!-- dwa tytuły: .yt-nie widać od razu (0 filmów na YouTube albo brak pliku yt.json), .yt-tak dopiero po klasie
          .yt-jest na sekcji (skrypt z assets/yt.json, liczba ≥ 1) — sekcja stoi od początku, więc strona nie przeskakuje -->
     <h2 class="rv rv2"><span class="yt-tak"><span class="yt-count"></span> <span class="yt-adj">Darmowe</span> <span class="yt-noun">poradniki</span> wideo</span><span class="yt-nie">Poradnik wideo do każdego ćwiczenia</span></h2>
-    <!-- Poziomy telefon 3D: pokazuje jeden poradnik przez chwilę, potem sam obraca się w dłoni
-         i w połowie obrotu zmienia film na kolejny — kilka filmów w pętli. PRZED nim dwa szklane pop-upy (translateZ do przodu),
-         które „wyprzedzają" telefon i dodają głębi 3D: pierwszy niesie tekst spod tytułu, drugi
-         jest jednocześnie przyciskiem na YouTube. Ekstruzję boku, obrót i skalę dodaje JS. -->
-    <div class="vphone-wrap rv rv3">
-      <div class="vphone" id="vphone">
-        <div class="dl-body">
-          <div class="dl-ekran">
-            <div class="vp-track" id="vpTrack" aria-hidden="true">
-              <div class="vp-slide on"><video muted loop playsinline preload="none" src="assets/instruktaz_d1.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d2.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d3.mp4"></video></div>
-              <div class="vp-slide"><video muted loop playsinline preload="none" src="assets/instruktaz_d4.mp4"></video></div>
-            </div>
-          </div>
-        </div>
-        <!-- szklane pop-upy wyprzedzające telefon (więcej 3D) = linki do playlist na YouTube (Tomek 26.10): „Technika ćwiczeń”
-             (instruktaże) i „Biblioteka ćwiczeń” (filmy pokazowe z planów); do startu sprzedaży playlisty są niepubliczne (z linku działają) -->
-        <a class="vp-pop vp-pop-a" href="https://www.youtube.com/playlist?list=PLNaYUUQuWmNg" target="_blank" rel="noopener">
-          <span class="vp-pop-ic" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#99E66D"/><path d="M27.11 23.33v17.34L41.77 32z" fill="#0B0F0D"/></svg></span><span class="vp-pop-txt"><span class="vp-pop-eyebrow">Zanim kupisz plan</span>Sprawdź, jak tłumaczę.</span>
-        </a>
-        <a class="vp-pop vp-pop-b" href="https://www.youtube.com/playlist?list=PLTRiTAUWaC5U" target="_blank" rel="noopener">
-          <span class="vp-pop-ic" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#99E66D"/><path d="M27.11 23.33v17.34L41.77 32z" fill="#0B0F0D"/></svg></span><span class="vp-pop-txt"><span class="vp-pop-eyebrow">Biblioteka ćwiczeń</span>Poznaj ćwiczenia.</span>
-        </a>
-      </div>
-    </div>
-    <!-- WCAG 2.2.2: filmy i pasek pod hero ruszają same, więc musi być sposób, żeby je zatrzymać.
-         Obsługa w skrypcie efektów (`ruchBtn`); wybór pamiętany do końca sesji. -->
+    <p class="sec-sub center yt-lead rv rv2">Zobacz, jak tłumaczę ćwiczenia, zanim wybierzesz plan.</p>
+    <!-- D19 wariant A (Tomek 10.11 16:27): karty playlist zamiast telefonu 3D. Linki = te same playlisty co dawne okienka (Tomek 26.10;
+         do startu sprzedaży niepubliczne, z linku działają). Okładka = prawdziwa okładka playlisty z YouTube (kopia z 5.11).
+         Liczbę filmów wpisuje skrypt z assets/yt.json (pole „playlisty”, liczy automat yt-count.yml po data-pl); bez niej napis zostaje bez liczby. -->
+    <ul class="yt-lista rv rv3">
+      <li><a class="yt-karta" href="https://www.youtube.com/playlist?list=PLNaYUUQuWmNg" target="_blank" rel="noopener">
+        <span class="yt-min"><img src="assets/yt/technika-cwiczen.jpg" alt="" width="640" height="360" loading="lazy" decoding="async"><span class="yt-play" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#99E66D"/><path d="M27.11 23.33v17.34L41.77 32z" fill="#0B0F0D"/></svg></span></span>
+        <span class="yt-opis"><span class="yt-tytul">Technika ćwiczeń</span><span class="yt-meta"><span class="yt-ile" data-pl="PLNaYUUQuWmNg"></span>YouTube&nbsp;↗</span></span>
+      </a></li>
+      <li><a class="yt-karta" href="https://www.youtube.com/playlist?list=PLTRiTAUWaC5U" target="_blank" rel="noopener">
+        <span class="yt-min"><img src="assets/yt/biblioteka-cwiczen.jpg" alt="" width="640" height="360" loading="lazy" decoding="async"><span class="yt-play" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#99E66D"/><path d="M27.11 23.33v17.34L41.77 32z" fill="#0B0F0D"/></svg></span></span>
+        <span class="yt-opis"><span class="yt-tytul">Biblioteka ćwiczeń</span><span class="yt-meta"><span class="yt-ile" data-pl="PLTRiTAUWaC5U"></span>YouTube&nbsp;↗</span></span>
+      </a></li>
+    </ul>
+    <p class="yt-plan rv rv3"><b>W&nbsp;aplikacji</b> każde ćwiczenie ma wideo poglądowe, instruktaż oraz wskazówki poprawnego wykonania.</p>
+    <!-- WCAG 2.2.2: pasek pod hero rusza sam, więc musi być sposób, żeby go zatrzymać (w wariancie A sekcja już się nie rusza;
+         przycisk zostaje tu, dopóki nie trafi pod pasek). Obsługa: blok „ruchBtn bez telefonu” w skrypcie efektów. -->
     <button class="ruch-btn" id="ruchBtn" type="button" aria-pressed="false"><span class="ruch-ic" aria-hidden="true">❚❚</span><span class="ruch-txt">Zatrzymaj</span></button>
   </div>
 </section>
@@ -2731,6 +2879,9 @@
           <li>konkretne wskazówki o&nbsp;treningu, jedzeniu i&nbsp;regeneracji</li>
           <li>informacje i&nbsp;oferty dotyczące planów i&nbsp;opieki indywidualnej</li>
         </ul>
+        <!-- D25 (Tomek 10.11 „tak”; karta analiza1011-d25-zdanie, brzmienie prawa 10.11): wchodzi DOPIERO po teście social
+             (zapis → potwierdzenie → poradnik od razu). Gdy wysyłka poradnika zostanie wyłączona — zdanie znika tego samego dnia. -->
+        <p class="rv rv3">Na start, zaraz po potwierdzeniu zapisu, dostajesz poradnik „Jak zacząć ćwiczyć po&nbsp;40: plan na pierwsze 4&nbsp;tygodnie”.</p>
         <p class="rv rv3">Zero spamu — wypisanie jednym kliknięciem.</p>
       </div>
       <div class="rv rv3">
@@ -3985,6 +4136,33 @@
   const hpOmin = document.querySelector('.hero .lead-omin'), hpLead = document.querySelector('.hero p.lead');
   const hpUk = k => FOC_FIZ.ukladTel([k], T3H.HERO.F);
   const hpU = FOC_FIZ.ukladHero(), hpB = { start: hpUk(T3H.HERO.START), zero: hpUk({ ry: 0, rx: 0, rz: 0 }), m: hpUk(T3H.HERO.M) };
+  /* D34: na komputerze z silnikiem ekran telefonu hero gra 4–5 s prawdziwej apki (nagranie z konta testowego, dział wideo).
+     Żywy ekran DOM nałożony homografią jak w „Dlaczego” (poKlatce = każdy krok pochylenia); tekstura ekranu zostaje pod spodem.
+     Film pobierany dopiero po pierwszym obrazie silnika (po load, tylko komputer); poza kadrem pauza. */
+  const HP_FILM = 'assets/ekran/ekran-filmy';
+  let hpEk = null, hpWidac = false;
+  const hpEkran = () => {
+    if (hpEk) return hpEk;
+    const [NW, NH] = T3H.NAKLADKA, kx = NW / T3H.ekran.w, ky = NH / T3H.ekran.h, wy = T3H.wyspa;
+    const v = document.createElement('video'), w = document.createElement('span');
+    Object.assign(v, { muted: true, loop: true, playsInline: true, preload: 'none' });
+    w.className = 'fon-wyspa';
+    Object.assign(w.style, { width: `${(wy.w * kx).toFixed(1)}px`, height: `${(wy.h * ky).toFixed(1)}px`,
+      left: `${((NW - wy.w * kx) / 2).toFixed(1)}px`, top: `${((T3H.ekran.h / 2 - (wy.cy - T3H.ekran.cy) - wy.h / 2) * ky).toFixed(1)}px` });
+    hpEk = document.createElement('div');
+    hpEk.className = 'fon-ekran';
+    hpEk.style.borderRadius = `${(T3H.ekran.r_mm * kx).toFixed(1)}px`;
+    hpEk.append(v, w);
+    heroPhone.append(hpEk);
+    new IntersectionObserver(([e]) => { hpWidac = e.isIntersecting; hpFilm(); }).observe(heroPhone);
+    return hpEk;
+  };
+  const hpNaloz = kat => { if (hpEk) hpEk.style.transform = FOC_FIZ.macierzCSS(FOC_FIZ.homografia(FOC_FIZ.ekranTel(kat, hpU, hpSHost, 0.5, T3H.HERO.F)), ...T3H.NAKLADKA); };
+  const hpFilm = () => {
+    const v = hpEk && hpEk.firstChild, gra = hpWidac && heroPhone.classList.contains('gl-hero');
+    if (!v || gra !== v.paused) return;
+    if (gra) { if (!v.src) { v.poster = HP_FILM + '.jpg'; v.src = HP_FILM + '.mp4'; } v.play().catch(() => {}); } else v.pause();
+  };
 
   /* Silnik 3D (B.3): foc3d.js po load, w bezczynności (najpóźniej 3 s), tylko przy WebGL2 bez „dużego spadku
      wydajności". Oszczędzanie danych, „ogranicz ruch", ≤ 2 GB i ?3d=0: same zdjęcia, bez pobierania assets/3d/*.js.
@@ -4136,6 +4314,32 @@
     });
     dlUstaw(1);                                  /* start na pierwszym prawdziwym ekranie */
 
+    /* D15: filmy pierwszego treningu na ekranie 2 (#tr1, slajdy nie są kopiowane) — jeden naraz, po kolei, tylko gdy ten ekran
+       jest wybrany i telefon w kadrze; drugi <video> ładuje w tle następne ćwiczenie. Plakat dopiero, gdy sekcja jest blisko
+       (0 KB filmów przy wejściu na stronę, także na telefonie). „Ogranicz ruch”: sam plakat pierwszego ćwiczenia. */
+    const tr1 = document.getElementById('tr1');
+    let tr1Graj = () => {};
+    if (tr1) {
+      const li = [...tr1.querySelectorAll('li')], vv = [...tr1.querySelectorAll('video')], film = i => li[i % li.length].dataset.film + '.mp4';
+      let n = 0, akt = 0, widac = false;
+      const zaladuj = (v, i) => { v.src = film(i); v.preload = 'auto'; };
+      tr1Graj = () => {
+        const v = vv[akt];
+        if (widac && dlIdx === 1 && !reduced) { if (!v.src) zaladuj(v, n); v.play().catch(() => {}); } else v.pause();
+      };
+      vv.forEach((v, k) => {
+        v.addEventListener('playing', () => { const d = vv[1 - k]; if (k === akt && !d.src.endsWith(film(n + 1))) zaladuj(d, n + 1); });
+        v.addEventListener('ended', () => {
+          n = (n + 1) % li.length; akt = 1 - k;
+          li.forEach((x, i) => x.classList.toggle('on', i === n));
+          vv[akt].classList.add('on'); v.classList.remove('on');
+          tr1Graj();
+        });
+      });
+      new IntersectionObserver(([w], o) => { if (w.isIntersecting) { vv[0].poster = li[0].dataset.film + '.jpg'; vv[0].classList.add('on'); o.disconnect(); } },
+        { rootMargin: '300px 0px' }).observe(dlTelefon);
+      new IntersectionObserver(([w]) => { widac = w.isIntersecting; tr1Graj(); }, { threshold: 0.3 }).observe(dlTelefon);
+    }
     /* `krok` (±1) = ruch w stronę gestu, wolno wyjechać na kopię;
        bez `krok` = skok wprost pod numer ekranu (kropki). */
     const dlPokaz = (i, krok) => {
@@ -4145,6 +4349,7 @@
       dlKropki.forEach((k, n) => { k.classList.toggle('on', n === dlIdx); k.setAttribute('aria-current', String(n === dlIdx)); });
       dlTeksty.forEach((t, n) => t.classList.toggle('on', n === dlIdx));
       dlStosuj();
+      tr1Graj();
     };
     dlKropki.forEach(k => k.addEventListener('click', () => dlPokaz(+k.dataset.ekran)));
     const nl = document.getElementById('dlNavL'), nr = document.getElementById('dlNavR');
@@ -4395,6 +4600,24 @@
       ruchStosuj();
     });
     ruchStosuj();
+  } else {
+    /* ruchBtn bez telefonu (D19 wariant A): w sekcji wideo nic się nie rusza, przycisk zatrzymuje już tylko pasek pod hero (WCAG 2.2.2) */
+    const ruchBtn = document.getElementById('ruchBtn');
+    let stop = false;
+    try { stop = sessionStorage.getItem('foc_ruch') === 'stop'; } catch (_) {}
+    const stosuj = () => {
+      document.documentElement.classList.toggle('ruch-stop', stop);
+      if (!ruchBtn) return;
+      ruchBtn.setAttribute('aria-pressed', String(stop));
+      ruchBtn.querySelector('.ruch-txt').textContent = stop ? 'Odtwórz' : 'Zatrzymaj';
+      ruchBtn.querySelector('.ruch-ic').innerHTML = stop ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.33 5.5v13L19.33 12z"/></svg>' : '❚❚';
+    };
+    if (ruchBtn) ruchBtn.addEventListener('click', () => {
+      stop = !stop;
+      try { sessionStorage.setItem('foc_ruch', stop ? 'stop' : 'graj'); } catch (_) {}
+      stosuj();
+    });
+    stosuj();
   }
 
   const slowoRozumiesz = document.querySelector('.hero h1 .outline');
@@ -4547,11 +4770,11 @@
     const lr = cs ? [...hpWHero(hpLead), hpLead.offsetWidth, parseFloat(cs.lineHeight) / 2 - 0.36 * parseFloat(cs.fontSize)] : null;   /* odczyt przed zapisami stylu; bez animacji fadeUp */
     if (chce !== hpGlHost) {
       hpGlHost = chce;
-      heroPhone.classList.remove('gl-hero');
-      if (chce) hpGl.host('hero', { el: heroPhone, ekran: null, kat: { ry: tiltY, rx: tiltX, rz: 0 }, F: H.F,
-        obraz: 'assets/screen_trening.jpg', uklad: () => ({ U: hpU, s: hpSHost }),
-        poRysunku: () => heroPhone.classList.add('gl-hero'),
-        utrata: () => { hpGl = null; hpGlHost = false; heroPhone.classList.remove('gl-hero'); } });
+      heroPhone.classList.remove('gl-hero'); hpFilm();
+      if (chce) hpGl.host('hero', { el: heroPhone, ekran: hpEkran(), kat: { ry: tiltY, rx: tiltX, rz: 0 }, F: H.F,
+        obraz: 'assets/screen_trening.jpg', uklad: () => ({ U: hpU, s: hpSHost }), poKlatce: hpNaloz,
+        poRysunku: () => { heroPhone.classList.add('gl-hero'); hpFilm(); },
+        utrata: () => { hpGl = null; hpGlHost = false; heroPhone.classList.remove('gl-hero'); hpFilm(); } });
       else hpGl.usun('hero');
     }
     if (sHost !== hpSHost) {
@@ -5322,9 +5545,9 @@
     adj: odmien(n, ['darmowy', 'darmowe', 'darmowych']),
     noun: odmien(n, ['poradnik', 'poradniki', 'poradników'])
   });
-  /* Sekcja „Poradniki wideo" stoi zawsze (Tomek 26.10: chowanie po wczytaniu yt.json przesuwało stronę), z fragmentami
-     prawdziwych instruktaży z apki. Liczba i okienko „Oglądaj na YouTube" pojawiają się dopiero przy ≥ 1 filmie na YouTube
-     (klasa .yt-jest) — liczba ma być prawdziwa w każdej chwili (Tomek 3.09.2026), HTML nie ma żadnej liczby na sztywno.
+  /* Sekcja „Poradniki wideo" stoi zawsze (Tomek 26.10: chowanie po wczytaniu yt.json przesuwało stronę), z dwiema kartami
+     playlist (D19 wariant A). Liczba w tytule pojawia się dopiero przy ≥ 1 filmie na YouTube (klasa .yt-jest), liczby na kartach
+     przy ≥ 1 filmie danej playlisty — liczba ma być prawdziwa w każdej chwili (Tomek 3.09.2026), HTML nie ma żadnej liczby na sztywno.
      Numery sekcji („05 — …") przeliczamy od razu: ukryte „Opinie" nie zostawiają dziury w numeracji. */
   const przenumerujSekcje = () => {
     /* pierwotny numer trzymamy w data-nr — po pierwszym przeliczeniu tekst już go nie ma,
@@ -5343,6 +5566,12 @@
     .then(r => (r.ok ? r.json() : null))
     .then(d => {
       const n = (d && Number(d.count)) || 0;
+      /* liczba filmów na kartach playlist (D19): tylko gdy automat wpisze ją do yt.json ({"playlisty": {"<id listy>": 62}}) */
+      const pl = (d && d.playlisty) || {};
+      document.querySelectorAll('.yt-ile[data-pl]').forEach(el => {
+        const k = Number(pl[el.dataset.pl]) || 0;
+        if (k > 0) el.textContent = k + ' ' + odmien(k, ['film', 'filmy', 'filmów']) + ' · ';
+      });
       if (n < 1) return;
       const f = odmienPoradniki(n);
       document.querySelectorAll('.yt-count').forEach(el => { el.textContent = n; });
@@ -5431,7 +5660,9 @@
           </article>`;
       }).join('');
       sec.hidden = false; if (typeof przenumerujSekcje === "function") przenumerujSekcje();
-      startOrbit();
+      /* D20: 1–2 opinie obok siebie (.rzad), orbita dopiero od 3 — samotna karta krążyła i chowała się za brzeg */
+      grid.parentElement.classList.toggle('rzad', list.length < 3);
+      if (list.length >= 3) startOrbit();
       return true;
     };
     /* widok public_reviews (3.09.2026): tylko opublikowane wiersze i tylko te trzy kolumny —
@@ -5444,6 +5675,47 @@
       .catch(() => {});
     /* Opinie do orbity ładują się WYŁĄCZNIE z bazy (Supabase, tylko zatwierdzone). Dopóki nie ma
        żadnej prawdziwej — sekcja pozostaje ukryta. (Atrapy demo były tylko lokalnie, do podglądu.) */
+  })();
+
+  /* D08 (Tomek 10.11): mini-kalendarz „Kiedy skończysz plan?”. 3 dni z pastylek → daty 12 treningów od jutra.
+     Dni (skróty apki A5: pn wt sr cz pt sb nd) dopisujemy TYLKO do adresów linków „Kup plan” po „?” (&dni=…), nigdy do
+     adresu strony ani po „#” (warunek prawa A5); niczego nie zapisujemy w przeglądarce. Pomiar D31 tnie adres przed „?”,
+     więc kwota 79 zostaje. Apka bierze dni tylko przy komplecie (3 = treningi planu w tygodniu), stąd &dni= dopiero przy 3. */
+  (() => {
+    const box = document.getElementById('kiedy'), kal = document.getElementById('kdKal'), wynik = document.getElementById('kdWynik');
+    if (!box || !kal || !wynik) return;
+    const SKR = ['nd', 'pn', 'wt', 'sr', 'cz', 'pt', 'sb'];   /* indeks = getDay() */
+    const KIEDY = ['w\u00a0niedzielę', 'w\u00a0poniedziałek', 'we\u00a0wtorek', 'w\u00a0środę', 'w\u00a0czwartek', 'w\u00a0piątek', 'w\u00a0sobotę'];
+    const MIES = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca', 'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
+    const ILE = 3, TRENINGI = 12, btns = [...box.querySelectorAll('.kd-dzien')];
+    const rysuj = () => {
+      const wyb = btns.filter(b => b.getAttribute('aria-pressed') === 'true').map(b => SKR.indexOf(b.dataset.d)), pelne = wyb.length === ILE;
+      btns.forEach(b => { b.disabled = pelne && b.getAttribute('aria-pressed') !== 'true'; });
+      const start = new Date(); start.setHours(12, 0, 0, 0); start.setDate(start.getDate() + 1);   /* jutro; 12:00 = bez kłopotu ze zmianą czasu */
+      const tr = [];
+      if (pelne) for (const d = new Date(start); tr.length < TRENINGI; d.setDate(d.getDate() + 1)) if (wyb.includes(d.getDay())) tr.push(new Date(d));
+      const pon = new Date(start); pon.setDate(pon.getDate() - (pon.getDay() + 6) % 7);
+      const koniec = pelne ? tr[TRENINGI - 1] : new Date(pon); if (!pelne) koniec.setDate(koniec.getDate() + 27);
+      const klucze = tr.map(d => d.toDateString());
+      let h = ['pn', 'wt', 'śr', 'cz', 'pt', 'sb', 'nd'].map(n => `<span class="kd-nagl">${n}</span>`).join('');
+      for (const d = new Date(pon); d <= koniec || d.getDay() !== 1; d.setDate(d.getDate() + 1)) {
+        const i = klucze.indexOf(d.toDateString());
+        h += `<span class="${[i >= 0 && 'kd-tr', i === TRENINGI - 1 && 'kd-meta', d < start && 'kd-poza'].filter(Boolean).join(' ')}">${d.getDate()}</span>`;
+      }
+      kal.innerHTML = h;
+      const k = tr[TRENINGI - 1], brak = ILE - wyb.length;
+      wynik.textContent = pelne ? `Kończysz plan ${KIEDY[k.getDay()]}, ${k.getDate()}\u00a0${MIES[k.getMonth()]}.*`
+        : brak === ILE ? 'Zaznacz 3\u00a0dni, w\u00a0które możesz trenować.' : `Zaznacz jeszcze ${brak}\u00a0${brak === 1 ? 'dzień' : 'dni'}.`;
+      const dni = pelne ? wyb.sort((a, b) => (a + 6) % 7 - (b + 6) % 7).map(i => SKR[i]).join(',') : '';
+      document.querySelectorAll('a[href*="app.fitonlinecoach.com/plany/poczatek"]').forEach(a => {
+        try {
+          const u = new URL(a.href); u.searchParams.delete('dni'); u.hash = '';
+          a.href = u.href + (dni ? (u.search ? '&' : '?') + 'dni=' + dni : '');
+        } catch (_) { /* zły adres — zostaje jak był */ }
+      });
+    };
+    btns.forEach(b => b.addEventListener('click', () => { b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true')); rysuj(); }));
+    rysuj();
   })();
 
   /* pasek marquee — buduje tyle powtórzeń, żeby wypełnić każdą szerokość ekranu bez dziury */
@@ -5610,7 +5882,7 @@
           if (id === 'plan' && tel && widoczny(sc)) kadr(id, el, docTop(sc), docTop(sc) + sc.offsetHeight, widoczny(nota) ? docTop(nota) + nota.offsetHeight : undefined, pf.classList.contains('flipped'));
           else blok(id, el); });
     }
-    [['wideo', '#wideo'], ['opinie', '#opinie'], ['faq', '#faq'], ['zapis', '#zapis']]
+    [['kiedy', '#kiedy'], ['wideo', '#wideo'], ['opinie', '#opinie'], ['faq', '#faq'], ['zapis', '#zapis']]
       .forEach(([id, s]) => { const el = q(s); if (widoczny(el)) blok(id, el); });
     dodaj('koniec', maxY);
     S.forEach(s => { s.y = ogr(s.y, 0, maxY); if (s.strefa !== undefined) s.strefa = ogr(s.strefa, 0, maxY); });
