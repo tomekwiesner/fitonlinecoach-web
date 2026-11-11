@@ -14,13 +14,19 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon-180.png">
 <!-- Strona błędu 404 dla GitHub Pages — sam plik `404.html` w katalogu głównym wystarczy,
      Pages podstawia go automatycznie. Celowo SAMODZIELNA i lekka: nie wciąga 177-kilobajtowego
-     `index.html` ani fontów, bo ktoś, kto trafił tu z literówki, ma zobaczyć drogę powrotną
-     w ułamku sekundy, a nie ładować całą stronę. Kolory marki wpisane wprost. -->
+     `index.html`, bo ktoś, kto trafił tu z literówki, ma zobaczyć drogę powrotną
+     w ułamku sekundy, a nie ładować całą stronę. Kolory marki wpisane wprost. Czcionki marki (D33, 11.11)
+     z font-display:swap — tekst widać od razu, krój podmienia się po wczytaniu. -->
 <style>
+  /* D33 (DES-09, 11.11): czcionki marki jak na stronie głównej — te same pliki (po wizycie na stronie są już w pamięci przeglądarki);
+     swap = tekst widać od razu krojem zastępczym, bez czekania na plik */
+  @font-face{font-family:'Montserrat';src:url('/assets/fonts/Montserrat-VF.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+  @font-face{font-family:'Inter';src:url('/assets/fonts/Inter-VF.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
   *{margin:0;padding:0;box-sizing:border-box}
   body{min-height:100vh;display:flex;align-items:center;justify-content:center;
     background:#0B0F0D;color:#CFD8D2;padding:32px;
-    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6}
+    font-family:'Inter',system-ui,-apple-system,sans-serif;line-height:1.6}
+  h1,.kod,a.wroc{font-family:'Montserrat',sans-serif}
   .box{max-width:460px;text-align:center}
   img{height:64px;width:auto;margin-bottom:36px}
   .kod{font-size:.78rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;

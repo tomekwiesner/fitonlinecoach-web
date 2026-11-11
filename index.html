@@ -199,12 +199,31 @@
   /* link w opisie „Reklam”: dotyk 45 px bez rozsuwania wierszy; podkreślenie tekstu, bo kreska zjechałaby pod pole dotyku */
   .cc-opt a{display:inline-block;padding:13px 0;margin:-13px 0;color:var(--lime);text-decoration:underline;text-underline-offset:3px}
   @media(max-width:700px){
-    .cc{padding:18px 16px}
-    .cc-btns{width:100%}
-    .cc-btn{flex:1 1 100%;text-align:center}
-    /* okienko zgód na telefonie: nad linkiem 10 px do „Tylko niezbędne”, pod nim 18 px do krawędzi okienka. 2026-11-05: 44 px —
-       pole zachodzi 1 px na „Tylko niezbędne” (ten ma 45 px, zostaje 44) i sięga dolnej krawędzi okienka */
-    #ccSettings{padding:11px 0 18px;margin:-11px 0 -18px}
+    /* 2026-11-11 (D02, Tomek 10.11 „tak, pokaż podgląd”, warunki prawa 10.11): okienko na telefonie NIŻSZE i U GÓRY, pod paskiem
+       z logo (76 px). Na dole zasłaniało „Dołącz” (WYD-03, 11 z 11 prób), a nawet 1/3 ekranu od dołu zaczyna się nad przyciskiem
+       (343×740: od ok. 493 px, „Dołącz” od 550 px). Logo i menu zostają odkryte, strona bez zaciemnienia. Dół okienka najwyżej
+       na 70 % wysokości ekranu: „Dołącz” zaczyna się na 72–84 % (288–390 px), więc zostaje odkryty; dłuższy tekst przewija się
+       pod przyklejonymi przyciskami (reguła 2026-11-01 niżej). Po rozwinięciu „Ustawień” (świadomy wybór) okienko może sięgnąć
+       dołu ekranu, „Zapisz” przyklejony jak dotąd. Tekst i skrypt zgód bez zmian. */
+    .cc{top:76px;bottom:auto;padding:14px 16px 18px;max-height:calc(70vh - 76px);max-height:calc(70svh - 76px);
+      border-top:0;border-bottom:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+    .cc:has(.cc-opts.show){max-height:calc(100vh - 76px);max-height:calc(100svh - 76px)}
+    .cc-in{gap:12px}
+    /* nagłówek „Ciasteczka” na początku pierwszej linii tekstu (prawo 10.11: wolno), ta sama wielkość co tekst — oszczędza wiersz */
+    .cc-txt b{float:left;font-size:.9rem;line-height:1.6;margin:0 .45em 0 0}
+    /* link do polityki: pole dotyku ok. 44 px w pionie (prawo 10.11: „dobrze, żeby”); podkreślenie tekstu, bo kreska
+       (border) zjechałaby pod pole dotyku — jak link w „Reklamach” */
+    .cc-txt a{border-bottom:0;text-decoration:underline;text-decoration-color:rgba(153,230,109,.4);text-underline-offset:3px;
+      padding:13px 0;margin:-13px 0}
+    .cc-btns{width:100%;gap:0 8px;align-items:stretch}
+    /* „Zgadzam się” | „Tylko niezbędne” w jednym rzędzie, po pół rzędu, ta sama wysokość (min. 44 px), czcionka i rozstrzelenie
+       liter (prawo 10.11: zmiany zawsze OBU naraz). Mniejsze rozstrzelenie i boczny margines, żeby „TYLKO NIEZBĘDNE” mieścił się
+       w wierszu; gdy i tak się nie mieści (288 px), napisy obu zawijają się na 2 wiersze, a stretch trzyma równą wysokość. */
+    .cc-btn{flex:1 1 0;min-width:0;min-height:44px;padding:14px 6px;letter-spacing:.05em;white-space:normal;text-align:center}
+    /* „Ustawienia” w osobnym wierszu POD przyciskami (pusty element o pełnej szerokości łamie rząd), szerokość jak napis.
+       Pole dotyku 44 px: 11 px nad napisem (styka się z przyciskami, nie zachodzi), 18 px pod nim do krawędzi okienka. */
+    .cc-in > .cc-btns::after{content:'';flex:0 0 100%;order:1}
+    #ccSettings{order:2;padding:11px 0 18px;margin:0 0 -18px}
     /* „Zapisz” w rozwiniętych ustawieniach przyklejony do dołu okienka: po wpisaniu numerów pikseli treść jest wyższa niż
        ekran (343×740, 375×667, 288×640) i przycisk znikał pod krawędzią. bottom:-18px = dolny odstęp okienka (.cc). Odstęp i ujemny margines się znoszą, więc gdy
        treść się mieści, wygląd jest identyczny (reguła: przycisk potwierdzenia w zasięgu ekranu). */
@@ -334,11 +353,11 @@
      i 21-75 px wysokosci, przy wierszu 28 px. */
   .lead-omin{display:none}
   .hero p.lead{max-width:480px;color:#B9C4BD;font-size:1.08rem;margin-bottom:40px;
-    opacity:0;animation:fadeUp .8s 1.15s forwards}
+    opacity:0;animation:fadeUp .8s .3s forwards}
   /* kolumna wyrównana do lewej: przycisk „Dołącz" bierze szerokość z treści,
      a nie rozciąga się na całą szerokość kolumny */
   .hero-actions{display:flex;flex-direction:column;align-items:flex-start;gap:0;
-    opacity:0;animation:fadeUp .8s 1.35s forwards}
+    opacity:0;animation:fadeUp .8s .45s forwards}
   @keyframes wordUp{to{opacity:1;transform:translateY(0)}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
   .btn{display:inline-block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:.85rem;
@@ -610,6 +629,16 @@
   @keyframes a1ring{0%,44%{opacity:0;transform:scale(.92)}50%{opacity:1;transform:scale(1)}66%,100%{opacity:0;transform:scale(1.18)}}
   @keyframes a1toast{0%{opacity:0;transform:translateY(1em)}20%,79%{opacity:.3;transform:none}100%{opacity:1;transform:none}}
   @keyframes a1tt{from{opacity:0;transform:translateX(.6em)}}
+  /* D33 (DES-07, 11.11): ekran dotykowy (bez najeżdżania) — zamiast strzałki myszy krążek „dotknięcia palcem” na „Kup plan”
+     (tam, gdzie klikała strzałka) w tym samym rytmie (dotyk 42–48 %, razem z falą na przycisku); atrapa „Kup plan” lekko przygaszona, żeby nie udawała przycisku */
+  @media(hover:none){
+    .jk-s1 .jk-cur{display:none}
+    .jk-s1 .jk-btn{filter:brightness(.85)}
+    .jk-s1 .jk-btn::before{content:"";position:absolute;left:58%;top:50%;width:2.3em;height:2.3em;margin:-1.15em 0 0 -1.15em;border-radius:50%;
+      background:rgba(255,255,255,.32);box-shadow:0 0 0 .14em rgba(255,255,255,.8),0 .2em .6em rgba(0,0,0,.5);opacity:0;pointer-events:none}
+    .stp.jk-play .jk-s1 .jk-btn::before{animation:a1tap 3.4s ease-out .3s both}
+  }
+  @keyframes a1tap{0%,32%{opacity:0;transform:scale(1.5)}42%{opacity:1;transform:scale(1)}48%{opacity:1;transform:scale(.8)}66%,100%{opacity:0;transform:scale(1.7)}}
   @keyframes aPop{0%{transform:scale(.2);opacity:0}100%{transform:scale(1);opacity:1}}
   @keyframes aDraw{from{stroke-dashoffset:1}}
 
@@ -792,7 +821,9 @@
   @media(min-width:981px){
     /* pop-up zajmuje miejsce nagłówka sekcji — nagłówek całkiem ustępuje (bez „ducha" prześwitującego przez szkło) */
     .how-grid:has(.stp.jk-open) .how-left{opacity:0;transform:translateX(-16px)}
-    .steps:has(.stp.jk-open) .stp:not(.jk-open){opacity:.35}
+    /* D33 (DES-05, 11.11): .35 -> .9 — opisy kroków 02 i 03 mają 4,9:1 (było 1,8:1), tytuły 14:1; aktywny krok dalej wyróżnia
+       większy numer z limonkową kreską i linia pod krokiem */
+    .steps:has(.stp.jk-open) .stp:not(.jk-open){opacity:.9}
   }
 
   @media(max-width:980px){
@@ -906,7 +937,7 @@
      łamie się na dwie linie na wąskiej karcie */
   .plan-tag{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.22em;
     text-transform:uppercase;color:var(--lime);line-height:1.5;
-    border:1px solid rgba(153,230,109,.4);padding:7px 14px;border-radius:2px;margin-bottom:16px}
+    border:1px solid rgba(153,230,109,.4);padding:7px 14px;border-radius:999px;margin-bottom:16px}   /* D33 (DES-08): plakietka = pastylka, nie ostry róg przycisku akcji */
   .plan-body h3{font-size:clamp(1.6rem,2.3vw,2.05rem);color:#fff;margin-bottom:10px}
   .plan-body>p{color:var(--muted);margin-bottom:16px;max-width:420px;font-size:.92rem;line-height:1.55}
   .plan-feats{list-style:none;margin-bottom:14px;width:100%}
@@ -1074,7 +1105,7 @@
   .roles{position:relative;display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 20px;perspective:800px}
   .role{position:relative;overflow:hidden;isolation:isolate;border:1px solid var(--line);
     padding:11px 22px;font-size:.8rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-    color:#CFD8D2;border-radius:7px;background:transparent;font-family:inherit;cursor:pointer;
+    color:#CFD8D2;border-radius:999px;background:transparent;font-family:inherit;cursor:pointer;
     transform-style:preserve-3d;will-change:transform;
     transition:transform .16s ease-out, border-color .25s, color .25s, box-shadow .25s}
   .role>span{position:relative;z-index:1;display:inline-block;transition:transform .2s}
@@ -1450,6 +1481,9 @@
        akapit łamie się jak przed 3D (od 460 px szerokość jak w 40f4dab, bo dawny układ i tak był tam inny) */
     .lead-omin{display:block;float:right;width:40%;height:88px;min-height:88px}
     @media(max-width:440px){.lead-omin{min-width:40%}}
+    /* D33 (DES-04, 11.11): tablet w pionie (768–980 px szerokości, wysokość ponad 900 px) — treść na środku ekranu w pionie,
+       a nie u góry z pustą połową pod spodem; telefon 3D 2× większy obok tekstu (skrypt dokujTelefon, hpTablet) */
+    @media(min-width:768px) and (min-height:901px){.hero{align-items:center}.hero-content{padding-top:var(--hp-pad,0px)}}
     /* formularz newslettera na dole strony — ciaśniejsze odstępy na telefonie */
     .zapis-korzysci{margin-bottom:10px}
     .zapis-zgoda{margin-top:10px}
@@ -2411,7 +2445,7 @@
                    powiedzieć klientowi czegoś innego. Ta sama lista stoi w apce
                    w sekcji „Czego potrzebujesz" na stronie planu. -->
               <div class="pb-sprzet"><h3 class="pb-h">Czego potrzebujesz?</h3>
-              <p class="pb-nota">Taki sprzęt ma większość siłowni.</p>
+              <p class="pb-nota"><!--TRESC:sprzet-zdanie-->Taki sprzęt ma większość siłowni.<!--/TRESC--></p>
               <ul class="plan-feats plan-sprzet"><!--TRESC:sprzet-poczatek-->
                 <li>Sprzęt cardio — rower, bieżnia albo wioślarz</li>
                 <li>Drążek do podciągania oraz niski drążek lub kółka</li>
@@ -2511,7 +2545,7 @@
                  tego samego dnia wraca wersja bez ceny z zapisem na newsletter (strona nie ma wyłącznika).
                  Napis na guziku ≤ 22 znaki. 2026-11-05 (Tomek): bez gwiazdki i dopisku pod przyciskiem, warunki ceny klient
                  czyta w aplikacji przed zakupem („strona niech będzie jak najbardziej czysta”); pełne warunki zostają w FAQ. -->
-            <a class="btn btn-lime btn-join btn-care rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny" target="_blank" rel="noopener">
+            <a class="btn btn-lime btn-join btn-care rv rv4" href="https://app.fitonlinecoach.com/plany/indywidualny?kup=1" target="_blank" rel="noopener">
               <span class="bj-main">Opieka indywidualna</span>
               <span class="bj-sub">599 zł/mies.</span>
             </a>
@@ -2855,6 +2889,14 @@
      brakujące narzędzia doładują się od razu — bez przeładowania strony —
      a żadne nie wczyta się (ani nie policzy wejścia) drugi raz. */
   let gtagJs = false, ga4Wczytane = false, adsWczytane = false, pixelWczytany = false;
+  /* 2026-11-11 (prawo, luka sprzed D31): zgoda wycofana w INNEJ karcie zmienia ciasteczko, ale flagi wczytania w tej karcie
+     zostają true do przeładowania. Przed każdym zdarzeniem czytamy więc zgodę z ciasteczka; gdy któreś wczytane narzędzie
+     straciło zgodę (albo zgody nie ma), nic nie wysyłamy — gtag bez send_to poszedłby do wszystkich wczytanych celów. */
+  /* 2026-11-11 (prawo): adres bez identyfikatorów kliknięć reklam — jedna funkcja dla config GA4 i dla adresu strony
+     po kliknięciu w menu (pushState niżej, w skrypcie przystanków). Utm zostaje; URL.toString() nie zostawia pustego „?”. */
+  const bezIdKlikniec = href => { try { const u = new URL(href); ['gclid', 'gbraid', 'wbraid', 'fbclid', 'ttclid', 'msclkid'].forEach(k => u.searchParams.delete(k)); return u.toString(); } catch (_) { return href.split('?')[0]; } };
+  window.FOC_BEZ_ID_KLIKNIEC = bezIdKlikniec;
+  const zgodaAktualna = () => { const z = odczytaj(); return !!z && !!(z.a || z.m) && !((adsWczytane || pixelWczytany) && !z.m) && !(ga4Wczytane && !z.a); };
   const wczytajNarzedzia = z => {
     const chceGa4 = !!(z.a && cfg.ga4Id), chceAds = !!(z.m && cfg.googleAdsId);
     /* Google: jedna biblioteka obsługuje i Ads, i Analytics */
@@ -2866,7 +2908,14 @@
       gtag('js', new Date());
       gtagJs = true;
     }
-    if (chceGa4 && !ga4Wczytane) { gtag('config', cfg.ga4Id, {anonymize_ip: true}); ga4Wczytane = true; }
+    /* 2026-11-11 (prawo, luka sprzed D31): GA4 nie dostaje identyfikatorów kliknięć reklam (gclid, fbclid…) w adresie strony
+       ani w adresie poprzedniej strony (przejścia spis → poradnik → strona główna) — polityka przy „Statystykach” opisuje tylko
+       oznaczenia kampanii (utm), te zostają. URL.toString() nie zostawia pustego „?”; pusty referrer = pole pominięte. */
+    if (chceGa4 && !ga4Wczytane) {
+      const ustGa4 = {anonymize_ip: true, page_location: bezIdKlikniec(location.href)};
+      if (document.referrer) ustGa4.page_referrer = bezIdKlikniec(document.referrer);
+      gtag('config', cfg.ga4Id, ustGa4); ga4Wczytane = true;
+    }
     if (chceAds && !adsWczytane) { gtag('config', cfg.googleAdsId); adsWczytane = true; }
     /* Meta Pixel — tylko przy zgodzie marketingowej */
     if (z.m && cfg.metaPixelId && !pixelWczytany) {
@@ -2968,12 +3017,12 @@
 
   document.addEventListener('click', e => {
     const a = e.target && e.target.closest ? e.target.closest('a[href*="app.fitonlinecoach.com"]') : null;
-    if (!a) return;
+    if (!a || !zgodaAktualna()) return;   /* 2026-11-11: zgoda mogła zostać wycofana w innej karcie */
     /* 2026-11-10 (D31, decyzja Tomka): „Kup plan” i opieka = begin_checkout (Google) / InitiateCheckout (Meta) z kwotą, PLN
        i rodzajem oferty (poczatek / indywidualny); „Dołącz” (lista /plany) = osobne dolacz / Dolacz bez kwoty. Kwota z JSON-LD
        w <head> (Product → offers.url = adres przycisku bez „?”), więc nowa cena zmienia się w jednym miejscu. Wolno wysłać tylko
        rodzaj oferty, kwotę, PLN i adres bez „?” (ocena prawa D31-strona, 10.11). Każdą zmianę zdarzeń zgłosić prawu. */
-    const adres = (a.getAttribute('href') || '').split('?')[0];   /* bez „?”: fbclid i inne identyfikatory kliknięć nie idą do Google przy samej zgodzie na Statystyki */
+    const adres = (a.getAttribute('href') || '').split('?')[0];   /* bez „?”: identyfikatory kliknięć (fbclid, gclid…) nie idą w parametrach zdarzenia; adres strony (page_location) czyści config GA4 */
     let cena = 0;
     document.querySelectorAll('script[type="application/ld+json"]').forEach(s => {
       try { (JSON.parse(s.textContent)['@graph'] || []).forEach(n => { if (n.offers && n.offers.url === adres) cena = Number(n.offers.price); }); } catch (_) {}
@@ -2997,6 +3046,7 @@
      Zdarzenie leci ze skryptu formularza dopiero po odpowiedzi `{"success":true}`
      z MailerLite, czyli liczymy zapisy realne, nie kliknięcia w przycisk. */
   document.addEventListener('foc:zapis', () => {
+    if (!zgodaAktualna()) return;   /* 2026-11-11: jak przy kliknięciach — zgoda mogła zostać wycofana w innej karcie */
     try {
       if (ga4Wczytane || adsWczytane) gtag('event', 'sign_up', {method: 'newsletter'});
       if (pixelWczytany && window.fbq) fbq('track', 'Lead');
@@ -4387,9 +4437,17 @@
     const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;   /* ease-in-out */
     /* Skale z obrysu modelu w danej pozie (hpB: start, zadokowany 0/0, telefon M). Zadokowany obrys ma tyle,
        ile zmierzony dawny telefon CSS: 284 px na komputerze, 251 px na telefonie. */
-    /* start: telefon prawie na całą wysokość hero, lekko w PRAWO od środka */
-    const sStart = Math.min(hr.height * 0.9 / hpB.start.h, hr.width * 0.62 / hpB.start.w);
-    const xStart = hr.width * 0.05, yStart = 0;
+    /* start OBOK hasła (D03, Tomek 10.11), nie na środku (zakrywał 43 % hasła do pierwszego przewinięcia): wolne pole na prawo
+       od „rozumiesz.”; gdy tam telefon wyszedłby mniejszy niż po zadokowaniu, a pod hasłem (na prawo od akapitu) większy — tam.
+       Pole: 24 px od tekstu i od brzegu hero, telefon najwyżej 0,9 wysokości hero, na środku pola. Dalej dokowanie jak dotąd. */
+    const hpH1 = slowoRozumiesz.parentNode, hpPr = hpWHero(slowoRozumiesz)[0] + slowoRozumiesz.offsetWidth + 24;
+    const hpPod = hpWHero(hpH1)[1] + hpH1.offsetHeight + 24, hpPa = hpWHero(hpLead)[0] + hpLead.offsetWidth + 24;
+    const sPr = Math.min(hr.height * 0.9 / hpB.start.h, (hr.width - 24 - hpPr) / hpB.start.w);
+    const sPod = Math.min((hr.height - 24 - hpPod) / hpB.start.h, (hr.width - 24 - hpPa) / hpB.start.w);
+    const hpPd = sPr < 284 / hpB.zero.h && sPod > sPr;
+    const sStart = Math.max(0.01, hpPd ? sPod : sPr);
+    const xStart = ((hpPd ? hpPa : hpPr) + hr.width - 24) / 2 - hr.width / 2;
+    const yStart = hpPd ? (hpPod + hr.height - 24) / 2 - hr.height / 2 : 0;
     /* CEL DOKOWANIA (wskazany przez Tomka 2026-08-12): wolne pole po prawej stronie,
        PONIŻEJ hasła — a nie za słowem „rozumiesz.". Tam nic nie zasłania i telefon
        nie wchodzi w nagłówek ani w przycisk „Dołącz". */
@@ -4404,7 +4462,10 @@
     if (!plynne) {
       /* MOBILE: telefon zadokowany, lekko obrócony, w PRAWYM GÓRNYM rogu hero (najluźniejsze
          miejsce) i trochę mniejszy — żeby cała scena była czytelniejsza na małym ekranie. */
-      sDock = 251 / hpB.m.h;
+      /* D33 (11.11): telefon (do 767 px) 210 zamiast 251 px — opis idzie pod nim pełnymi wierszami (DES-06, hpUstaw3d);
+         tablet w pionie 2× większy, 502 px, wyśrodkowany w pionie na treści (DES-04) */
+      const hpWys = hpTablet.matches ? 502 : hpWaski.matches ? 210 : 251;
+      sDock = hpWys / hpB.m.h;
       xDock = hr.width * 0.28;
       /* TELEFON ZACZYNA SIĘ POD NAPISEM „TRENING — DIETA — FIZJOTERAPIA" (polecenie Tomka
          2026-08-16). Wcześniej stała `-hr.height * 0.245` podnosiła go o ułamek wysokości
@@ -4418,7 +4479,14 @@
         /* Górna krawędź obrysu tam, gdzie stał dawny telefon CSS: 28 px pod nadtytułem, do 980 px 4 px (dawny margines −24 px).
            Położenie nadtytułu z układu (offsetTop), nie z prostokąta: przez pierwszą sekundę wjeżdża animacją fadeUp
            (translateY 24 px) i pomiar w tym czasie stawiał telefon za nisko — to był powód „pływania" dawnego telefonu. */
-        yDock = hpWHero(nadtytul)[1] + nadtytul.offsetHeight + (matchMedia('(max-width:980px)').matches ? 4 : 28) + 251 / 2 - hr.height / 2;
+        yDock = hpWHero(nadtytul)[1] + nadtytul.offsetHeight + (matchMedia('(max-width:980px)').matches ? 4 : 28) + hpWys / 2 - hr.height / 2;
+        /* tablet w pionie: telefon i treść kończą się razem na „Dołącz”, a całość (telefon wyższy od treści) stoi na środku ekranu —
+           treść dostaje u góry tyle miejsca, o ile telefon jest od niej wyższy (--hp-pad, CSS D33 tylko na tablecie) */
+        const tr = heroEl.querySelector('.hero-content'), t0 = tr && tr.firstElementChild, t1 = tr && tr.lastElementChild;
+        if (hpTablet.matches && t0 && t1) {
+          tr.style.setProperty('--hp-pad', `${Math.max(0, hpWys - (t1.offsetTop + t1.offsetHeight - t0.offsetTop)).toFixed(1)}px`);
+          yDock = hpWHero(t1)[1] + t1.offsetHeight - hpWys / 2 - hr.height / 2;
+        }
       } else {
         yDock = -hr.height * 0.245;
       }
@@ -4430,7 +4498,7 @@
     tiltY = -15 * (1 - e);
     tiltX = 4 * (1 - e);
     if (!plynne) { tiltY = -14; tiltX = 6; }   /* MOBILE: stały lekki obrót 3D — widać metaliczny bok */
-    hpUstaw3d(hr, x, y, s, plynne ? sStart : s, plynne);
+    hpUstaw3d(hr, x, y, s, plynne ? Math.max(sStart, sDock) : s, plynne);   /* płótno w skali większej z obu: start bywa mniejszy niż dok (D03) */
     stosujTelefon();
     /* Cień RZUCANY przez telefon na napis. Telefon jest Z PRZODU napisu przez większość
        dokowania i wtedy rzuca cień: z daleka szeroki i słaby, im bliżej — węższy i mocniejszy.
@@ -4468,6 +4536,8 @@
   };
   /* [lewo, góra] elementu w hero z samego układu (offset*), bez transformacji i animacji */
   const hpWHero = el => { let x = 0, y = 0; for (let e = el; e && e !== heroEl; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; } return [x, y]; };
+  /* D33: tablet w pionie (DES-04, ten sam warunek co w CSS) i telefon (DES-06) */
+  const hpTablet = matchMedia('(min-width:768px) and (max-width:980px) and (min-height:901px)'), hpWaski = matchMedia('(max-width:767px)');
   /* Środek obrysu pozy w (hero/2 + x, hero/2 + y), skala s. Host = suma obrysów póz (hpU) w skali sHost (komputer: startowa,
      pełna rozdzielczość płótna), resztę robi scale(). Komputer z silnikiem: host „hero", poza nim zdjęcie. Telefon: miejsce
      w akapicie (.lead-omin) z obrysu, żeby tekst nie wchodził na telefon. */
@@ -4505,9 +4575,12 @@
     const tx = cx - (b.w / 2 - b.ox + hpU.ox) * s, ty = cy - (b.h / 2 - b.oy + hpU.oy) * s;
     heroPhone.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${(s / sHost).toFixed(5)})`;
     if (lr) {
-      hpOmin.style.width = `${Math.max(0, lr[0] + lr[2] - (cx - b.w / 2 * s) + 8).toFixed(1)}px`;
+      /* D33 (DES-06, 11.11): na telefonie wycięcie na CAŁĄ szerokość akapitu — opis zaczyna się 16 px pod telefonem, pełnymi
+         wierszami, bez „schodka” (było: 4 wiersze po ok. 20 znaków obok telefonu, potem pełna szerokość); tablet i komputer jak dotąd */
+      const wOmin = Math.max(0, lr[0] + lr[2] - (cx - b.w / 2 * s) + 8), pelny = wOmin > 0.3 * lr[2];   /* telefon zabiera ponad 30 % wiersza */
+      hpOmin.style.width = pelny ? '100%' : `${wOmin.toFixed(1)}px`;
       /* opływa wiersze z wielkimi literami (lr[3] od góry wiersza) nad dołem telefonu − 2 px, jak dawny telefon CSS */
-      hpOmin.style.height = `${Math.max(0, cy + b.h / 2 * s - lr[1] - lr[3] - 2).toFixed(1)}px`;
+      hpOmin.style.height = `${Math.max(0, cy + b.h / 2 * s - lr[1] - lr[3] + (pelny ? 16 : -2)).toFixed(1)}px`;
     }
   };
   foc3d.then(api => { if (api) { hpGl = api; dokujTelefon(); } });
@@ -5775,7 +5848,9 @@
       : w ? w.y
       : nad && nad.strefa !== undefined ? Math.max(nad.y, Math.min(yA - pl.nag - P.MARGINES, nad.strefa))
       : nad && yA - nad.y + 60 < pl.vh ? nad.y : najblizszy(pl.S, yA);
-    history.pushState(null, '', location.pathname + location.search + '#' + id);
+    /* 2026-11-11 (prawo): nowy adres bez gclid/fbclid… — inaczej pomiar zaawansowany GA4 („zmiany strony na podstawie historii”)
+       wysłałby page_view z identyfikatorami przy samych „Statystykach”. Linki do apki dostały identyfikatory już przy wejściu. */
+    { const u = new URL((window.FOC_BEZ_ID_KLIKNIEC || (h => h))(location.href)); history.pushState(null, '', u.pathname + u.search + '#' + id); }
     const fokus = () => {
       if (!el.matches('a[href],button,input,select,textarea,summary,[tabindex]')) el.setAttribute('tabindex', '-1');
       el.focus({ preventScroll: true });
