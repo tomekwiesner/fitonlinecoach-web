@@ -78,7 +78,7 @@
      Nie zamieniać ich na „wideo pokazowe". Twardy warunek przed zdjęciem bramki „Już wkrótce": instruktaże do wszystkich
      ćwiczeń są w bazie — inaczej obietnica „poradnika do każdego ćwiczenia" wprowadza w błąd (art. 5 upnpr). -->
 <title>Plany treningowe online z wideo po polsku — FitOnlineCoach</title>
-<meta name="description" content="Plany treningowe z poradnikiem wideo do każdego ćwiczenia. Po polsku. Trener personalny, fizjoterapeuta i dietetyk w jednym.">
+<meta name="description" content="Plany treningowe online z wideo po polsku — FitOnlineCoach - Trening, dieta, fizjoterapia. Trening do domu i na siłownię. Dla początkujących i średnio zaawansowanych.">
 
 <!-- ===== SEO / social (pakiet z wątku Social media FOC, zatwierdzony przez Tomka) ===== -->
 <link rel="canonical" href="https://fitonlinecoach.com/">
@@ -92,7 +92,7 @@
 <meta property="og:locale" content="pl_PL">
 <meta property="og:url" content="https://fitonlinecoach.com/">
 <meta property="og:title" content="FitOnlineCoach — trening, który rozumiesz">
-<meta property="og:description" content="Plany treningowe z poradnikiem wideo do każdego ćwiczenia. Po polsku, konkretnie, bez ściemy.">
+<meta property="og:description" content="Plany treningowe online z wideo po polsku — FitOnlineCoach - Trening, dieta, fizjoterapia. Trening do domu i na siłownię. Dla początkujących i średnio zaawansowanych.">
 <!-- Obrazek podglądu linku (og:image, twitter:image) = STRONA-10 B z notatką Tomka, zatwierdzony 22.10: prawdziwe zdjęcie hali
      Hussars ze skrzyniami + telefon 3D ze strony (assets/3d/fon_hero_start_2x.webp), napisy jak pierwszy ekran (decyzja D06).
      Narzędzie: strona-www-galeria/narzedzia/og-hussars-telefon.py. Facebook pamięta obrazek pod tym adresem — po podmianie
@@ -105,7 +105,7 @@
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="FitOnlineCoach — trening, który rozumiesz">
-<meta name="twitter:description" content="Plany treningowe z poradnikiem wideo do każdego ćwiczenia. Po polsku, konkretnie, bez ściemy.">
+<meta name="twitter:description" content="Plany treningowe online z wideo po polsku — FitOnlineCoach - Trening, dieta, fizjoterapia. Trening do domu i na siłownię. Dla początkujących i średnio zaawansowanych.">
 <meta name="twitter:image" content="https://fitonlinecoach.com/assets/og-image.jpg">
 
 <!-- Ikony z assets/brand (wątek grafiki) — ciemny kafel #121A16, bo na białym
@@ -232,8 +232,10 @@
   .nav-links{display:flex;gap:36px;align-items:center;list-style:none}
   .nav-links a{font-size:.82rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:.2s}
   .nav-links a:hover{color:var(--lime)}
-  .nav-cta{border:1px solid var(--lime);color:var(--lime)!important;padding:11px 26px;border-radius:2px;transition:.25s!important}
+  .nav-cta{background:var(--lime);border:1px solid var(--lime);color:var(--black)!important;padding:11px 26px;border-radius:2px;transition:.25s!important}
   .nav-cta:hover{background:var(--lime);color:var(--black)!important;box-shadow:0 0 24px rgba(153,230,109,.35)}
+  /* menu ma 8 pozycji (D27): na węższym komputerze mniejsze odstępy, żeby napisy nie zawijały się i nie wchodziły na logo */
+  @media(min-width:981px) and (max-width:1100px){.nav-links{gap:20px}}
   .burger{display:none;background:none;border:0;cursor:pointer;padding:8px;z-index:95}
   .burger span{display:block;width:26px;height:2px;background:#fff;margin:6px 0;transition:.3s}
   .burger.open span:nth-child(1){transform:translateY(8px) rotate(45deg)}
@@ -886,14 +888,6 @@
 
   /* ---------- dust divider ---------- */
   .divider{position:relative;height:70vh;min-height:420px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-  /* OZDOBNE TŁA WCZYTUJĄ SIĘ DOPIERO PRZY DOJEŻDŻANIU DO SEKCJI.
-     Tło wpisane w arkuszu stylów przeglądarka pobiera, gdy tylko przeczyta regułę —
-     nie da mu się `loading="lazy"` jak zwykłemu obrazkowi. Te dwa leżą 3,5 i 8 ekranów
-     niżej, a ważyły razem 355 KB pobieranych razem z pierwszym ekranem.
-     Adres obrazka siedzi więc w regule `.wczytane`, dokładanej przez obserwatora.
-     Pod spodem ciemna barwa marki, żeby przed wczytaniem nie było jasnej dziury. */
-  .divider .bg{position:absolute;inset:-18% 0;background:var(--graphite) center/cover no-repeat;will-change:transform}
-  .divider .bg.wczytane{background-image:url('assets/tlo_zero_sciemy.jpg')}
   .divider::before{content:"";position:absolute;inset:0;background:rgba(7,9,8,.45);z-index:1}
   .divider h2{position:relative;z-index:2;font-size:clamp(2rem,6vw,4.6rem);font-weight:900;color:#fff;
     text-align:center;text-shadow:0 6px 40px rgba(0,0,0,.6)}
@@ -919,6 +913,7 @@
   .price-row{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
   /* odwracana karta planu (3D flip) */
   .plan-flip{perspective:1800px}
+  .plan-platnosc{display:block;margin-top:8px;font-size:.7rem;line-height:1.4;color:var(--muted);text-align:center;align-self:stretch}   /* szary drobny druk >= 11 px */
   .plan-front{cursor:pointer}
   .plan-hint{display:block;margin-top:10px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;text-align:center;align-self:stretch;
     color:var(--lime);opacity:.7}
@@ -941,6 +936,7 @@
   .plan-back h3{font-size:1.5rem;color:#fff;margin-bottom:16px}
   .plan-back .pb-h{margin-top:30px}
   .plan-back .plan-feats{margin-bottom:0}
+  .plan-back .pb-nota{font-size:.84rem;line-height:1.4;color:var(--muted);margin:0 0 6px}
   /* Prawa kolumna tyłu karty: zrzuty, pod nimi przycisk. `margin-top` OBNIŻA zrzuty
      względem tekstu po lewej — bez tego wisiały równo z górną krawędzią karty. */
   .plan-back-right{display:flex;flex-direction:column;gap:30px;margin-top:58px}
@@ -1045,20 +1041,20 @@
     transition:transform .35s cubic-bezier(.2,.8,.2,1)}
   .faq-item[open]:not(.zwija) summary::after{transform:rotate(45deg)}
   .faq-item summary:hover{color:var(--lime)}
-  .faq-item p{color:var(--muted);font-size:.95rem;line-height:1.65;padding:0 34px 22px 0;max-width:640px}
+  .faq-item p{color:var(--muted);font-size:1rem;line-height:1.65;padding:0 34px 22px 0;max-width:640px}
   /* W76: „Kiedy przerwać trening" — akapity jak w FAQ, ale bez dolnego odstępu między nimi; punkty listy z limonkową
      kropką (jak w apce), linia z 112 pogrubiona i jasna. Ton spokojny: bez czerwieni (decyzja Tomka 1.10, P06). */
   .kiedy-przerwac{padding-bottom:22px}
   .faq-item .kiedy-przerwac p{padding-bottom:10px}
   .kiedy-przerwac ul{list-style:none;margin:0 0 10px;padding:0 34px 0 0;max-width:640px}
-  .kiedy-przerwac li{position:relative;padding:0 0 6px 18px;color:var(--muted);font-size:.95rem;line-height:1.6}
+  .kiedy-przerwac li{position:relative;padding:0 0 6px 18px;color:var(--muted);font-size:1rem;line-height:1.6}
   .kiedy-przerwac li::before{content:"";position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--lime)}
   .kiedy-przerwac strong{color:var(--text)}
-  @media(max-width:640px){.kiedy-przerwac ul{padding-right:0}.kiedy-przerwac li{font-size:.9rem}}
+  @media(max-width:640px){.kiedy-przerwac ul{padding-right:0}.kiedy-przerwac li{font-size:1rem}}
   @media(max-width:640px){
     .faq-list{margin-top:40px}
     .faq-item summary{font-size:.95rem;padding:18px 0;gap:12px}
-    .faq-item p{font-size:.9rem;padding:0 0 18px}
+    .faq-item p{font-size:1rem;padding:0 0 18px}
   }
 
   /* ---------- o mnie ---------- */
@@ -1200,7 +1196,7 @@
      Opisy wyszły ze środka telefonu — w slajdzie został sam zrzut na całym ekranie.
      Żadnych nowych ozdób: kreska, kropki i strzałki to te same elementy co wcześniej. */
   #whyLayer .sec-title{max-width:none}
-  /* `<br>` ZOSTAJE: tytuł ma się łamać po zdaniu — „Wiedza różnych specjalistów.”
+  /* `<br>` ZOSTAJE: tytuł ma się łamać po zdaniu — „Trener, fizjoterapeuta i dietetyk.”
      / „Jeden spójny plan.” Bez tego zawijał się w środku drugiego zdania
      („… JEDEN / SPÓJNY PLAN.”). Polecenie Tomka 2026-08-13: dwa wersy. */
   #whyLayer .dl-scena{position:relative}   /* układ odniesienia dla strzałek przy telefonie */
@@ -1366,7 +1362,7 @@
   .zapis-korzysci li::before{content:"—";position:absolute;left:0;color:var(--lime);font-weight:700}
   /* wariant w sekcji na dole — tam jest więcej miejsca, więc czcionka jak w akapicie obok */
   .zapis-korzysci-duze{margin:14px 0 18px;max-width:420px}
-  .zapis-korzysci-duze li{font-size:.95rem;padding-left:20px}
+  .zapis-korzysci-duze li{font-size:1rem;padding-left:20px}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
     clip:rect(0,0,0,0);white-space:nowrap;border:0}
   /* Telefon: formularz na całą szerokość kolumny — na wąskim ekranie ograniczanie
@@ -1471,15 +1467,13 @@
     /* na telefonie WSZYSTKIE CZTERY w jednym poziomym pasku — dlatego zwarte odstępy i podpisy */
     /* na wąskiej karcie przycisk zakupu ma węższe marginesy, żeby napis został w jednej linii */
     #planCta,#plan .plan-back .btn-care{padding-left:18px;padding-right:18px;letter-spacing:.08em}   /* tył = ten sam przycisk co przód (25.10) */
-    .plan-stats{grid-template-columns:repeat(4,1fr);gap:2px;margin:20px 0;padding:14px 0}
-    .pstat .val{font-size:1.3rem;margin-bottom:5px}
+    .plan-stats{grid-template-columns:repeat(2,1fr);gap:6px 2px;margin:20px 0;padding:14px 0}
+    .pstat{display:flex;justify-content:center;align-items:baseline;gap:5px}   /* liczba i pełne słowo w jednej linii, 2×2 (pełne słowa nie mieszczą się w 4 kolumnach) */
+    .pstat .val{font-size:1.3rem;margin-bottom:0}
     /* podpisy liczników: minimum 11 px (audyt 2026-07-29 — odbiorca 35–55 nie może mrużyć
-       oczu). Na telefonie SKRÓTY (tyg / tr / ćw / min, decyzja Tomka 3.08) — pełne podpisy
-       nie mieściły się i były ucinane wielokropkiem („TYGO…"), co nie niosło informacji.
-       Skróty są krótkie, więc ucinanie w ogóle przestaje występować. */
+       oczu). Na telefonie PEŁNE słowa (tygodnie / treningów / ćwiczeń / minut, Tomek 10.11 D11) w układzie 2×2,
+       liczba obok słowa — w 4 kolumnach nie mieściły się (przy 288 px kolumna 54 px, „TRENINGÓW” 72 px). */
     .pstat .lbl{font-size:clamp(11px,3.8vw,13px);letter-spacing:.04em;text-overflow:clip}
-    .pstat .lbl-pelny{display:none}
-    .pstat .lbl-krotki{display:inline}
     .about-grid{grid-template-columns:1fr;gap:60px}
     .nl-grid{grid-template-columns:1fr;gap:40px}
     .plan-back-grid{grid-template-columns:minmax(0,1fr);gap:32px;padding:36px 24px}
@@ -1495,7 +1489,7 @@
     .plan-back-right .plan-hint{order:1}
     .plan-back-right .plan-screens{order:2}
     .nav-links{position:fixed;inset:0;background:rgba(7,9,8,.97);flex-direction:column;
-      justify-content:center;gap:34px;display:none}
+      justify-content:center;gap:clamp(12px,4.6vh,34px);display:none}   /* 8 pozycji (D27): na niskim ekranie (320×568) mniejsze odstępy, żeby „Kup plan” nie wyjechał poza ekran; od 740 px wysokości bez zmian */
     .nav-links.open{display:flex}
     /* rozmycie paska po przewinięciu robi z nagłówka ramkę dla menu (position:fixed) — menu miało 76 px wysokości i wisiało
        bez tła; przy otwartym menu bez rozmycia */
@@ -1503,6 +1497,7 @@
     .nav-links a{font-size:1.05rem}
     /* pole dotyku 44 px (napis ma 20): pionowy padding linku w linii nie zmienia układu menu */
     .nav-links a:not(.nav-cta){padding:12px 0}
+    .nav-links .nav-cta{padding:12px 26px}   /* „Kup plan” w menu telefonu: pole dotyku 44 px (było 11 px → ok. 42 px) */
     .burger{display:block}
   }
   /* Kurtyna WYŁĄCZONA na telefonie i przy „ogranicz ruch": zwykłe sekcje jedna pod drugą
@@ -1566,6 +1561,7 @@
     #plan .plan-visual img{top:-60px;height:calc(100% + 120px);object-position:50% 38%}
     #plan .plan-body{padding:12px 16px 10px}
     #plan .plan-tag{margin-bottom:6px;padding:3px 12px}
+    #planTag{letter-spacing:.06em}   /* tylko etykieta przodu (D10); tył karty bez zmian */
     #plan .plan-body h3{margin-bottom:6px}
     #plan .plan-body>p{margin-bottom:8px;line-height:1.42}
     #plan .plan-feats{margin-bottom:6px}
@@ -1575,6 +1571,7 @@
     #plan .pstat .lbl{line-height:1.2}
     #plan .btn-care{padding-top:10px;padding-bottom:10px}
     #plan .plan-hint{margin-top:2px;line-height:1.4}
+    #plan .plan-platnosc{margin-top:6px;line-height:1.35}
   }
   /* ---------- JEDNA SEKCJA = JEDEN EKRAN (decyzja Tomka 23.10) ----------
      Każda sekcja ma wysokość ekranu pod paskiem menu (--nag ustawia skrypt), treść stoi na środku. Przystanki (blok
@@ -1591,7 +1588,6 @@
     /* manifest: akapit nad pasem, na który spadają talerze (podłoga liczona od akapitu); przy 32 px leżały na słowach */
     .topblok .manifest{padding-bottom:150px}
     #zapis{min-height:calc(var(--ekran) - var(--stopka,0px))}
-    main > .divider{height:var(--ekran);min-height:0}
     #faq .faq-list{margin-top:28px}
     /* wysokość dopasowana do okna (laptop 1366 × 768, 1280 × 720) */
     #plan .plan-visual{min-height:clamp(220px,38vh,380px)}
@@ -1602,7 +1598,7 @@
     footer{padding:36px 0 24px}
     footer .foot-grid{margin-bottom:28px}
   }
-  @media(min-width:981px) and (max-height:760px){#plan .plan-body{padding-top:16px;padding-bottom:16px}}
+  @media(min-width:981px) and (max-height:760px){#plan .plan-body{padding-top:16px;padding-bottom:16px}#plan .plan-stats{margin:6px 0 8px;padding:6px 0}#plan .plan-platnosc{margin-top:4px}#plan .plan-hint{margin-top:4px}}
   /* KARTA PLANU: przód i tył tej samej wysokości (polecenie Tomka 25.10). Wysokość ustala PRZÓD — zostaje w układzie także
      po obróceniu (tylko niewidoczny), tył leży na nim w absolute, więc obrót nie zmienia wysokości karty ani sekcji i nie
      przesuwa przystanków. Zrzuty apki biorą to, co zostaje pod listami (flex 1 1 0): przy dłuższych listach maleją zamiast
@@ -1632,6 +1628,7 @@
     #plan .plan-back .plan-sprzet li{display:inline;padding:0;border:0}
     #plan .plan-back .plan-sprzet li::before{content:none}
     #plan .plan-back .plan-sprzet li + li::before{content:"· ";color:var(--lime)}
+    #plan .plan-back .pb-nota{font-size:.72rem;line-height:1.35;margin:0 0 3px}
     #plan .plan-back-right{gap:6px}
     #plan .plan-back .plan-hint{margin-top:-4px}   /* 6 − 4 = 2 px pod przyciskiem i 10 px dołu karty — jak na przodzie (25.10) */
     #plan .plan-screens{padding-top:14px;order:-1}
@@ -1642,11 +1639,12 @@
     #plan .plan-back-grid{grid-template-rows:auto minmax(0,1fr);gap:24px;padding:28px 24px 48px}
     #plan .plan-back .plan-hint{margin-top:-4px}   /* odstępy pod „Kup plan” jak na przodzie: 10 px do podpisu, 49 px do dołu karty */
     #plan .plan-screens{order:-1}   /* zrzuty nad przyciskiem — „Kup plan” na dole karty, jak na przodzie */
-    #plan .plan-back-grid > div:first-child{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;align-content:start}
+    #plan .plan-back-grid > div:first-child{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:28px;align-content:start}
     #plan .plan-back .plan-tag{grid-column:1 / -1;justify-self:start}
     #plan .plan-back h3:not(.pb-h){grid-column:1;grid-row:2}
     #plan .plan-back .plan-feats:not(.plan-sprzet){grid-column:1;grid-row:3;margin-bottom:0}
     #plan .plan-back .pb-h{grid-column:2;grid-row:2;margin-top:0}
+    #plan .plan-back .pb-sprzet{grid-column:2;grid-row:2 / span 2}
     #plan .plan-back .plan-sprzet{grid-column:2;grid-row:3;margin-bottom:0}
     #plan .plan-back .plan-feats li{padding:6px 0;line-height:1.4}
   }
@@ -1656,6 +1654,7 @@
   @media(max-width:767px) and (min-height:720px) and (max-height:799px){
     #plan .plan-back .plan-feats li{padding:3px 0;font-size:.76rem}
     #plan .plan-back .plan-sprzet{font-size:.76rem;line-height:1.4}
+    #plan .plan-back .pb-nota{font-size:.76rem;line-height:1.4}
     #plan .plan-back .pb-h{margin-top:10px}
   }
   @media(max-width:767px) and (max-height:700px){
@@ -1672,6 +1671,8 @@
     #plan .plan-back .pb-h{margin-top:4px}
     #plan .plan-back .plan-feats li{padding:1px 0;line-height:1.18}
     #plan .plan-back .plan-sprzet{line-height:1.24}
+    #plan .plan-back .pb-nota{line-height:1.24;margin-bottom:2px}
+    #plan .plan-platnosc{display:none}   /* D12: na najwęższych telefonach bez linii płatności, żeby karta zmieściła się w ekranie */
   }
   /* zrzuty niższe niż 100 px to okruchy — wtedy znikają (zostają listy i przycisk) */
   .plan-screens{container-type:size}
@@ -1681,7 +1682,7 @@
       box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-top:20px;padding-bottom:20px}
     .topblok .manifest > .wrap,#whyLayer > .wrap,#dlaczego .how > .wrap,#plan > .wrap,#aboutLayer > .wrap,#wideo > .wrap,#faq > .wrap,
       #zapis > .wrap,footer > .wrap{width:100%}
-    main > .divider,#hasloRegularnie{height:var(--ekran);min-height:0}
+    #hasloRegularnie{height:var(--ekran);min-height:0}
     /* manifest: akapit nad pasem, na który spadają talerze (podłoga liczona od akapitu, talerzeHero) */
     .topblok .manifest{padding-bottom:150px}
   }
@@ -1723,7 +1724,7 @@
     /* wejście treści: ostatnie 45 % wjazdu panelu. Zakres --od..--do (px przewinięcia) liczy skrypt PANELE: view-timeline na
        przypiętym panelu Chrome liczy z przesunięciem przypięcia (przy 288 px wejście „Planu” wypadało 1692 px za późno) */
     @supports (animation-timeline:scroll()){
-      html.panele :is(main > section,main .layer) > .wrap,html.panele main > .divider > h2{animation:wjazdTresci linear both;
+      html.panele :is(main > section,main .layer) > .wrap{animation:wjazdTresci linear both;
         animation-timeline:scroll(root);animation-range:var(--od,0px) var(--do,0px)}
       /* .rv (wjazd przejściem przy pierwszym pokazaniu) zastąpione wejściem z przewijania — bez podwójnego ruchu */
       html.panele main > :not(:first-child) .rv{opacity:1;transform:none;transition:none}
@@ -1839,8 +1840,8 @@
     #aboutLayer .roles{opacity:1;transform:none}
     #aboutText .sec-label{margin-bottom:8px}
     #aboutText .sec-title{font-size:1.45rem;margin-bottom:10px}
-    #aboutText p{font-size:.85rem;line-height:1.45;margin-bottom:7px;max-width:none}
-    .om-opis{overflow:hidden;max-height:calc(3 * 1.45 * .85rem);transition:max-height .45s ease;
+    #aboutText p{font-size:1rem;line-height:1.45;margin-bottom:7px;max-width:none}
+    .om-opis{overflow:hidden;max-height:calc(3 * 1.45 * 1rem);transition:max-height .45s ease;
       -webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
     .om-opis.otwarty{-webkit-mask-image:none;mask-image:none}
     /* zwinięty opis ucina akapity, więc obserwator .rv (próg 15%) by ich nie pokazał — tu bez wjazdu, widać je od razu */
@@ -1956,7 +1957,7 @@
      po każdej zmianie FAQ uruchomić skrypt ponownie (sprawdzenie: --sprawdz) -->
 <!--FAQ-JSONLD-->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"pl-PL","mainEntity":[{"@type":"Question","name":"Ile czasu zajmuje trening?","acceptedAnswer":{"@type":"Answer","text":"Treningi jednorazowo zajmą Ci 45–70 min. Zanim wybierzesz plan, możesz sprawdzić, ile treningów jest przewidzianych w tygodniu."}},{"@type":"Question","name":"Pierwszy raz na siłowni — czy dam radę?","acceptedAnswer":{"@type":"Answer","text":"Tak, każdy plan został zbudowany i przedstawiony w ten sposób, aby był zrozumiały i możliwy do wykonania. Jeśli właśnie zaczynasz swoją treningową przygodę — sprawdź plan „Początek”."}},{"@type":"Question","name":"Czym różni się opieka indywidualna od gotowego planu?","acceptedAnswer":{"@type":"Answer","text":"Gotowy plan kupujesz raz i realizujesz samodzielnie w aplikacji. W opiece indywidualnej plan powstaje po wywiadzie zdrowotnym i treningowym, specjalnie dla Ciebie, a w trakcie masz stały kontakt z trenerem na czacie. Opieka indywidualna online to abonament miesięczny: 599 zł/mies., a po opłaconym Planie 499 zł/mies.* Opłata odnawia się co miesiąc, aż zrezygnujesz. Rezygnacja w każdej chwili, bez kar. Masz też ustawowe 14 dni na odstąpienie od umowy: płacisz wtedy tylko za dni, w których opieka już trwała. *Dotyczy Planu opłaconego i niezwróconego w chwili zakupu opieki."}},{"@type":"Question","name":"Jaki sprzęt jest potrzebny?","acceptedAnswer":{"@type":"Answer","text":"To zależy od planu. Pełną listę sprzętu widzisz na karcie planu i w aplikacji, zanim kupisz."}},{"@type":"Question","name":"Jak długo mam dostęp do planu?","acceptedAnswer":{"@type":"Answer","text":"Bezterminowo, dopóki masz konto — płacisz raz, a plan zostaje z Tobą. Chcesz przejść go drugi raz? Restart masz bez dopłaty."}},{"@type":"Question","name":"Mam kontuzję albo problemy zdrowotne — czy mogę trenować?","acceptedAnswer":{"@type":"Answer","text":"Przed pierwszym treningiem porozmawiaj z lekarzem, jeśli chorujesz na serce, masz cukrzycę albo świeży uraz. W ciąży oraz krótko po porodzie lub gdy wracasz do aktywności po długiej przerwie także. Jeśli masz jakiekolwiek wątpliwości co do swojego zdrowia, bezpośrednia konsultacja z lekarzem, fizjoterapeutą lub trenerem to świetny pomysł. Regularne badania to część zdrowego trybu życia."}},{"@type":"Question","name":"Kiedy przerwać trening?","acceptedAnswer":{"@type":"Answer","text":"Normalne są: zadyszka, zmęczenie mięśni w trakcie i bóle mięśniowe 1–2 dni po treningu. Przerwij ćwiczenie i odpocznij, jeśli pojawi się: ból w klatce piersiowej, duszności, zawroty głowy, kołatanie serca, ostry ból stawu, nagły ból pleców. W przypadku wystąpienia powyższych objawów, przed kolejnym treningiem skonsultuj się ze specjalistą."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"pl-PL","mainEntity":[{"@type":"Question","name":"Ile czasu zajmuje trening?","acceptedAnswer":{"@type":"Answer","text":"Treningi jednorazowo zajmą Ci 45–70 min. Zanim wybierzesz plan, możesz sprawdzić, ile treningów jest przewidzianych w tygodniu."}},{"@type":"Question","name":"Pierwszy raz na siłowni — czy dam radę?","acceptedAnswer":{"@type":"Answer","text":"Tak, każdy plan został zbudowany i przedstawiony w ten sposób, aby był zrozumiały i możliwy do wykonania. Jeśli właśnie zaczynasz swoją treningową przygodę — sprawdź plan „Początek”."}},{"@type":"Question","name":"Czy mogę najpierw spróbować?","acceptedAnswer":{"@type":"Answer","text":"Tak. Pierwszy tydzień planu, czyli 3 treningi na siłowni, masz za darmo przez 7 dni i bez podawania karty. Potrzebne są tylko konto w aplikacji i kilka pytań o zdrowie przed pierwszym treningiem. Darmowy tydzień przysługuje raz i kończy się sam, bez opłat. Potem decydujesz, czy kupujesz cały plan."}},{"@type":"Question","name":"Czym różni się opieka indywidualna od gotowego planu?","acceptedAnswer":{"@type":"Answer","text":"Gotowy plan kupujesz raz i realizujesz samodzielnie w aplikacji. W opiece indywidualnej plan powstaje po wywiadzie zdrowotnym i treningowym, specjalnie dla Ciebie, a w trakcie masz stały kontakt z trenerem na czacie. Opieka indywidualna online to abonament miesięczny: 599 zł/mies., a po opłaconym Planie 499 zł/mies.* Opłata odnawia się co miesiąc, aż zrezygnujesz. Rezygnacja w każdej chwili, bez kar. Masz też ustawowe 14 dni na odstąpienie od umowy: płacisz wtedy tylko za dni, w których opieka już trwała. *Dotyczy Planu opłaconego i niezwróconego w chwili zakupu opieki."}},{"@type":"Question","name":"Jaki sprzęt jest potrzebny?","acceptedAnswer":{"@type":"Answer","text":"To zależy od planu. Pełną listę sprzętu widzisz na karcie planu i w aplikacji, zanim kupisz."}},{"@type":"Question","name":"Jak długo mam dostęp do planu?","acceptedAnswer":{"@type":"Answer","text":"Bezterminowo, dopóki masz konto — płacisz raz, a plan zostaje z Tobą. Chcesz przejść go drugi raz? Restart masz bez dopłaty."}},{"@type":"Question","name":"Mam kontuzję albo problemy zdrowotne — czy mogę trenować?","acceptedAnswer":{"@type":"Answer","text":"Przed pierwszym treningiem porozmawiaj z lekarzem, jeśli chorujesz na serce, masz cukrzycę albo świeży uraz. W ciąży oraz krótko po porodzie lub gdy wracasz do aktywności po długiej przerwie także. Jeśli masz jakiekolwiek wątpliwości co do swojego zdrowia, bezpośrednia konsultacja z lekarzem, fizjoterapeutą lub trenerem to świetny pomysł. Regularne badania to część zdrowego trybu życia."}},{"@type":"Question","name":"Kiedy przerwać trening?","acceptedAnswer":{"@type":"Answer","text":"Normalne są: zadyszka, zmęczenie mięśni w trakcie i bóle mięśniowe 1–2 dni po treningu. Przerwij ćwiczenie i odpocznij, jeśli pojawi się: ból w klatce piersiowej, duszności, zawroty głowy, kołatanie serca, ostry ból stawu, nagły ból pleców. W przypadku wystąpienia powyższych objawów, przed kolejnym treningiem skonsultuj się ze specjalistą."}}]}
 </script>
 <!--/FAQ-JSONLD-->
 </head>
@@ -1973,7 +1974,10 @@
         <li><a href="#plan">Plan</a></li>
         <li><a href="#o-mnie">O mnie</a></li>
         <li><a href="#wideo">Wideo</a></li>
-        <li><a class="nav-cta" href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Aplikacja</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#kontakt">Kontakt</a></li>
+        <li><a href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Zaloguj się</a></li>
+        <li><a class="nav-cta" href="#plan">Kup plan</a></li>
       </ul>
       <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
     </nav>
@@ -2029,7 +2033,7 @@
     <div class="hero-actions">
       <a class="btn btn-lime btn-join" href="https://app.fitonlinecoach.com/plany" target="_blank" rel="noopener">
         <span class="bj-main">Dołącz</span>
-        <span class="bj-sub">już od 79 zł</span>
+        <span class="bj-sub">79 zł</span>
       </a>
     </div>
   </div>
@@ -2063,8 +2067,8 @@
       <div class="why-head" id="whyHead">
           <div class="sec-label rv">01 — Dlaczego FitOnlineCoach</div>
           <!-- spacja przed <br> jest konieczna: na dużym ekranie łamanie jest ukryte
-               (tytuł idzie przez całą szerokość), a bez niej wychodzi „specjalistów.Jeden" -->
-          <h2 class="sec-title rv rv2">Wiedza różnych specjalistów. <br>Jeden spójny plan.</h2>
+               (tytuł idzie przez całą szerokość), a bez niej wychodzi „dietetyk.Jeden" -->
+          <h2 class="sec-title rv rv2">Trener, fizjoterapeuta i&nbsp;dietetyk. <br>Jeden spójny plan.</h2>
         </div>
         <!-- Trzy ekrany w jednym telefonie 3D zamiast trzech odwracanych kafelków
              (decyzja Tomka 2026-08-08). Teksty BEZ ZMIAN — te same, co były na kafelkach;
@@ -2270,12 +2274,6 @@
   </div>
 </div>
 
-<!-- ===== DIVIDER ===== -->
-<div class="divider">
-  <div class="bg tlo-pozne" data-parallax="0.18"></div>
-  <h2 class="rv">Zero ściemy.<br><span>Sam konkret.</span></h2>
-</div>
-
 <!-- ===== PLAN ===== -->
 <section id="plan">
   <div class="wrap">
@@ -2296,7 +2294,7 @@
           <div class="plan-grid" id="planGrid">
             <div class="plan-visual"><img id="planImg" src="assets/plan_poczatek_karta.jpg" alt="Tomek w russian twist z piłką lekarską; na podłodze sali logo FitOnlineCoach" data-parallax="0.1" loading="lazy" decoding="async"></div>
             <div class="plan-body">
-              <span class="plan-tag" id="planTag">Dla początkujących</span>
+              <span class="plan-tag" id="planTag">Dla początkujących · na&nbsp;siłownię</span>
               <h3 id="planTitle">Początek</h3>
               <p id="planDesc">Cztery tygodnie prostych, konkretnych treningów angażujących całe ciało.</p>
               <ul class="plan-feats" id="planFeats">
@@ -2323,6 +2321,7 @@
                   <span class="bj-sub" id="planCtaCena">79 zł — jednorazowo</span>
                 </a>
               </div>
+              <span class="plan-platnosc">Karta, BLIK, Przelewy24, Google Pay, Apple Pay</span>
               <span class="plan-hint">Kliknij — szczegóły planu →</span>
             </div>
           </div>
@@ -2345,14 +2344,15 @@
                    `G:\cloude\TRESCI-WSPOLNE.md`, żeby strona i aplikacja nie mogły
                    powiedzieć klientowi czegoś innego. Ta sama lista stoi w apce
                    w sekcji „Czego potrzebujesz" na stronie planu. -->
-              <h3 class="pb-h">Czego potrzebujesz?</h3>
+              <div class="pb-sprzet"><h3 class="pb-h">Czego potrzebujesz?</h3>
+              <p class="pb-nota">Taki sprzęt ma większość siłowni.</p>
               <ul class="plan-feats plan-sprzet"><!--TRESC:sprzet-poczatek-->
                 <li>Sprzęt cardio — rower, bieżnia albo wioślarz</li>
                 <li>Drążek do podciągania oraz niski drążek lub kółka</li>
                 <li>Dwa jednakowe kettlebelle i hantle w kilku ciężarach</li>
                 <li>Sztanga z obciążeniem i stojakiem</li>
                 <li>Skrzynia lub ławka, guma oporowa (powerband), piłka lekarska, skakanka</li>
-              <!--/TRESC--></ul>
+              <!--/TRESC--></ul></div>
             </div>
             <!-- PRAWA KOLUMNA: zrzuty z aplikacji, a POD NIMI przycisk zakupu
                  (polecenie Tomka 2026-08-16). Przycisk siedzi tutaj, a nie w lewej kolumnie
@@ -2523,7 +2523,8 @@
 <!-- ===== FAQ =====
      Obsługa obiekcji przed zakupem (audyt 2026-07-29). FAQ jest OGÓLNE — odpowiada za
      wszystkie plany, także przyszłe, więc NIE podawaj tu liczb konkretnego planu (decyzja
-     Tomka 2026-08-16). Jedyna liczba, jaka tu zostaje, to długość pojedynczego treningu
+     Tomka 2026-08-16). Wyjątek 10.11: pytanie „Czy mogę najpierw spróbować?” podaje „3 treningi” (tydzień próbny planu „Początek”).
+     Jedyna liczba, jaka tu zostaje, to długość pojedynczego treningu
      45–70 min, wspólna dla wszystkich planów; liczba treningów w tygodniu jest przy planie.
      Zwroty opisane zgodnie z regulaminem —
      ŻADNEJ obietnicy „gwarancji zwrotu" (decyzja Tomka).
@@ -2546,6 +2547,15 @@
         <p>Tak, każdy plan został zbudowany i przedstawiony w ten sposób, aby był
           zrozumiały i możliwy do wykonania. Jeśli właśnie zaczynasz swoją treningową
           przygodę — sprawdź plan „Początek”.</p>
+      </details>
+      <details class="faq-item">
+        <!-- 10.11 (decyzja Tomka, audyt D14 = B): tylko FAQ, bez linku pod „Kup plan”. Odpowiedź wyjątkowo podaje liczbę
+             (3 treningi = tydzień 1 planu „Początek”) — świadoma decyzja Tomka, mimo reguły z 16.08 o ogólnym FAQ. Prawda wg apki
+             (main): trial 7 dni, 1 tydzień planu, bez karty, wymaga konta i otwartej sprzedaży (trial.ts, api/trial/start).
+             Tekst odpowiedzi = karta prawa analiza1011-d14-faq (10.11). PRZY ZAMKNIĘCIU SPRZEDAŻY TO PYTANIE USUNĄĆ (warunek prawa:
+             bez otwartej sprzedaży darmowego tygodnia nie da się uruchomić, więc „Tak” byłoby nieprawdą). -->
+        <summary><span>Czy mogę najpierw spróbować?</span></summary>
+        <p>Tak. Pierwszy tydzień planu, czyli 3&nbsp;treningi na siłowni, masz za darmo przez 7&nbsp;dni i bez podawania karty. Potrzebne są tylko konto w&nbsp;aplikacji i kilka pytań o&nbsp;zdrowie przed pierwszym treningiem. Darmowy tydzień przysługuje raz i kończy się sam, bez opłat. Potem decydujesz, czy kupujesz cały plan.</p>
       </details>
       <details class="faq-item">
         <!-- najdroższy produkt był na stronie tylko ceną — obiekcja „za co tyle?" (audyt 3.09) -->
@@ -2705,7 +2715,7 @@
          Dane wylacznie z sekcji 3a pliku FITONLINECOACH-STATUS.md — nie przepisywac z pamieci.
          Forma: zwiniete jedna linijka, rozwiniete krotkie linijki po jednej danej
          (wybor Tomka 2026-08-26 — wariant B rozwijajacy sie w C). -->
-    <details class="foot-rejestr">
+    <details class="foot-rejestr" id="kontakt">
       <summary>FitOnlineCoach P.S.A.</summary>
       <div class="foot-rejestr-lista">
         <p class="fr-firma">FitOnlineCoach prosta spółka akcyjna</p>
@@ -3126,6 +3136,9 @@
 
   burger.addEventListener('click', () => ustawMenu(!nav.classList.contains('open')));
   nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => ustawMenu(false)));
+  /* „Kontakt” (D27) prowadzi do metryczki w stopce: rozwijamy ją, zanim obsługa kotwic zmierzy cel — e-mail i telefon są w środku */
+  nav.querySelector('a[href="#kontakt"]')?.addEventListener('click', () => { const d = document.getElementById('kontakt'); if (d) d.open = true; });
+  if (location.hash === '#kontakt') { const d = document.getElementById('kontakt'); if (d) d.open = true; }   /* wejście z linku …/#kontakt */
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && nav.classList.contains('open')) ustawMenu(false);
   });
@@ -3877,16 +3890,6 @@
   }
 
   /* pętla przewijania: parallax + hero + manifest + progress + kurtyna */
-  /* Ozdobne tła sekcji: dokładamy obrazek 1200 px przed sekcją, żeby zdążył się wczytać,
-     zanim klient do niej dojedzie. Obserwator rozłącza się po pierwszym uruchomieniu. */
-  document.querySelectorAll('.tlo-pozne').forEach(el => {
-    new IntersectionObserver((wpisy, obs) => {
-      if (!wpisy.some(w => w.isIntersecting)) return;
-      el.classList.add('wczytane');
-      obs.disconnect();
-    }, { rootMargin: '1200px 0px' }).observe(el);
-  });
-
   const pxEls = [...document.querySelectorAll('[data-parallax]')];
   const topblok = document.getElementById('topblok');
   const T3D = {"P":[0.910772,0.060874,-0.48707,-0.0887989,1.06058,-0.484725,-0.177946,0.1214,0.0286475],"Q":[0.161341,-0.885087,0.360775,1.10255,-0.0278928,-0.538938,0.10824,0.158657,-0.133448],"K":[0.0892285,-0.060874,0.48707,0.0887989,-0.0605809,0.484725,0.177946,-0.1214,0.971352]};
@@ -5058,7 +5061,7 @@
      nie woła setPlan — zaplecze zostaje pod powrót karuzeli przy drugim planie. */
   const plans = [
     {
-      tag: 'Dla początkujących', title: 'Początek',
+      tag: 'Dla początkujących · na siłownię', title: 'Początek',
       /* ⚠ `minutes` i `data-odo` przy liczniku MUSZĄ być zgodne — licznik czyta stąd,
          więc poprawienie samego znacznika daje rozjazd po przełączeniu planu.
          700 min = suma czasów 12 treningów (liczby od działu planów, zatwierdza CEO:
@@ -5485,7 +5488,7 @@
     if (stack) {
       const dl = q('#dlaczego'), om = q('#o-mnie');
       if (widoczny(dl)) kurtyna('dlaczego', 'jak', dl);
-      [['zero', 'main > .divider'], ['plan', '#plan']].forEach(([id, s]) => { const el = q(s); if (widoczny(el)) blok(id, el); });
+      [['plan', '#plan']].forEach(([id, s]) => { const el = q(s); if (widoczny(el)) blok(id, el); });
       if (widoczny(om)) kurtyna('omnie', 'haslo', om);
     } else {
       const tel = innerWidth <= 767, wl = q('#whyLayer'); if (widoczny(wl)) blok('dlaczego', wl);
@@ -5506,7 +5509,7 @@
       });
       /* karta planu: kadr = widoczna ścianka (po obróceniu tył), z notą pod nią */
       const pf = q('#planFlip'), sc = pf && pf.querySelector(pf.classList.contains('flipped') ? '.plan-back' : '.plan-front'), nota = q('#plan .zdrowie-nota');
-      [['zero', 'main > .divider'], ['plan', '#plan'], ['omnie', '#aboutLayer'], ['haslo', '#hasloRegularnie']]
+      [['plan', '#plan'], ['omnie', '#aboutLayer'], ['haslo', '#hasloRegularnie']]
         .forEach(([id, s]) => { const el = q(s); if (!widoczny(el)) return;
           if (id === 'plan' && tel && widoczny(sc)) kadr(id, el, docTop(sc), docTop(sc) + sc.offsetHeight, widoczny(nota) ? docTop(nota) + nota.offsetHeight : undefined, pf.classList.contains('flipped'));
           else blok(id, el); });
