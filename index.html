@@ -1230,18 +1230,8 @@
      więc przeciąganie myszą zaczyna się ZAWSZE na obrazku — a przeglądarka odpala wtedy
      własne przeciąganie obrazka, przerywa strumień wskaźnika (`pointercancel`) i karuzela
      stoi w miejscu. Wcześniej nie było tego widać, bo dolne 42 % ekranu zajmował tekst. */
-  .dl-foto img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;
+  .dl-foto img,.dl-foto video{width:100%;height:100%;object-fit:cover;object-position:top;display:block;
     pointer-events:none}
-  /* D15: ekran „pierwszy trening” (402×874 jak każdy slajd): tytuł, film 16:9, lista ćwiczeń; bieżące ćwiczenie na limonce (limonka = tło).
-     Dwa <video> na zmianę: drugi ładuje następne ćwiczenie w tle (bez czarnej klatki przy zmianie). */
-  .tr1{padding:92px 22px 0}
-  .tr1-tyt{font:700 22px/1.2 'Montserrat',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#B9C4BD;margin:0 0 16px}
-  .tr1-film{position:relative;flex:none;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000}
-  .tr1-film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;opacity:0}
-  .tr1-film video.on{opacity:1}
-  .tr1-lista{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
-  .tr1-lista li{font:600 24px/1.25 'Inter',sans-serif;color:#E8EDEA;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,.05)}
-  .tr1-lista li.on{background:var(--lime);color:#121A16}
   /* limonkowa kreska nad hasłem — ten sam znak co przy wyliczeniach na karcie planu,
      spina ekran w jedną kompozycję zamiast dzielić go na pół.
      Rozmiary pisma są przy `.wa-teksty` niżej (opisy stoją obok telefonu, nie w nim). */
@@ -2304,22 +2294,11 @@
               <div class="dl-ekran">
                 <div class="dl-tor" id="dlTor">
                   <article class="dl-slajd">
-                    <div class="dl-foto"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
+                    <!-- 11.11: nagrania prawdziwej apki (kod produkcji, konto testowe, wygląd B5); film i plakat ładuje skrypt (dlFilmy) -->
+                    <div class="dl-foto" role="img" aria-label="Ekran aplikacji: okno ćwiczenia z filmem, który pokazuje ruch"><video muted playsinline loop preload="none" aria-hidden="true" data-src="assets/dlaczego/cwiczenia.mp4" data-poster="assets/dlaczego/cwiczenia.jpg"></video></div>
                   </article>
-                  <!-- D15 (Tomek 10.11 16:24 przez CEO, „a”): podgląd pierwszego treningu zamiast slajdu „Masz dość angielskich tutoriali?”.
-                       Pętle bez dźwięku z pokazówek (dział wideo, pętle z 10.11), nazwy jak w apce (namePl).
-                       Jeden film naraz, po kolei; gra tylko ten ekran i tylko w kadrze (skrypt: tr1). -->
-                  <article class="dl-slajd tr1" id="tr1">
-                    <p class="tr1-tyt">Wybrane ćwiczenia z&nbsp;treningu A — tydzień&nbsp;1</p>
-                    <div class="tr1-film" aria-hidden="true"><video muted playsinline preload="none"></video><video muted playsinline preload="none"></video></div>
-                    <ol class="tr1-lista" aria-label="Ćwiczenia pierwszego treningu">
-                      <li class="on" data-film="assets/trening1/01-cardio">Kardio</li>
-                      <li data-film="assets/trening1/02-chin-up-hold">Podciąganie — utrzymanie pozycji</li>
-                      <li data-film="assets/trening1/03-australian-pull-up">Australijskie podciąganie</li>
-                      <li data-film="assets/trening1/04-kneeling-push-up">Pompki na kolanach</li>
-                      <li data-film="assets/trening1/05-walking-lunges">Wykroki chodzone</li>
-                      <li data-film="assets/trening1/06-half-burpee">Połowa padnij-powstań</li>
-                    </ol>
+                  <article class="dl-slajd">
+                    <div class="dl-foto" role="img" aria-label="Ekran aplikacji: plan „Początek” z filmem o planie i rozpiską treningów"><video muted playsinline loop preload="none" aria-hidden="true" data-src="assets/dlaczego/plan.mp4" data-poster="assets/dlaczego/plan.jpg"></video></div>
                   </article>
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
@@ -2338,8 +2317,8 @@
               <p>Każde ćwiczenie w&nbsp;planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać, bez zgadywania. Dobra technika zmniejsza ryzyko kontuzji.</p>
             </div>
             <div class="dl-tresc">
-              <h3>Zobacz swój pierwszy trening</h3>
-              <p>Tak zaczyna się plan „Początek”: ćwiczenia z&nbsp;pierwszego treningu. Widzisz, co zrobisz, zanim zaczniesz.</p>
+              <h3>Zobacz swój plan</h3>
+              <p>Tak wygląda plan „Początek” w&nbsp;aplikacji: film o&nbsp;planie, a&nbsp;pod nim wszystkie treningi. Widzisz, co zrobisz, zanim zaczniesz.</p>
             </div>
             <div class="dl-tresc">
               <h3>Nie masz czasu na trening?</h3>
@@ -4314,32 +4293,24 @@
     });
     dlUstaw(1);                                  /* start na pierwszym prawdziwym ekranie */
 
-    /* D15: filmy pierwszego treningu na ekranie 2 (#tr1, slajdy nie są kopiowane) — jeden naraz, po kolei, tylko gdy ten ekran
-       jest wybrany i telefon w kadrze; drugi <video> ładuje w tle następne ćwiczenie. Plakat dopiero, gdy sekcja jest blisko
-       (0 KB filmów przy wejściu na stronę, także na telefonie). „Ogranicz ruch”: sam plakat pierwszego ćwiczenia. */
-    const tr1 = document.getElementById('tr1');
-    let tr1Graj = () => {};
-    if (tr1) {
-      const li = [...tr1.querySelectorAll('li')], vv = [...tr1.querySelectorAll('video')], film = i => li[i % li.length].dataset.film + '.mp4';
-      let n = 0, akt = 0, widac = false;
-      const zaladuj = (v, i) => { v.src = film(i); v.preload = 'auto'; };
-      tr1Graj = () => {
-        const v = vv[akt];
-        if (widac && dlIdx === 1 && !reduced) { if (!v.src) zaladuj(v, n); v.play().catch(() => {}); } else v.pause();
-      };
-      vv.forEach((v, k) => {
-        v.addEventListener('playing', () => { const d = vv[1 - k]; if (k === akt && !d.src.endsWith(film(n + 1))) zaladuj(d, n + 1); });
-        v.addEventListener('ended', () => {
-          n = (n + 1) % li.length; akt = 1 - k;
-          li.forEach((x, i) => x.classList.toggle('on', i === n));
-          vv[akt].classList.add('on'); v.classList.remove('on');
-          tr1Graj();
-        });
-      });
-      new IntersectionObserver(([w], o) => { if (w.isIntersecting) { vv[0].poster = li[0].dataset.film + '.jpg'; vv[0].classList.add('on'); o.disconnect(); } },
-        { rootMargin: '300px 0px' }).observe(dlTelefon);
-      new IntersectionObserver(([w]) => { widac = w.isIntersecting; tr1Graj(); }, { threshold: 0.3 }).observe(dlTelefon);
-    }
+    /* Ekrany 1 i 2: nagrania prawdziwej apki. Gra tylko film wybranego ekranu i tylko z telefonem w kadrze; pozostałe wracają
+       na pierwszą klatkę (= plakat, który pokazuje też kopia ekranu na taśmie). Plakaty dopiero, gdy sekcja jest blisko,
+       film przy pierwszym odtworzeniu (0 KB filmów przy wejściu na stronę). „Ogranicz ruch” i „Zatrzymaj” (klasa ruch-stop, WCAG 2.2.2):
+       same plakaty. Taśma stoi na kopii skrajnego ekranu → film rusza dopiero po przeskoku na prawdziwy ekran (transitionend). */
+    const dlFilmy = [...dlTor.querySelectorAll('video')], dlHtml = document.documentElement;
+    let dlWidac = false;
+    const dlGraj = () => dlFilmy.forEach(v => {
+      if (dlWidac && !reduced && !dlHtml.classList.contains('ruch-stop') && dlPoz >= 1 && dlPoz <= dlN
+          && v.closest('.dl-slajd') === dlTor.children[dlIdx + 1]) {
+        if (!v.src) v.src = v.dataset.src;
+        v.play().catch(() => {});
+      } else if (v.src && (!v.paused || v.currentTime)) { v.pause(); v.currentTime = 0; }
+    });
+    new IntersectionObserver(([w], o) => { if (w.isIntersecting) { dlFilmy.forEach(v => { v.poster = v.dataset.poster; }); o.disconnect(); } },
+      { rootMargin: '300px 0px' }).observe(dlTelefon);
+    new IntersectionObserver(([w]) => { dlWidac = w.isIntersecting; dlGraj(); }, { threshold: 0.3 }).observe(dlTelefon);
+    dlTor.addEventListener('transitionend', e => { if (e.target === dlTor && e.propertyName === 'transform') dlGraj(); });   /* po dlDomknij */
+    new MutationObserver(dlGraj).observe(dlHtml, { attributes: true, attributeFilter: ['class'] });   /* przycisk „Zatrzymaj / Odtwórz” */
     /* `krok` (±1) = ruch w stronę gestu, wolno wyjechać na kopię;
        bez `krok` = skok wprost pod numer ekranu (kropki). */
     const dlPokaz = (i, krok) => {
@@ -4349,7 +4320,7 @@
       dlKropki.forEach((k, n) => { k.classList.toggle('on', n === dlIdx); k.setAttribute('aria-current', String(n === dlIdx)); });
       dlTeksty.forEach((t, n) => t.classList.toggle('on', n === dlIdx));
       dlStosuj();
-      tr1Graj();
+      dlGraj();
     };
     dlKropki.forEach(k => k.addEventListener('click', () => dlPokaz(+k.dataset.ekran)));
     const nl = document.getElementById('dlNavL'), nr = document.getElementById('dlNavR');
