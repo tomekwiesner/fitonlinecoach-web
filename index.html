@@ -15,7 +15,7 @@
      Pełne rozwiązanie (prawdziwe nagłówki + HSTS) wymaga przeniesienia domeny za
      Cloudflare albo Vercel — decyzja na PO starcie, nie na teraz. -->
 <style id="ochronaRamki">html{display:none}</style>
-<noscript><style>html{display:block}</style></noscript>
+<noscript><style>html{display:block}.rv,.stp{opacity:1!important;transform:none!important}</style></noscript>
 <script>
   (function () {
     if (self === top) {
@@ -33,25 +33,22 @@
      Baner zgód pokazuje się także przy pustych gniazdach (2026-10-08, D11: „Reklamy” = pamięć źródła wizyty
      w apce na 30 dni — szczegóły przy PAMIEC_ZRODLA_W_APCE w skrypcie zgód). Wpisanie identyfikatora samo dokłada
      w banerze wiersz „Statystyki” (ga4Id) albo zdanie o Instagramie i Google (Meta / Google Ads) i pyta od nowa
-     osoby, które decydowały przy innym zestawie narzędzi. Po wpisaniu choć jednego klik w „Kup plan" / „Załóż konto"
-     zgłasza zdarzenia begin_checkout (Google) i InitiateCheckout (Meta) — tylko za zgodą klienta.
+     osoby, które decydowały przy innym zestawie narzędzi. Po wpisaniu choć jednego klik w „Kup plan", opiekę albo „Dołącz"
+     zgłasza zdarzenia (od 2026-11-10, D31: begin_checkout / InitiateCheckout z kwotą przy planie i opiece, dolacz / Dolacz
+     bez kwoty przy „Dołącz”; konwersja Google Ads tylko z etykietą w adsKonwersje) — tylko za zgodą klienta.
      Sygnały Google ad_storage / ad_user_data / ad_personalization = granted tylko przy wpisanym metaPixelId albo googleAdsId
      (samo ga4Id daje wyłącznie analytics_storage) — patrz funkcja zastosuj w skrypcie zgód.
-     Aplikacja tych numerów nie potrzebuje: nie ładuje tych narzędzi, czyta tylko ciasteczko foc_consent (src/lib/utm.ts).
-     ⚠ Przed wpisaniem pierwszego identyfikatora: uzupełnić politykę prywatności apki, sekcja 10 (narzędzia,
-     cele, zgoda z banera jako podstawa, okresy, odbiorcy, przekazanie do USA — F63) i przejść test F40
-     (baner, „tylko niezbędne”, po przeładowaniu brak żądań do facebook.com i googletagmanager.com
-     oraz ciasteczek _fbp i _ga). -->
+     Aplikacja tych numerów nie potrzebuje: nie ładuje tych narzędzi, czyta tylko ciasteczko foc_consent (src/lib/utm.ts). -->
 <script>
   window.FOC_MARKETING = {
     metaPixelId: '2669627443493048',   /* Meta (Instagram/Facebook), np. '123456789012345' */
     googleAdsId: 'AW-18548540062',   /* Google Ads, np. 'AW-123456789'                    */
-    ga4Id: 'G-KMY9H2GVKM'          /* Google Analytics 4, np. 'G-XXXXXXXXXX'            */
+    ga4Id: 'G-KMY9H2GVKM',         /* Google Analytics 4, np. 'G-XXXXXXXXXX'            */
+    /* D31: etykiety konwersji Google Ads = część po „/” w send_to 'AW-…/etykieta' (panel Ads → Cele → Konwersje → konwersja
+       → „Skonfiguruj tag” → „Zainstaluj tag samodzielnie”). Puste = strona nie wysyła konwersji Ads (GA4 i Meta działają dalej). */
+    adsKonwersje: { poczatek: '', indywidualny: '', dolacz: '' }
   };
   /* ===== NEWSLETTER: adres formularza MailerLite =====
-     Formularz (id 194586683979597714) zapisuje do grupy id 194586674959746116. Do 3.09.2026
-     grupa nazywała się „Lista oczekujących — start 7.09.2026"; kampania przedsprzedażowa
-     została ODWOŁANA (decyzja Tomka 3.09.2026) i grupę przemianowuje Tomek w panelu MailerLite.
      NIE zakładać nowej grupy ani formularza — zmieniłby się ten adres.
      Potwierdzenie mailem (double opt-in) jest WŁĄCZONE po stronie MailerLite.
      Sprawdzone 2026-08-01: adres odpowiada, a pole musi się nazywać `fields[email]`
@@ -75,8 +72,7 @@
 </script>
 <!-- 2026-10-07 (decyzje Tomka D06 i D07): brzmienia sprzed przeglądu prawnego wracają ŚWIADOMIE — „poradnik wideo",
      „instruktaż techniki" i hasło „Trening — Dieta — Fizjoterapia" (Tomek ma prawo wykonywania zawodu fizjoterapeuty).
-     Nie zamieniać ich na „wideo pokazowe". Twardy warunek przed zdjęciem bramki „Już wkrótce": instruktaże do wszystkich
-     ćwiczeń są w bazie — inaczej obietnica „poradnika do każdego ćwiczenia" wprowadza w błąd (art. 5 upnpr). -->
+     Nie zamieniać ich na „wideo pokazowe". -->
 <title>Plany treningowe online z wideo po polsku — FitOnlineCoach</title>
 <meta name="description" content="Plany treningowe online z wideo po polsku — FitOnlineCoach - Trening, dieta, fizjoterapia. Trening do domu i na siłownię. Dla początkujących i średnio zaawansowanych.">
 
@@ -188,7 +184,7 @@
     letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-decoration:underline}
   .cc-link:hover{color:var(--lime)}
   /* pole dotyku: rośnie tylko w pionie, wygląd bez zmian (padding zjada ujemny margines). Stopka: 45 px. */
-  #ccReopen{padding-block:15px;margin-block:-15px}
+  #ccReopen,#ccSettings{padding-block:15px;margin-block:-15px}
   .cc-opts{display:none;width:100%;border-top:1px solid var(--line);margin-top:18px;padding-top:18px;gap:14px;
     flex-direction:column}
   .cc-opts.show{display:flex}
@@ -206,8 +202,9 @@
     .cc{padding:18px 16px}
     .cc-btns{width:100%}
     .cc-btn{flex:1 1 100%;text-align:center}
-    /* okienko zgód na telefonie: nad linkiem 10 px do „Tylko niezbędne”, pod nim 18 px do krawędzi → 41 px bez zachodzenia */
-    #ccSettings{padding:9px 0 17px;margin:-9px 0 -17px}
+    /* okienko zgód na telefonie: nad linkiem 10 px do „Tylko niezbędne”, pod nim 18 px do krawędzi okienka. 2026-11-05: 44 px —
+       pole zachodzi 1 px na „Tylko niezbędne” (ten ma 45 px, zostaje 44) i sięga dolnej krawędzi okienka */
+    #ccSettings{padding:11px 0 18px;margin:-11px 0 -18px}
     /* „Zapisz” w rozwiniętych ustawieniach przyklejony do dołu okienka: po wpisaniu numerów pikseli treść jest wyższa niż
        ekran (343×740, 375×667, 288×640) i przycisk znikał pod krawędzią. bottom:-18px = dolny odstęp okienka (.cc). Odstęp i ujemny margines się znoszą, więc gdy
        treść się mieści, wygląd jest identyczny (reguła: przycisk potwierdzenia w zasięgu ekranu). */
@@ -226,7 +223,7 @@
 
   /* ---------- nawigacja ---------- */
   header{position:fixed;top:0;left:0;right:0;z-index:90;transition:.35s;border-bottom:1px solid transparent}
-  header.scrolled{background:rgba(7,9,8,.82);backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+  header.scrolled{background:rgba(7,9,8,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:var(--line)}
   nav{display:flex;align-items:center;justify-content:space-between;height:76px}
   .logo img{height:30px;width:auto}
   .nav-links{display:flex;gap:36px;align-items:center;list-style:none}
@@ -241,6 +238,14 @@
   .burger.open span:nth-child(1){transform:translateY(8px) rotate(45deg)}
   .burger.open span:nth-child(2){opacity:0}
   .burger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+  /* 2026-11-05 pola dotyku ≥ 44 px bez zmiany wyglądu: niewidoczny kwadrat 46×46 px na środku celu (procent w `inset`
+     liczy się od rozmiaru samego celu). Wystaje tylko poza cele mniejsze niż 46 px: logo 30 px, hamburger 42 px szer.,
+     linki menu 16 px (komputer) i 44 px (telefon), „Plan” w stopce 42 px szer., jednowierszowe pytania FAQ 42 px. */
+  .logo,.burger,.nav-links a,.foot-links a,.faq-item summary{position:relative}
+  .logo::before,.burger::before,.nav-links a::before,.foot-links a::before,.faq-item summary::before{content:"";position:absolute;
+    inset:calc(50% - 23px)}
+  /* pytania FAQ stoją jedno pod drugim: jednowierszowe zabiera 1–2 px brzegu wyższym sąsiadom (te zostają ≥ 44 px) */
+  .faq-item summary::before{z-index:1}
 
   /* ---------- hero ---------- */
   /* Hero stoi w miejscu DOKŁADNIE tak długo, ile trwa dokowanie telefonu, i ani chwili
@@ -462,9 +467,7 @@
   .manifest .mw.accent{color:var(--lime)}
 
 
-  /* Miejsce na pasek przewijania rezerwowane na stałe: bramka „wkrótce" blokuje
-     przewijanie (`html.gate-locked{overflow:hidden}`), a po jej zdjęciu pasek się pojawia —
-     bez rezerwy cała treść przeskakiwałaby wtedy w bok o jego szerokość. */
+  /* Miejsce na pasek przewijania rezerwowane na stałe: treść nie przeskakuje w bok, gdy pasek się pojawia. */
   html{scrollbar-gutter:stable}
 
 
@@ -545,7 +548,7 @@
   .stp.jk-open .jk-pop::before{transform:scaleX(1);transition-delay:.18s}
 
   /* scena: 34×30 jednostek; 1em = 1/34 szerokości pop-upu, więc całość skaluje się razem z nim */
-  .jk-scene{position:relative;width:100%;aspect-ratio:34/30;font-size:calc(100cqw / 34);border-radius:11px;overflow:hidden;
+  .jk-scene{display:block;-webkit-tap-highlight-color:transparent;position:relative;width:100%;aspect-ratio:34/30;font-size:calc(100cqw / 34);border-radius:11px;overflow:hidden;
     background:radial-gradient(70% 55% at 85% 0%,rgba(153,230,109,.09),transparent 70%),linear-gradient(160deg,#0f1713,#080b0a);
     line-height:1.25;text-transform:none;letter-spacing:0}
   .jk-scene *{position:absolute}
@@ -1289,7 +1292,7 @@
   .ruch-btn:hover,.ruch-btn[aria-pressed="true"]{border-color:var(--lime);color:var(--text)}
   .ruch-btn .ruch-ic{font-size:.8em;color:var(--lime)}
   .ruch-btn .ruch-ic svg{display:block;width:1.6em;height:1.6em}
-  html.ruch-stop .marquee-track{animation-play-state:paused}
+  html.ruch-stop .marquee-track,html.panele .przykryta .marquee-track{animation-play-state:paused}   /* WYD-01: przykryty pasek nie liczy się w tle */
 
   /* Drobny druk: nota zdrowotna pod planem i nota o opiniach. Wyciszony szary,
      wyśrodkowany, szerokość ograniczona do ~62 znaków, żeby dało się to przeczytać. */
@@ -1519,6 +1522,9 @@
   @media(prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
     html{scroll-behavior:auto}
+    /* 2026-11-05: bez skryptu przystanków kotwica stawiała początek sekcji pod paskiem menu (77 px). Tylko tutaj —
+       przy zwykłym ruchu skrypt kotwic czyta scroll-margin i liczyłby przystanek inaczej. */
+    #plan,#faq-zdrowie{scroll-margin-top:96px}
     .rv,.stp{opacity:1;transform:none}
     .manifest .mw{opacity:1}
     /* Przy ograniczonym ruchu pętla przewijania nie działa (nie wygasza pepitki), więc
@@ -1666,7 +1672,7 @@
     /* „Kup plan” 29 px od dołu karty — tam, gdzie na przodzie (przód ma pod nim podpis, tył już nie) */
     #plan .plan-back-grid{gap:4px;padding:4px 12px 28px}   /* boki 12 px: „Każde z ponad 50 ćwiczeń…” w 2 linijkach, inaczej lista wchodzi pod „Kup plan” (25.10) */
     #plan .plan-back-right{gap:2px;justify-content:flex-end}
-    #plan .plan-back .plan-hint{display:none}   /* nie mieścił się (ucięty dołem karty), a przesuwał „Kup plan” względem przodu */
+    #plan .plan-back .plan-hint{position:absolute;width:1px;height:1px;overflow:hidden;white-space:nowrap;clip-path:inset(50%)}   /* nie mieścił się (ucięty dołem karty), a przesuwał „Kup plan” względem przodu; schowany tylko dla oka, bo jest przyciskiem powrotu z klawiatury i czytnika (KOD-04) */
     #plan .plan-back h3{font-size:.9rem}
     #plan .plan-back .pb-h{margin-top:4px}
     #plan .plan-back .plan-feats li{padding:1px 0;line-height:1.18}
@@ -1957,11 +1963,70 @@
      po każdej zmianie FAQ uruchomić skrypt ponownie (sprawdzenie: --sprawdz) -->
 <!--FAQ-JSONLD-->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"pl-PL","mainEntity":[{"@type":"Question","name":"Ile czasu zajmuje trening?","acceptedAnswer":{"@type":"Answer","text":"Treningi jednorazowo zajmą Ci 45–70 min. Zanim wybierzesz plan, możesz sprawdzić, ile treningów jest przewidzianych w tygodniu."}},{"@type":"Question","name":"Pierwszy raz na siłowni — czy dam radę?","acceptedAnswer":{"@type":"Answer","text":"Tak, każdy plan został zbudowany i przedstawiony w ten sposób, aby był zrozumiały i możliwy do wykonania. Jeśli właśnie zaczynasz swoją treningową przygodę — sprawdź plan „Początek”."}},{"@type":"Question","name":"Czy mogę najpierw spróbować?","acceptedAnswer":{"@type":"Answer","text":"Tak. Pierwszy tydzień planu, czyli 3 treningi na siłowni, masz za darmo przez 7 dni i bez podawania karty. Potrzebne są tylko konto w aplikacji i kilka pytań o zdrowie przed pierwszym treningiem. Darmowy tydzień przysługuje raz i kończy się sam, bez opłat. Potem decydujesz, czy kupujesz cały plan."}},{"@type":"Question","name":"Czym różni się opieka indywidualna od gotowego planu?","acceptedAnswer":{"@type":"Answer","text":"Gotowy plan kupujesz raz i realizujesz samodzielnie w aplikacji. W opiece indywidualnej plan powstaje po wywiadzie zdrowotnym i treningowym, specjalnie dla Ciebie, a w trakcie masz stały kontakt z trenerem na czacie. Opieka indywidualna online to abonament miesięczny: 599 zł/mies., a po opłaconym Planie 499 zł/mies.* Opłata odnawia się co miesiąc, aż zrezygnujesz. Rezygnacja w każdej chwili, bez kar. Masz też ustawowe 14 dni na odstąpienie od umowy: płacisz wtedy tylko za dni, w których opieka już trwała. *Dotyczy Planu opłaconego i niezwróconego w chwili zakupu opieki."}},{"@type":"Question","name":"Jaki sprzęt jest potrzebny?","acceptedAnswer":{"@type":"Answer","text":"To zależy od planu. Pełną listę sprzętu widzisz na karcie planu i w aplikacji, zanim kupisz."}},{"@type":"Question","name":"Jak długo mam dostęp do planu?","acceptedAnswer":{"@type":"Answer","text":"Bezterminowo, dopóki masz konto — płacisz raz, a plan zostaje z Tobą. Chcesz przejść go drugi raz? Restart masz bez dopłaty."}},{"@type":"Question","name":"Mam kontuzję albo problemy zdrowotne — czy mogę trenować?","acceptedAnswer":{"@type":"Answer","text":"Przed pierwszym treningiem porozmawiaj z lekarzem, jeśli chorujesz na serce, masz cukrzycę albo świeży uraz. W ciąży oraz krótko po porodzie lub gdy wracasz do aktywności po długiej przerwie także. Jeśli masz jakiekolwiek wątpliwości co do swojego zdrowia, bezpośrednia konsultacja z lekarzem, fizjoterapeutą lub trenerem to świetny pomysł. Regularne badania to część zdrowego trybu życia."}},{"@type":"Question","name":"Kiedy przerwać trening?","acceptedAnswer":{"@type":"Answer","text":"Normalne są: zadyszka, zmęczenie mięśni w trakcie i bóle mięśniowe 1–2 dni po treningu. Przerwij ćwiczenie i odpocznij, jeśli pojawi się: ból w klatce piersiowej, duszności, zawroty głowy, kołatanie serca, ostry ból stawu, nagły ból pleców. W przypadku wystąpienia powyższych objawów, przed kolejnym treningiem skonsultuj się ze specjalistą."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"pl-PL","mainEntity":[{"@type":"Question","name":"Ile czasu zajmuje trening?","acceptedAnswer":{"@type":"Answer","text":"Jeden trening zajmie Ci 45–70 min. Zanim wybierzesz plan, możesz sprawdzić, ile treningów jest przewidzianych w tygodniu."}},{"@type":"Question","name":"Pierwszy raz na siłowni — czy dam radę?","acceptedAnswer":{"@type":"Answer","text":"Tak, każdy plan został zbudowany i przedstawiony w ten sposób, aby był zrozumiały i możliwy do wykonania. Jeśli właśnie zaczynasz swoją treningową przygodę — sprawdź Plan „Początek”."}},{"@type":"Question","name":"Czy mogę najpierw spróbować?","acceptedAnswer":{"@type":"Answer","text":"Tak. Pierwszy tydzień planu, czyli 3 treningi na siłowni, masz za darmo przez 7 dni i bez podawania karty. Potrzebne są tylko konto w aplikacji i kilka pytań o zdrowie przed pierwszym treningiem. Darmowy tydzień przysługuje raz i kończy się sam, bez opłat. Potem decydujesz, czy kupujesz cały plan."}},{"@type":"Question","name":"Od ilu lat można korzystać z aplikacji?","acceptedAnswer":{"@type":"Answer","text":"Z aplikacji FitOnlineCoach, także z planów i opieki, mogą korzystać wyłącznie osoby pełnoletnie (od 18 lat)."}},{"@type":"Question","name":"Czym różni się opieka indywidualna od gotowego planu?","acceptedAnswer":{"@type":"Answer","text":"Gotowy plan kupujesz raz i realizujesz samodzielnie w aplikacji. W opiece indywidualnej plan powstaje po wywiadzie zdrowotnym i treningowym, specjalnie dla Ciebie, a w trakcie masz stały kontakt z trenerem na czacie. Opieka indywidualna online to abonament miesięczny: 599 zł/mies., a po opłaconym Planie 499 zł/mies.* Opłata odnawia się co miesiąc, aż zrezygnujesz. Rezygnacja w każdej chwili, bez kar. Masz też ustawowe 14 dni na odstąpienie od umowy: płacisz wtedy tylko za dni, w których opieka już trwała. *Dotyczy Planu opłaconego i niezwróconego w chwili zakupu opieki."}},{"@type":"Question","name":"Jaki sprzęt jest potrzebny?","acceptedAnswer":{"@type":"Answer","text":"To zależy od planu. Pełną listę sprzętu widzisz na karcie planu i w aplikacji, zanim kupisz."}},{"@type":"Question","name":"Jak długo mam dostęp do planu?","acceptedAnswer":{"@type":"Answer","text":"Bezterminowo, dopóki masz konto — płacisz raz, a plan zostaje z Tobą. Chcesz przejść go drugi raz? Restart masz bez dopłaty."}},{"@type":"Question","name":"Mam kontuzję albo problemy zdrowotne — czy mogę trenować?","acceptedAnswer":{"@type":"Answer","text":"Przed pierwszym treningiem porozmawiaj z lekarzem, jeśli chorujesz na serce, masz cukrzycę albo świeży uraz. To samo dotyczy ciąży, okresu krótko po porodzie i powrotu do aktywności po długiej przerwie. Jeśli masz jakiekolwiek wątpliwości co do swojego zdrowia, bezpośrednia konsultacja z lekarzem, fizjoterapeutą lub trenerem to świetny pomysł. Regularne badania to część zdrowego trybu życia."}},{"@type":"Question","name":"Kiedy przerwać trening?","acceptedAnswer":{"@type":"Answer","text":"Normalne są: zadyszka, zmęczenie mięśni w trakcie i bóle mięśniowe 1–2 dni po treningu. Przerwij ćwiczenie i odpocznij, jeśli pojawi się: ból w klatce piersiowej, duszności, zawroty głowy, kołatanie serca, ostry ból stawu, nagły ból pleców. W przypadku wystąpienia powyższych objawów, przed kolejnym treningiem skonsultuj się ze specjalistą."}}]}
 </script>
 <!--/FAQ-JSONLD-->
 </head>
 <body>
+
+<!-- ===== BANER ZGÓD NA CIASTECZKA =====
+     Stoi tuż za <body> (KOD-05): pierwszy Tab trafia w zgody; pozycja stała i z-index 1100, więc wygląd bez zmian.
+     Nic nie śledzi, dopóki klient nie kliknie. Zgoda zapisywana na domenie nadrzędnej
+     (.fitonlinecoach.com), więc aplikacja czyta tę samą decyzję — klient odpowiada RAZ. -->
+<div class="cc" id="cc" role="dialog" aria-live="polite" aria-label="Zgoda na pliki cookies">
+  <div class="cc-in">
+    <div class="cc-txt">
+      <!-- Teksty skrócone do minimum (polecenie Tomka 2026-08-14): 583 -> 352 znaki, 40 % mniej.
+           Świadomie ZOSTAJE „Na Twoim urządzeniu zapisujemy pliki" — zgoda dotyczy dostępu do
+           pamięci urządzenia, a samo „używamy plików" można przeczytać jako „mamy pliki na
+           serwerze". Zdanie jest prawdziwe od pierwszego kliknięcia: baner zapisuje ciasteczko
+           `foc_consent` z zapamiętanym wyborem (funkcja `zapisz` w skrypcie zgód), niezależnie od Pixela. -->
+      <b>Ciasteczka</b>
+      <!-- 2026-10-08 (D11): baner pyta tylko o to, co naprawdę działa — znaczniki data-cc przełącza skrypt zgód
+           według gniazd FOC_MARKETING (ga4 = jest ga4Id, ads = jest Meta albo Google Ads, „!” = gdy nie ma).
+           2026-11-01 (przegląd prawny, pkt 11): przy numerach pełny opis celów i odbiorców, bo „Zgadzam się” włącza wszystko
+           bez otwierania „Ustawień”. Krótka wersja zostaje tylko jako awaryjna (puste gniazda). -->
+      <p><span data-cc="ga4" hidden>Za Twoją zgodą FitOnlineCoach włącza statystyki Google
+        Analytics oraz reklamy Meta (m.in. Facebook, Instagram)
+        i&nbsp;Google: pomiar i&nbsp;dopasowanie reklam do
+        Ciebie. Korzystają z&nbsp;plików cookies i&nbsp;adresu
+        IP. Zgodę wycofasz w&nbsp;„Ustawieniach cookies” na dole strony.</span><span data-cc="!ga4">Na Twoim urządzeniu zapisujemy pliki niezbędne do działania strony. Reklamy — tylko za zgodą.</span>
+        Szczegóły w&nbsp;<a href="https://app.fitonlinecoach.com/polityka-prywatnosci" target="_blank" rel="noopener">polityce prywatności</a>.</p>
+    </div>
+    <div class="cc-btns">
+      <button class="cc-btn primary" id="ccAll" type="button">Zgadzam się</button>
+      <button class="cc-btn" id="ccNec" type="button">Tylko niezbędne</button>
+      <button class="cc-link" id="ccSettings" type="button">Ustawienia</button>
+    </div>
+    <div class="cc-opts" id="ccOpts">
+      <div class="cc-opt locked">
+        <input type="checkbox" id="ccNecCb" checked disabled>
+        <label for="ccNecCb"><b>Niezbędne</b>
+          <span>Zawsze włączone, bez nich strona nie działa.</span></label>
+      </div>
+      <div class="cc-opt" data-cc="ga4" hidden>
+        <input type="checkbox" id="ccAnaCb">
+        <label for="ccAnaCb"><b>Statystyki</b>
+          <span>Google Analytics: ile osób odwiedza stronę, skąd przychodzą i&nbsp;co klikają — żeby ją poprawiać.</span></label>
+      </div>
+      <div class="cc-opt">
+        <input type="checkbox" id="ccMktCb">
+        <label for="ccMktCb"><b>Reklamy</b>
+          <!-- 2026-10-07 (decyzja Tomka D11): ta sama zgoda obejmuje pamięć źródła wizyty w apce (src/lib/utm.ts).
+               2026-10-08 (runda napraw): zapisuje TYLKO aplikacja (localStorage foc-zrodlo) — strona niczego nie zapamiętuje
+               (polityka apki pkt 10), stąd „aplikacja zapamięta”. Zdanie o Instagramie i Google tylko przy wpisanym
+               identyfikatorze Meta albo Google Ads; bez niego wersja bez „też”. -->
+          <span data-cc="ads" hidden>Meta (m.in. Facebook, Instagram) i&nbsp;Google: mierzymy skuteczność naszych reklam
+            i&nbsp;dopasowujemy je do Ciebie. Za tą zgodą aplikacja zapamięta też w&nbsp;przeglądarce na 30 dni, z&nbsp;której
+            reklamy lub linku do nas trafiasz. <a href="https://business.safety.google/privacy/" target="_blank" rel="noopener">Jak Google wykorzystuje dane.</a></span><span data-cc="!ads">Za tą zgodą
+            aplikacja zapamięta w&nbsp;przeglądarce na 30 dni, z&nbsp;której reklamy lub linku do nas trafiasz.</span></label>
+      </div>
+      <div class="cc-btns">
+        <button class="cc-btn primary" id="ccSave" type="button">Zapisz</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="progress" id="progress" aria-hidden="true"></div>
 
@@ -1972,7 +2037,7 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="#dlaczego">Dlaczego</a></li>
         <li><a href="#plan">Plan</a></li>
-        <li><a href="#o-mnie">O mnie</a></li>
+        <li><a href="#o-mnie">O&nbsp;mnie</a></li>
         <li><a href="#wideo">Wideo</a></li>
         <li><a href="#faq">FAQ</a></li>
         <li><a href="#kontakt">Kontakt</a></li>
@@ -2024,7 +2089,7 @@
       <span class="w" style="animation-delay:.55s">który</span>
       <span class="w outline" style="animation-delay:.75s">rozumiesz.</span>
     </h1>
-    <p class="lead"><span class="lead-omin" aria-hidden="true"></span>Plany treningowe z poradnikiem wideo do każdego ćwiczenia w&nbsp;aplikacji FitOnlineCoach.
+    <p class="lead"><span class="lead-omin" aria-hidden="true"></span>Plany treningowe z&nbsp;poradnikiem wideo do każdego ćwiczenia w&nbsp;aplikacji FitOnlineCoach.
       Po polsku, konkretnie, bez ściemy.</p>
     <!-- Wersja sprzedażowa (decyzja Tomka 3.09.2026): strona otwiera się dopiero gotowa do
          sprzedaży, więc pierwszy ekran prowadzi wprost do zakupu w aplikacji. Zapis na listę
@@ -2050,7 +2115,7 @@
 <!-- ===== MANIFEST (wzór dziedziczy z bloku górnego) ===== -->
 <section class="manifest">
   <div class="wrap">
-    <p id="manifest">Nie potrzebujesz kolejnej rozpiski, potrzebujesz planu, który <em>zrozumiesz.</em> I który <em>zrealizujesz.</em></p>
+    <p id="manifest">Nie potrzebujesz kolejnej rozpiski, potrzebujesz planu, który <em>zrozumiesz.</em> I&nbsp;który <em>zrealizujesz.</em></p>
   </div>
 </section>
 </div><!-- /topblok -->
@@ -2091,7 +2156,7 @@
                     <div class="dl-foto"><img src="assets/screen_cwiczenia.jpg" alt="Ekran aplikacji: biblioteka ćwiczeń z filmami" loading="lazy" decoding="async"></div>
                   </article>
                   <article class="dl-slajd">
-                    <div class="dl-foto"><img src="assets/screen_arch.jpg" alt="Ekran aplikacji: instruktaż wideo arch up ze strzałkami pokazującymi ruch" loading="lazy" decoding="async"></div>
+                    <div class="dl-foto"><img src="assets/screen_arch.jpg" alt="Ekran aplikacji: instruktaż wideo wznosów ramion i nóg w leżeniu przodem ze strzałkami pokazującymi ruch" loading="lazy" decoding="async"></div>
                   </article>
                   <article class="dl-slajd">
                     <div class="dl-foto"><img src="assets/screen_kalendarz.jpg" alt="Ekran aplikacji: kalendarz treningów" loading="lazy" decoding="async"></div>
@@ -2107,15 +2172,15 @@
               <h3>Nie wiesz, jak wykonywać ćwiczenia?</h3>
               <!-- 2026-10-04 (przegląd prawny, F41): bez bezwzględnego „bez ryzyka kontuzji" — sprzeczne z notą zdrowotną
                    i §6 regulaminu (art. 5 ust. 3 pkt 2 upnpr). 2026-10-07 (decyzja Tomka D07): „poradnik wideo" wraca. -->
-              <p>Każde ćwiczenie w planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać — bez zgadywania, a dobra technika zmniejsza ryzyko kontuzji.</p>
+              <p>Każde ćwiczenie w&nbsp;planie ma swój poradnik wideo. Widzisz dokładnie, jak się ruszać, bez zgadywania. Dobra technika zmniejsza ryzyko kontuzji.</p>
             </div>
             <div class="dl-tresc">
               <h3>Masz dość angielskich tutoriali?</h3>
-              <p>FitOnlineCoach mówi do Ciebie po polsku, w zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
+              <p>FitOnlineCoach mówi do Ciebie po polsku, w&nbsp;zrozumiały sposób. Fachowa wiedza — bez fachowego żargonu.</p>
             </div>
             <div class="dl-tresc">
               <h3>Nie masz czasu na trening?</h3>
-              <p>3 treningi w tygodniu po 45–70 minut&nbsp;— resztę zostaw życiu. Plan masz w telefonie, a treningi wpisujesz prosto do kalendarza.</p>
+              <p>3 treningi w&nbsp;tygodniu po 45–70 minut&nbsp;— resztę zostaw życiu. Plan masz w&nbsp;telefonie, a&nbsp;treningi wpisujesz prosto do kalendarza.</p>
             </div>
           </div>
           <div class="wa-ster">
@@ -2140,14 +2205,14 @@
           <div class="how-left">
             <div class="sec-label rv">02 — Jak to działa</div>
             <h2 class="sec-title rv rv2">Trzy kroki<br>do pierwszego<br>treningu.</h2>
-            <p class="sec-sub rv rv3">Kupujesz, odpowiadasz na kilka pytań o zdrowie, trenujesz.</p>
+            <p class="sec-sub rv rv3">Kupujesz, odpowiadasz na kilka pytań o&nbsp;zdrowie, trenujesz.</p>
           </div>
           <div class="steps">
             <div class="stp" data-step tabindex="0">
               <span class="n">01</span>
-              <div><h3>Wybierz plan</h3><p>Plan „Początek” dla zaczynających i wracających. Kupujesz raz, a dostęp jest bezterminowy.</p></div>
+              <div><h3>Wybierz plan</h3><p>Plan „Początek” dla zaczynających i&nbsp;wracających. Kupujesz raz, a&nbsp;dostęp jest bezterminowy.</p></div>
               <div class="jk-pop" aria-hidden="true">
-                <div class="jk-scene jk-s1">
+                <a class="jk-scene jk-s1" href="#plan" tabindex="-1">
                   <div class="jk-bar"><i></i><i></i><i></i><span>fitonlinecoach.com</span></div>
                   <div class="jk-card">
                     <img loading="lazy" decoding="async" src="assets/jak/plan.webp" alt="" width="300" height="402">
@@ -2163,15 +2228,15 @@
                   </div>
                   <div class="jk-toast">
                     <div class="jk-ok"><svg viewBox="0 0 16 14"><path pathLength="1" d="M2 7.5 L6.2 11.5 L14 2.5"/></svg></div>
-                    <div class="jk-tt jk-fl"><b>Plan jest Twój</b><span>Czeka na Ciebie w aplikacji</span></div>
+                    <div class="jk-tt jk-fl"><b>Plan jest Twój</b><span>Czeka na Ciebie w&nbsp;aplikacji</span></div>
                   </div>
                   <svg class="jk-cur" viewBox="0 0 20 26"><path d="M2 1.5 V21 L7.2 16.4 L10.6 24 L14 22.5 L10.7 15.2 L17.5 14.6 Z" fill="#fff" stroke="#0B0F0D" stroke-width="1.4" stroke-linejoin="round"/></svg>
-                </div>
+                </a>
               </div>
             </div>
             <div class="stp" data-step tabindex="0">
               <span class="n">02</span>
-              <div><h3>Otwórz w telefonie</h3><p>Plan działa w aplikacji, którą otworzysz na telefonie, tablecie i komputerze.</p></div>
+              <div><h3>Otwórz w&nbsp;telefonie</h3><p>Plan działa w&nbsp;aplikacji, którą otworzysz na telefonie, tablecie i&nbsp;komputerze.</p></div>
               <div class="jk-pop" aria-hidden="true">
                 <div class="jk-scene jk-s2">
                   <div class="jk-ph">
@@ -2214,8 +2279,8 @@
                     </div>
                   </div>
                   <div class="jk-lgd">
-                    <span class="jk-ey">Bez sklepu z aplikacjami</span>
-                    <div class="jk-li"><i>1</i><span>Otwórz stronę w telefonie</span></div>
+                    <span class="jk-ey">Bez sklepu z&nbsp;aplikacjami</span>
+                    <div class="jk-li"><i>1</i><span>Otwórz stronę w&nbsp;telefonie</span></div>
                     <div class="jk-li"><i>2</i><span>Dodaj do ekranu głównego</span></div>
                     <div class="jk-li"><i>3</i><span>Ikona FOC otwiera Twój plan</span></div>
                   </div>
@@ -2224,11 +2289,11 @@
             </div>
             <div class="stp" data-step tabindex="0">
               <span class="n">03</span>
-              <div><h3>Trenuj z wideo</h3><p>Przy każdym ćwiczeniu masz poradnik wideo po polsku. Oglądasz, powtarzasz, robisz progres.</p></div>
+              <div><h3>Trenuj z&nbsp;wideo</h3><p>Przy każdym ćwiczeniu masz poradnik wideo po polsku. Oglądasz, powtarzasz, robisz postępy.</p></div>
               <div class="jk-pop" aria-hidden="true">
                 <div class="jk-scene jk-s3">
                   <div class="jk-ch">
-                    <div class="jk-chh">Twój progres</div>
+                    <div class="jk-chh">Twój postęp</div>
                     <div class="jk-chs">rekordy zapisują się same</div>
                     <svg viewBox="0 0 316 120" preserveAspectRatio="none">
                       <defs><linearGradient id="jk-a3g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#99E66D" stop-opacity=".22"/><stop offset="1" stop-color="#99E66D" stop-opacity="0"/></linearGradient></defs>
@@ -2245,10 +2310,10 @@
                     <div class="jk-bd"><small>Nowy rekord</small><b>+2 powtórzenia</b></div>
                   </div>
                   <div class="jk-tips jk-fl">
-                    <span class="jk-ey">Wskazówki z poradnika</span>
+                    <span class="jk-ey">Wskazówki z&nbsp;poradnika</span>
                     <div><i>1</i><span>Ustaw dłonie przy krawędzi skrzyni</span></div>
                     <div><i>2</i><span>Dobierz wysokość — im wyższa skrzynia, tym łatwiej</span></div>
-                    <div><i>3</i><span>Utrzymuj ciało w jednej linii</span></div>
+                    <div><i>3</i><span>Utrzymuj ciało w&nbsp;jednej linii</span></div>
                   </div>
                   <div class="jk-ttl">
                     <span class="jk-ey">Trening A<em> · </em>tydzień 4</span>
@@ -2266,7 +2331,7 @@
             </div>
           </div>
           <!-- telefon (23.10): kroki to karuzela przesuwana palcem w bok; kropki pokazują, który krok widać (skrypt jkKropki) -->
-          <div class="jk-kropki" aria-hidden="true"><i class="on"></i><i></i><i></i><span>Przesuń w bok</span></div>
+          <div class="jk-kropki" aria-hidden="true"><i class="on"></i><i></i><i></i><span>Przesuń w&nbsp;bok</span></div>
         </div>
       </div>
     </section>
@@ -2284,15 +2349,16 @@
     <!-- Karta planu. Do startu jest jeden plan — karuzela z pustymi kartami „Wkrótce"
          zeszła ze strony (audyt 2026-07-29): odciągała od jedynego kupowalnego produktu,
          a jej rewers pokazywał zły plan. Wróci razem z drugim planem (historia gita). -->
-    <!-- role+tabindex: kartę można obrócić też z klawiatury (Enter/spacja — patrz skrypt) -->
+    <!-- obrót z klawiatury i czytnika ekranu: role+tabindex na napisach „Kliknij — …” (Enter/spacja — patrz skrypt). KOD-04: cała karta
+         jako przycisk zlewała nagłówek i „Kup plan” w jeden napis przycisku. Klik w kartę obraca ją jak dotąd. -->
     <div class="plan-slider rv rv3" id="planSlider">
-    <div class="plan-flip" id="planFlip" role="button" tabindex="0">
+    <div class="plan-flip" id="planFlip">
       <div class="plan-flip-inner">
 
         <!-- przód karty -->
         <div class="plan-face plan-front">
           <div class="plan-grid" id="planGrid">
-            <div class="plan-visual"><img id="planImg" src="assets/plan_poczatek_karta.jpg" alt="Tomek w russian twist z piłką lekarską; na podłodze sali logo FitOnlineCoach" data-parallax="0.1" loading="lazy" decoding="async"></div>
+            <div class="plan-visual"><img id="planImg" src="assets/plan_poczatek_karta.jpg" alt="Tomek w rotacji tułowia w siadzie z piłką lekarską; na podłodze sali logo FitOnlineCoach" data-parallax="0.1" loading="lazy" decoding="async"></div>
             <div class="plan-body">
               <span class="plan-tag" id="planTag">Dla początkujących · na&nbsp;siłownię</span>
               <h3 id="planTitle">Początek</h3>
@@ -2300,7 +2366,7 @@
               <ul class="plan-feats" id="planFeats">
                 <li>Poradnik wideo do każdego ćwiczenia</li>
                 <li>Wszystko po polsku, krok po kroku</li>
-                <li>Działa w telefonie, tablecie i komputerze</li>
+                <li>Działa w&nbsp;telefonie, tablecie i&nbsp;komputerze</li>
               </ul>
               <!-- liczniki planu — przeniesione z osobnej sekcji pod kartami wprost na kartę -->
               <div class="plan-stats">
@@ -2322,7 +2388,7 @@
                 </a>
               </div>
               <span class="plan-platnosc">Karta, BLIK, Przelewy24, Google Pay, Apple Pay</span>
-              <span class="plan-hint">Kliknij — szczegóły planu →</span>
+              <span class="plan-hint" role="button" tabindex="0">Kliknij — szczegóły planu →</span>
             </div>
           </div>
         </div>
@@ -2334,14 +2400,14 @@
               <span class="plan-tag">Plan „Początek” od środka</span>
               <h3>Co dostajesz?</h3>
               <ul class="plan-feats">
-                <li>4 tygodnie treningu — 3 dni w tygodniu (pełne ciało)</li>
-                <li>Każde z ponad 50 ćwiczeń ma wideo pokazowe i instruktaż techniki</li>
+                <li>4 tygodnie treningu — 3 dni w&nbsp;tygodniu (pełne ciało)</li>
+                <li>Każde z&nbsp;ponad 50 ćwiczeń ma wideo pokazowe i&nbsp;instruktaż techniki</li>
                 <li>Kalendarz treningów dopasowany do Twojego tygodnia</li>
-                <li>Zapis wyników i sugerowane obciążenia</li>
+                <li>Zapis wyników i&nbsp;sugerowane obciążenia</li>
               </ul>
               <!-- LISTA SPRZĘTU. Nie edytować tutaj — treść wpisuje skrypt
-                   `python G:\cloude\synchronizuj-tresci.py` ze wspólnego źródła
-                   `G:\cloude\TRESCI-WSPOLNE.md`, żeby strona i aplikacja nie mogły
+                   `synchronizuj-tresci.py` ze wspólnego źródła
+                   `TRESCI-WSPOLNE.md`, żeby strona i aplikacja nie mogły
                    powiedzieć klientowi czegoś innego. Ta sama lista stoi w apce
                    w sekcji „Czego potrzebujesz" na stronie planu. -->
               <div class="pb-sprzet"><h3 class="pb-h">Czego potrzebujesz?</h3>
@@ -2373,7 +2439,7 @@
                   <span class="bj-sub">79 zł — jednorazowo</span>
                 </a>
               </div>
-              <span class="plan-hint">Kliknij — wróć do planu →</span>
+              <span class="plan-hint" role="button" tabindex="0">Kliknij — wróć do planu →</span>
             </div>
           </div>
         </div>
@@ -2391,7 +2457,7 @@
          o konsultacji, przeciwwskazaniach czy ciąży (audyt 2026-08-14). W FAQ zostaje. -->
     <!-- 23.10 (decyzja Tomka: plan na jednym ekranie telefonu): pod kartą KRÓTKA nota, pełna treść wspólna z apką
          (TRESCI-WSPOLNE.md, nota-zdrowotna) stoi w FAQ „Mam kontuzję albo problemy zdrowotne”. -->
-    <p class="zdrowie-nota rv rv4">Chorujesz przewlekle, masz uraz, jesteś w ciąży lub wracasz po długiej przerwie? Przed startem skonsultuj się z&nbsp;lekarzem lub fizjoterapeutą. <a href="#faq-zdrowie" id="notaWiecej">Więcej w FAQ</a></p>
+    <p class="zdrowie-nota rv rv4">Chorujesz przewlekle, masz uraz, jesteś w&nbsp;ciąży lub wracasz po długiej przerwie? Przed startem skonsultuj się z&nbsp;lekarzem lub fizjoterapeutą. <a href="#faq-zdrowie" id="notaWiecej">Więcej w&nbsp;FAQ</a></p>
   </div>
 </section>
 
@@ -2421,17 +2487,17 @@
             <div class="frame"><img src="assets/tomek_czapka.jpg" alt="Tomek Wiesner, trener personalny FitOnlineCoach, w czapce i koszulce z logo FOC" width="1200" height="1200" loading="lazy" decoding="async"></div>
           </div>
           <div id="aboutText">
-            <div class="sec-label rv">04 — O mnie</div>
+            <div class="sec-label rv">04 — O&nbsp;mnie</div>
             <h2 class="sec-title rv rv2">Cześć,<br>jestem Tomek.</h2>
             <!-- opis: na telefonie zwinięty do początku 1. akapitu, „Czytaj dalej” rozwija resztę (Tomek 25.10) -->
             <div class="om-opis" id="aboutOpis">
-            <p class="rv rv3">Jako trener personalny, fizjoterapeuta i dietetyk patrzę na Twój trening
-              z trzech stron naraz — dzięki temu plan jest skuteczny, bezpieczny i możliwy do pogodzenia
-              z normalnym życiem.</p>
-            <p class="rv rv3">Od 2010 roku codziennie planuję i prowadzę treningi dla swoich klientów,
+            <p class="rv rv3">Jako trener personalny, fizjoterapeuta i&nbsp;dietetyk patrzę na Twój trening
+              z&nbsp;trzech stron naraz — dzięki temu plan jest skuteczny, bezpieczny i&nbsp;możliwy do pogodzenia
+              z&nbsp;normalnym życiem.</p>
+            <p class="rv rv3">Od 2010 roku codziennie planuję i&nbsp;prowadzę treningi dla swoich klientów,
               dlatego masz pewność, że moje plany treningowe to coś więcej niż Ctrl+C / Ctrl+V.</p>
-            <p class="rv rv3">Wierzę w złoty środek — mądry ruch, proste zasady odżywiania
-              i systematyczność, którą utrzymasz latami.</p>
+            <p class="rv rv3">Wierzę w&nbsp;złoty środek — mądry ruch, proste zasady odżywiania
+              i&nbsp;systematyczność, którą utrzymasz latami.</p>
             </div>
             <button class="om-wiecej" id="aboutMore" type="button" aria-expanded="false" aria-controls="aboutOpis">Czytaj dalej</button>
             <div class="roles rv rv4" id="roles">
@@ -2512,7 +2578,7 @@
          (art. 6 ust. 4 pkt 7 i art. 7 pkt 26 ustawy o nieuczciwych praktykach rynkowych;
          raport audyty/prawo-fala1-2026-10-01.md, sekcja 2). Zatwierdzone przez Tomka 1.10 (P38).
          Decyzja Tomka 2.10, W75: oba zdania połączone dwukropkiem, żeby „Opinie" nie padało dwa razy z rzędu. -->
-    <p class="rev-nota rv rv2">Opinie są sprawdzane i pochodzą od prawdziwych użytkowników aplikacji: można je wystawić tylko z konta w aplikacji. Publikujemy wszystkie, na które autor dał zgodę — także krytyczne. Ukrywamy tylko te, które łamią regulamin (§9).</p>
+    <p class="rev-nota rv rv2">Opinie są sprawdzane i&nbsp;pochodzą od prawdziwych użytkowników aplikacji: można je wystawić tylko z&nbsp;konta w&nbsp;aplikacji. Publikujemy wszystkie, na które autor dał zgodę — także krytyczne. Ukrywamy tylko te, które łamią regulamin (§9).</p>
     <!-- Karuzela po orbicie: karty (buduje je renderOpinie z danych) krążą po elipsie; JS pozycjonuje. -->
     <div class="orbit-stage rv rv3">
       <div class="orbit" id="revGrid"></div>
@@ -2537,16 +2603,16 @@
     <div class="faq-list rv rv3">
       <details class="faq-item">
         <summary><span>Ile czasu zajmuje trening?</span></summary>
-        <p>Treningi jednorazowo zajmą Ci <b>45–70 min</b>. Zanim wybierzesz plan,
-          możesz sprawdzić, ile treningów jest przewidzianych w tygodniu.</p>
+        <p>Jeden trening zajmie Ci <b>45–&#8288;70&nbsp;min</b>. Zanim wybierzesz plan,
+          możesz sprawdzić, ile treningów jest przewidzianych w&nbsp;tygodniu.</p>
       </details>
       <details class="faq-item">
         <!-- bezosobowo: „pierwszy raz" opisuje RAZ, nie czytelnika. Mówi o sytuacji,
              a nie o przeszłości, więc pasuje też komuś, kto wraca po latach przerwy. -->
         <summary><span>Pierwszy raz na siłowni — czy dam radę?</span></summary>
-        <p>Tak, każdy plan został zbudowany i przedstawiony w ten sposób, aby był
-          zrozumiały i możliwy do wykonania. Jeśli właśnie zaczynasz swoją treningową
-          przygodę — sprawdź plan „Początek”.</p>
+        <p>Tak, każdy plan został zbudowany i&nbsp;przedstawiony w&nbsp;ten sposób, aby był
+          zrozumiały i&nbsp;możliwy do wykonania. Jeśli właśnie zaczynasz swoją treningową
+          przygodę — sprawdź Plan&nbsp;„Początek”.</p>
       </details>
       <details class="faq-item">
         <!-- 10.11 (decyzja Tomka, audyt D14 = B): tylko FAQ, bez linku pod „Kup plan”. Odpowiedź wyjątkowo podaje liczbę
@@ -2555,13 +2621,18 @@
              Tekst odpowiedzi = karta prawa analiza1011-d14-faq (10.11). PRZY ZAMKNIĘCIU SPRZEDAŻY TO PYTANIE USUNĄĆ (warunek prawa:
              bez otwartej sprzedaży darmowego tygodnia nie da się uruchomić, więc „Tak” byłoby nieprawdą). -->
         <summary><span>Czy mogę najpierw spróbować?</span></summary>
-        <p>Tak. Pierwszy tydzień planu, czyli 3&nbsp;treningi na siłowni, masz za darmo przez 7&nbsp;dni i bez podawania karty. Potrzebne są tylko konto w&nbsp;aplikacji i kilka pytań o&nbsp;zdrowie przed pierwszym treningiem. Darmowy tydzień przysługuje raz i kończy się sam, bez opłat. Potem decydujesz, czy kupujesz cały plan.</p>
+        <p>Tak. Pierwszy tydzień planu, czyli 3&nbsp;treningi na siłowni, masz za darmo przez 7&nbsp;dni i&nbsp;bez podawania karty. Potrzebne są tylko konto w&nbsp;aplikacji i&nbsp;kilka pytań o&nbsp;zdrowie przed pierwszym treningiem. Darmowy tydzień przysługuje raz i&nbsp;kończy się sam, bez opłat. Potem decydujesz, czy kupujesz cały plan.</p>
+      </details>
+      <details class="faq-item">
+        <!-- 2026-11-05 (C2): granica 18 lat z regulaminu §3 obejmuje całą aplikację, łącznie z kontem (brzmienie działu prawa) -->
+        <summary><span>Od ilu lat można korzystać z&nbsp;aplikacji?</span></summary>
+        <p>Z&nbsp;aplikacji FitOnlineCoach, także z&nbsp;planów i&nbsp;opieki, mogą korzystać wyłącznie osoby pełnoletnie (od 18&nbsp;lat).</p>
       </details>
       <details class="faq-item">
         <!-- najdroższy produkt był na stronie tylko ceną — obiekcja „za co tyle?" (audyt 3.09) -->
         <summary><span>Czym różni się opieka indywidualna od gotowego planu?</span></summary>
-        <p>Gotowy plan kupujesz raz i realizujesz samodzielnie w aplikacji. W opiece indywidualnej plan powstaje
-          po wywiadzie zdrowotnym i treningowym, specjalnie dla Ciebie, a w trakcie masz stały kontakt z trenerem
+        <p>Gotowy plan kupujesz raz i&nbsp;realizujesz samodzielnie w&nbsp;aplikacji. W&nbsp;opiece indywidualnej plan powstaje
+          po wywiadzie zdrowotnym i&nbsp;treningowym, specjalnie dla Ciebie, a&nbsp;w&nbsp;trakcie masz stały kontakt z&nbsp;trenerem
           na czacie.</p>
         <p>Opieka indywidualna online to abonament miesięczny: <span class="kwota">599 zł/mies.</span>, a&nbsp;po opłaconym Planie <span class="kwota">499 zł/mies.*</span>
           Opłata odnawia się co miesiąc, aż zrezygnujesz. Rezygnacja w&nbsp;każdej chwili, bez&nbsp;kar.
@@ -2579,11 +2650,11 @@
              Poprzednia wersja wymieniała „mata, gumy, sztanga, kettle, hantle i drążek"
              i była nieprawdziwa: brakowało m.in. DWÓCH jednakowych kettli, sprzętu cardio,
              skrzyni i piłki lekarskiej, a „mata" w planie w ogóle nie występuje. -->
-        <p>To zależy od planu. Pełną listę sprzętu widzisz na karcie planu i w aplikacji, zanim kupisz.</p>
+        <p>To zależy od planu. Pełną listę sprzętu widzisz na karcie planu i&nbsp;w&nbsp;aplikacji, zanim kupisz.</p>
       </details>
       <details class="faq-item">
         <summary><span>Jak długo mam dostęp do planu?</span></summary>
-        <p>Bezterminowo, dopóki masz konto — płacisz raz, a plan zostaje z Tobą.
+        <p>Bezterminowo, dopóki masz konto — płacisz raz, a&nbsp;plan zostaje z&nbsp;Tobą.
           Chcesz przejść go drugi raz? Restart masz bez dopłaty.</p>
       </details>
       <details class="faq-item" id="faq-zdrowie">
@@ -2591,9 +2662,9 @@
         <!-- 25.10 (decyzja Tomka): na stronie WŁASNY tekst Tomka (2 poprawki: bez formy płciowej, „co do”), bez zdania
              „Jeśli lekarz odradza wysiłek, nie zaczynaj” — świadomie, mimo rekomendacji. Apka zostaje przy wspólnej nocie
              z TRESCI-WSPOLNE.md; synchronizuj-tresci.py już tego miejsca nie zmienia. Pod kartą planu krótka nota + link tutaj. -->
-        <p>Przed pierwszym treningiem porozmawiaj z lekarzem, jeśli chorujesz na serce, masz cukrzycę albo świeży uraz.
-          W ciąży oraz krótko po porodzie lub gdy wracasz do aktywności po długiej przerwie także. Jeśli masz jakiekolwiek
-          wątpliwości co do swojego zdrowia, bezpośrednia konsultacja z lekarzem, fizjoterapeutą lub trenerem to świetny pomysł.
+        <p>Przed pierwszym treningiem porozmawiaj z&nbsp;lekarzem, jeśli chorujesz na serce, masz cukrzycę albo świeży uraz.
+          To samo dotyczy ciąży, okresu krótko po porodzie i&nbsp;powrotu do aktywności po długiej przerwie. Jeśli masz jakiekolwiek
+          wątpliwości co do swojego zdrowia, bezpośrednia konsultacja z&nbsp;lekarzem, fizjoterapeutą lub trenerem to świetny pomysł.
           Regularne badania to część zdrowego trybu życia.</p>
       </details>
       <!-- 25.10 (decyzja Tomka): na stronie krótki tekst Tomka — bez zdania o 112 i bez punktu o łydce, świadomie, mimo
@@ -2602,10 +2673,10 @@
       <details class="faq-item faq-kiedy">
         <summary><span>Kiedy przerwać trening?</span></summary>
         <div class="kiedy-przerwac">
-          <p>Normalne są: zadyszka, zmęczenie mięśni w trakcie i bóle mięśniowe 1–2 dni po treningu.</p>
-          <p>Przerwij ćwiczenie i odpocznij, jeśli pojawi się: ból w klatce piersiowej, duszności, zawroty głowy, kołatanie serca,
+          <p>Normalne są: zadyszka, zmęczenie mięśni w&nbsp;trakcie i&nbsp;bóle mięśniowe 1–2 dni po treningu.</p>
+          <p>Przerwij ćwiczenie i&nbsp;odpocznij, jeśli pojawi się: ból w&nbsp;klatce piersiowej, duszności, zawroty głowy, kołatanie serca,
             ostry ból stawu, nagły ból pleców.</p>
-          <p>W przypadku wystąpienia powyższych objawów, przed kolejnym treningiem skonsultuj się ze specjalistą.</p>
+          <p>W&nbsp;przypadku wystąpienia powyższych objawów, przed kolejnym treningiem skonsultuj się ze specjalistą.</p>
         </div>
       </details>
     </div>
@@ -2613,9 +2684,7 @@
 </section>
 
 <!-- ===== NEWSLETTER =====
-     Kotwica `#zapis`. Do 3.09.2026 była to „lista oczekujących" kampanii przedsprzedażowej —
-     kampania ODWOŁANA (decyzja Tomka), został zwykły newsletter. Ten sam formularz i ta sama
-     grupa MailerLite (komentarz przy FOC_NEWSLETTER w <head>). -->
+     Kotwica `#zapis`. Formularz i grupa MailerLite: komentarz przy FOC_NEWSLETTER w <head>. -->
 <section class="nl" id="zapis">
   <div class="wrap">
     <div class="nl-grid">
@@ -2625,8 +2694,8 @@
         <h2 class="rv rv2">Wskazówki treningowe na skrzynkę.</h2>
         <p class="rv rv3">Co dostajesz za zostawienie adresu:</p>
         <ul class="zapis-korzysci zapis-korzysci-duze rv rv3">
-          <li>konkretne wskazówki o treningu, jedzeniu i regeneracji</li>
-          <li>informacje i oferty dotyczące planów i opieki indywidualnej</li>
+          <li>konkretne wskazówki o&nbsp;treningu, jedzeniu i&nbsp;regeneracji</li>
+          <li>informacje i&nbsp;oferty dotyczące planów i&nbsp;opieki indywidualnej</li>
         </ul>
         <p class="rv rv3">Zero spamu — wypisanie jednym kliknięciem.</p>
       </div>
@@ -2634,7 +2703,7 @@
         <!-- Zgoda leży WEWNĄTRZ formularza i PRZED przyciskiem: wewnątrz — bo `new FormData(form)`
              bierze tylko pola z formularza (wykryte testem 2026-08-01); przed przyciskiem — bo
              człowiek ma ją przeczytać, zanim kliknie. -->
-        <form class="zapis" data-zapis novalidate>
+        <form class="zapis" data-zapis method="post" novalidate>
           <label class="sr-only" for="zapisDol">Adres e-mail</label>
           <input id="zapisDol" type="email" name="fields[email]" placeholder="Twój adres e-mail"
                  autocomplete="email" required>
@@ -2645,16 +2714,15 @@
                  które brzmienie klient widział.
                  2026-10-04 (przegląd prawny, F77): v3 — newsletter kończy się ofertą istniejącego planu i pisze też
                  o jedzeniu, a v2 obejmowała tylko „wskazówki treningowe i informacje o nowych planach" (art. 398 PKE,
-                 zgoda „konkretna" z art. 4 pkt 11 RODO). Zapisani z v2 mają dostawać wydania bez oferty — segment w MailerLite
-                 do założenia przed pierwszą wysyłką NTB (warunek przed wysyłką).
+                 zgoda „konkretna" z art. 4 pkt 11 RODO).
                  2026-10-07 (decyzja Tomka D12): v4 — jedno brzmienie zgody w apce, na stronie i w polityce (T-MARKETING
                  ze specyfikacji, dosłownie; dochodzi opieka indywidualna). v3 nigdy nie trafiła na serwer. Zmiana zdania
                  = nowa wersja tu ORAZ ZGODA_MARKETING_WERSJA w apce (src/lib/zgody.ts). -->
             <input type="checkbox" data-zgoda name="fields[zgoda_marketingowa]"
                    value="v4-2026-10-07" required>
-            <span>Chcę dostawać e-maile ze wskazówkami o treningu, jedzeniu i regeneracji oraz z informacjami
-              i ofertami dotyczącymi planów treningowych i opieki indywidualnej. Zgodę możesz wycofać w każdej
-              chwili. Szczegóły w <a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
+            <span>Chcę dostawać e-maile ze wskazówkami o&nbsp;treningu, jedzeniu i&nbsp;regeneracji oraz z&nbsp;informacjami
+              i&nbsp;ofertami dotyczącymi planów treningowych i&nbsp;opieki indywidualnej. Zgodę możesz wycofać w&nbsp;każdej
+              chwili. Szczegóły w&nbsp;<a href="https://app.fitonlinecoach.com/polityka-prywatnosci"
               target="_blank" rel="noopener">polityce prywatności</a>.</span>
           </label>
           <button type="submit">Zapisz się →</button>
@@ -2686,7 +2754,7 @@
       <ul class="foot-links">
         <li><a href="#dlaczego">Dlaczego</a></li>
         <li><a href="#plan">Plan</a></li>
-        <li><a href="#o-mnie">O mnie</a></li>
+        <li><a href="#o-mnie">O&nbsp;mnie</a></li>
         <li><a href="#wideo">Wideo</a></li>
         <li><a href="https://app.fitonlinecoach.com/polityka-prywatnosci" target="_blank" rel="noopener">Polityka prywatności</a></li>
         <li><a href="https://app.fitonlinecoach.com/regulamin" target="_blank" rel="noopener">Regulamin</a></li>
@@ -2721,7 +2789,7 @@
         <p class="fr-firma">FitOnlineCoach prosta spółka akcyjna</p>
         <p>ul. Żyzna 2, 40-314 Katowice</p>
         <p>KRS 0001262434 · NIP 9542914095 · REGON 545549296</p>
-        <p>Sąd Rejonowy Katowice-Wschód w Katowicach, VIII Wydział Gospodarczy KRS</p>
+        <p>Sąd Rejonowy Katowice-Wschód w&nbsp;Katowicach, VIII Wydział Gospodarczy KRS</p>
         <p>Kapitał akcyjny 5 000,00 zł</p>
         <!-- adres elektroniczny — art. 5 ust. 2 ustawy o świadczeniu usług drogą elektroniczną
              i art. 13 RODO; skrzynka kontaktowa dla klientów (decyzja Tomka 3.09.2026) -->
@@ -2732,7 +2800,7 @@
         <!-- O obróbce AI mówimy tutaj i w regulaminie apki, nie pod zdjęciami (decyzja Tomka D05 z 7.10;
              art. 50 ust. 4–5 AI Act; brzmienie ze specyfikacji działu prawnego). Miejsce: rozwijana metryczka
              (decyzja Tomka STRONA-02 B z 12.10). Zmiana tamtego ustępu regulaminu = sprawdzić to zdanie. -->
-        <p class="fr-ai">Zdjęcia i filmy edytujemy z pomocą narzędzi AI — szczegóły w&nbsp;<a class="fr-mail" href="https://app.fitonlinecoach.com/regulamin" target="_blank" rel="noopener">regulaminie</a>.</p>
+        <p class="fr-ai">Zdjęcia i&nbsp;filmy edytujemy z&nbsp;pomocą narzędzi AI — szczegóły w&nbsp;<a class="fr-mail" href="https://app.fitonlinecoach.com/regulamin" target="_blank" rel="noopener">regulaminie</a>.</p>
       </div>
     </details>
     <div class="copy">
@@ -2742,64 +2810,6 @@
     </div>
   </div>
 </footer>
-
-<!-- ===== BANER ZGÓD NA CIASTECZKA =====
-     Nic nie śledzi, dopóki klient nie kliknie. Zgoda zapisywana na domenie nadrzędnej
-     (.fitonlinecoach.com), więc aplikacja czyta tę samą decyzję — klient odpowiada RAZ. -->
-<div class="cc" id="cc" role="dialog" aria-live="polite" aria-label="Zgoda na pliki cookies">
-  <div class="cc-in">
-    <div class="cc-txt">
-      <!-- Teksty skrócone do minimum (polecenie Tomka 2026-08-14): 583 -> 352 znaki, 40 % mniej.
-           Świadomie ZOSTAJE „Na Twoim urządzeniu zapisujemy pliki" — zgoda dotyczy dostępu do
-           pamięci urządzenia, a samo „używamy plików" można przeczytać jako „mamy pliki na
-           serwerze". Zdanie jest prawdziwe od pierwszego kliknięcia: baner zapisuje ciasteczko
-           `foc_consent` z zapamiętanym wyborem (funkcja `zapisz` w skrypcie zgód), niezależnie od Pixela. -->
-      <b>Ciasteczka</b>
-      <!-- 2026-10-08 (D11): baner pyta tylko o to, co naprawdę działa — znaczniki data-cc przełącza skrypt zgód
-           według gniazd FOC_MARKETING (ga4 = jest ga4Id, ads = jest Meta albo Google Ads, „!” = gdy nie ma).
-           2026-11-01 (przegląd prawny, pkt 11): przy numerach pełny opis celów i odbiorców, bo „Zgadzam się” włącza wszystko
-           bez otwierania „Ustawień”. Krótka wersja zostaje tylko jako awaryjna (puste gniazda). -->
-      <p><span data-cc="ga4" hidden>Za Twoją zgodą FitOnlineCoach włącza statystyki Google
-        Analytics oraz reklamy Meta (m.in. Facebook, Instagram)
-        i&nbsp;Google: pomiar i&nbsp;dopasowanie reklam do
-        Ciebie. Korzystają z&nbsp;plików cookies i&nbsp;adresu
-        IP. Zgodę wycofasz w&nbsp;„Ustawieniach cookies” na dole strony.</span><span data-cc="!ga4">Na Twoim urządzeniu zapisujemy pliki niezbędne do działania strony. Reklamy — tylko za zgodą.</span>
-        Szczegóły w <a href="https://app.fitonlinecoach.com/polityka-prywatnosci" target="_blank" rel="noopener">polityce prywatności</a>.</p>
-    </div>
-    <div class="cc-btns">
-      <button class="cc-btn primary" id="ccAll" type="button">Zgadzam się</button>
-      <button class="cc-btn" id="ccNec" type="button">Tylko niezbędne</button>
-      <button class="cc-link" id="ccSettings" type="button">Ustawienia</button>
-    </div>
-    <div class="cc-opts" id="ccOpts">
-      <div class="cc-opt locked">
-        <input type="checkbox" id="ccNecCb" checked disabled>
-        <label for="ccNecCb"><b>Niezbędne</b>
-          <span>Zawsze włączone, bez nich strona nie działa.</span></label>
-      </div>
-      <div class="cc-opt" data-cc="ga4" hidden>
-        <input type="checkbox" id="ccAnaCb">
-        <label for="ccAnaCb"><b>Statystyki</b>
-          <span>Google Analytics: ile osób odwiedza stronę, skąd przychodzą i&nbsp;co klikają — żeby ją poprawiać.</span></label>
-      </div>
-      <div class="cc-opt">
-        <input type="checkbox" id="ccMktCb">
-        <label for="ccMktCb"><b>Reklamy</b>
-          <!-- 2026-10-07 (decyzja Tomka D11): ta sama zgoda obejmuje pamięć źródła wizyty w apce (src/lib/utm.ts).
-               2026-10-08 (runda napraw): zapisuje TYLKO aplikacja (localStorage foc-zrodlo) — strona niczego nie zapamiętuje
-               (polityka apki pkt 10), stąd „aplikacja zapamięta”. Zdanie o Instagramie i Google tylko przy wpisanym
-               identyfikatorze Meta albo Google Ads; bez niego wersja bez „też”. -->
-          <span data-cc="ads" hidden>Meta (m.in. Facebook, Instagram) i&nbsp;Google: mierzymy skuteczność naszych reklam
-            i&nbsp;dopasowujemy je do Ciebie. Za tą zgodą aplikacja zapamięta też w&nbsp;przeglądarce na 30 dni, z&nbsp;której
-            reklamy lub linku do nas trafiasz. <a href="https://business.safety.google/privacy/" target="_blank" rel="noopener">Jak Google wykorzystuje dane.</a></span><span data-cc="!ads">Za tą zgodą
-            aplikacja zapamięta w&nbsp;przeglądarce na 30 dni, z&nbsp;której reklamy lub linku do nas trafiasz.</span></label>
-      </div>
-      <div class="cc-btns">
-        <button class="cc-btn primary" id="ccSave" type="button">Zapisz</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script>
 (() => {
@@ -2929,9 +2939,8 @@
   };
   el('ccReopen').addEventListener('click', pokaz);
 
-  /* ===== Pomiar konwersji: klik w „Kup plan" (?kup=1), „Załóż konto" (/start)
-     albo wejście na listę planów / opiekę indywidualną (/plany — m.in. hero „Dołącz";
-     wcześniej hero w ogóle nie było liczone — audyt 2026-07-29) =====
+  /* ===== Pomiar konwersji: klik w „Kup plan” (plan, z kwotą), „Opieka indywidualna” (z kwotą) i hero „Dołącz”
+     (lista planów /plany, osobne zdarzenie bez kwoty) — rozdzielone 2026-11-10 (D31; wcześniej jedno begin_checkout bez kwoty) =====
      Nasłuch na CAŁYM dokumencie, bo przycisk „Kup plan" jest podmieniany skryptem
      przy przełączaniu planów — nasłuch przypięty do samego przycisku by go zgubił.
      Zdarzenie leci wyłącznie, gdy narzędzie jest realnie wczytane (czyli była zgoda
@@ -2944,8 +2953,6 @@
      tylko przepisuje adres na adres (art. 399 PKE tego nie obejmuje; F24 odrzucone przez weryfikatora prawa).
      Apka zapisuje je przy koncie i zakupie na podstawie art. 6 ust. 1 lit. f RODO (prawo sprzeciwu), a w pamięci
      przeglądarki na 30 dni tylko za zgodą „Reklamy” z banera wyżej (foc_consent v2, m: true).
-     ⚠ Strona może iść na serwer tylko razem z wersją apki z decyzji D11 albo po niej — dzisiejsza apka na serwerze
-     zapisuje UTM w telefonie bez pytania o zgodę.
      Wartość do 500 znaków (było 100): nowe fbclid bywają dłuższe, a ucięty identyfikator kliknięcia jest bezwartościowy.
      Wcześniej nie przechodziło nawet przy „Kup plan" (?kup=1): reklama → strona → apka gubiła źródło.
      Raz przy wczytaniu, a nie przy kliknięciu — wtedy działa też otwarcie w nowej karcie środkowym przyciskiem. */
@@ -2962,12 +2969,26 @@
   document.addEventListener('click', e => {
     const a = e.target && e.target.closest ? e.target.closest('a[href*="app.fitonlinecoach.com"]') : null;
     if (!a) return;
-    const adres = a.getAttribute('href') || '';
-    if (adres.indexOf('kup=1') === -1 && adres.indexOf('/start') === -1
-        && adres.indexOf('/plany') === -1) return;
+    /* 2026-11-10 (D31, decyzja Tomka): „Kup plan” i opieka = begin_checkout (Google) / InitiateCheckout (Meta) z kwotą, PLN
+       i rodzajem oferty (poczatek / indywidualny); „Dołącz” (lista /plany) = osobne dolacz / Dolacz bez kwoty. Kwota z JSON-LD
+       w <head> (Product → offers.url = adres przycisku bez „?”), więc nowa cena zmienia się w jednym miejscu. Wolno wysłać tylko
+       rodzaj oferty, kwotę, PLN i adres bez „?” (ocena prawa D31-strona, 10.11). Każdą zmianę zdarzeń zgłosić prawu. */
+    const adres = (a.getAttribute('href') || '').split('?')[0];   /* bez „?”: fbclid i inne identyfikatory kliknięć nie idą do Google przy samej zgodzie na Statystyki */
+    let cena = 0;
+    document.querySelectorAll('script[type="application/ld+json"]').forEach(s => {
+      try { (JSON.parse(s.textContent)['@graph'] || []).forEach(n => { if (n.offers && n.offers.url === adres) cena = Number(n.offers.price); }); } catch (_) {}
+    });
+    const oferta = cena ? adres.split('/').pop() : /\/plany\/?$/.test(adres) ? 'dolacz' : '';
+    if (!oferta) return;
     try {
-      if (ga4Wczytane || adsWczytane) gtag('event', 'begin_checkout', {link_url: adres.split('?')[0]});   /* bez „?”: fbclid i inne identyfikatory kliknięć nie idą do Google przy samej zgodzie na Statystyki */
-      if (pixelWczytany && window.fbq) fbq('track', 'InitiateCheckout');
+      if (ga4Wczytane || adsWczytane) gtag('event', cena ? 'begin_checkout' : 'dolacz', cena
+        ? {currency: 'PLN', value: cena, items: [{item_id: oferta, price: cena}], link_url: adres} : {link_url: adres});
+      const etykieta = adsWczytane && (cfg.adsKonwersje || {})[oferta];   /* konwersja Google Ads tylko po zgodzie na „Reklamy” */
+      if (etykieta) gtag('event', 'conversion', Object.assign({send_to: cfg.googleAdsId + '/' + etykieta}, cena ? {value: cena, currency: 'PLN'} : {}));
+      if (pixelWczytany && window.fbq) {
+        if (cena) fbq('track', 'InitiateCheckout', {value: cena, currency: 'PLN', content_ids: [oferta], content_type: 'product'});
+        else fbq('trackCustom', 'Dolacz');
+      }
     } catch (_) { /* pomiar nigdy nie może zepsuć kliknięcia */ }
   }, true);
 
@@ -2997,13 +3018,7 @@
 
   const zapisana = odczytaj();
   if (zapisana) zastosuj(zapisana, false);
-  else if (czySledzimy) {
-    const html = document.documentElement;
-    const bezBramki = () => !html.classList.contains('gate-locked');
-    if (bezBramki()) setTimeout(pokaz, 900);
-    else new MutationObserver((_, o) => { if (bezBramki()) { o.disconnect(); setTimeout(pokaz, 900); } })
-      .observe(html, {attributes: true, attributeFilter: ['class']});
-  }
+  else if (czySledzimy) setTimeout(pokaz, 900);
 })();
 </script>
 
@@ -3148,7 +3163,7 @@
 <script>
 /*FIZYKA>*/
 /* Fizyka modeli 3D (PROJEKT.md B.4). Czysta matematyka, bez DOM; na razie nic jej nie woła (etap E1).
-   Test: G:/cloude/assets/brand/3d/strona3d/testy/test_fizyka.mjs wycina ten blok i uruchamia w node.
+   Test: testy/test_fizyka.mjs wycina ten blok i uruchamia w node.
    Świat w metrach: X w prawo, Y w górę, Z do widza. Kąty w radianach, θ jak CSS rotate (+ = zgodnie z zegarem).
    Każda stała niżej to nazwane pokrętło. */
 (() => {
@@ -3653,6 +3668,9 @@
     const mqKol = matchMedia('(max-width: 980px)'), mqRM = matchMedia('(prefers-reduced-motion: reduce)');
     const INL = () => mqKol.matches, RM = () => mqRM.matches;
     let cur = null;
+    /* Safari < 16 nie zna cqw: 1em sceny = szerokość pop-upu / 24 (kolumna) albo / 34, jak calc(100cqw / …) w stylach */
+    if (!(window.CSS && CSS.supports('width:1cqw'))) { const roCq = new ResizeObserver(es => es.forEach(e => e.target.querySelectorAll('.jk-scene').forEach(s =>
+      s.style.fontSize = e.contentRect.width / (INL() ? 24 : 34) + 'px'))); document.querySelectorAll('.jk-pop').forEach(p => roCq.observe(p)); }
 
     /* ekran telefonu w kroku 02: żywy DOM 200×434 px na zdjęciu fon_dl_1.webp (narożniki z assets/3d/pozy.json, host 474.472 px) */
     const EKRAN = [[49.088, 7.411], [430.144, 47.997], [441.725, 902.312], [32.745, 918.178]], HOST_W = 474.472;
@@ -3896,7 +3914,7 @@
   /* Talerz 3D: cialo (bryla obrotowa) stoi, wiec swiatlo i obrecz stoja w miejscu. Obraca sie tylko
      warstwa napisow — po plaszczyznie tarczy widzianej pod katem: T(kat) = cos*P + sin*Q + K.
      kat jak w CSS rotate (+ = zgodnie z zegarem). Liczby z kamery Blendera:
-     G:/cloude/assets/brand/3d/talerze/ (talerze_scena.py, zloz_warstwy.py, sprawdz_warstwy.py). */
+     talerze/ (talerze_scena.py, zloz_warstwy.py, sprawdz_warstwy.py). */
   const talerzMacierz = (kat, w) => {        /* w: szerokość warstwy napisu */
     const a = kat * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
     const m = T3D.P.map((p, i) => c * p + s * T3D.Q[i] + T3D.K[i]);
@@ -3918,12 +3936,11 @@
   const hpUk = k => FOC_FIZ.ukladTel([k], T3H.HERO.F);
   const hpU = FOC_FIZ.ukladHero(), hpB = { start: hpUk(T3H.HERO.START), zero: hpUk({ ry: 0, rx: 0, rz: 0 }), m: hpUk(T3H.HERO.M) };
 
-  /* Silnik 3D (B.3): foc3d.js po load, po bramce, w bezczynności (najpóźniej 3 s), tylko przy WebGL2 bez „dużego spadku
+  /* Silnik 3D (B.3): foc3d.js po load, w bezczynności (najpóźniej 3 s), tylko przy WebGL2 bez „dużego spadku
      wydajności". Oszczędzanie danych, „ogranicz ruch", ≤ 2 GB i ?3d=0: same zdjęcia, bez pobierania assets/3d/*.js.
      Obietnica daje API silnika (window.FOC3D) albo null. */
   const foc3d = !window.FOC_3D || reduced || (navigator.connection && navigator.connection.saveData) ||
     (navigator.deviceMemory ?? 8) <= 2 ? Promise.resolve(null) : new Promise(ok => {
-    const html = document.documentElement;
     const laduj = () => {
       let gl = null;
       try { gl = document.createElement('canvas').getContext('webgl2', { failIfMajorPerformanceCaveat: true }); } catch (_) {}
@@ -3933,13 +3950,12 @@
       import('./assets/3d/foc3d.js?v=20260927f').then(m => m.start({ diag: /[?&]diag=1(&|$)/.test(location.search) }))
         .then(api => { window.FOC3D = api; ok(api); }, e => { console.warn('3D: zostają zdjęcia', e); ok(null); });
     };
-    const poBramce = () => (window.requestIdleCallback || (f => setTimeout(f, 1)))(laduj, { timeout: 3000 });
-    const poLoad = () => {
-      if (!html.classList.contains('gate-locked')) return poBramce();
-      new MutationObserver((_, o) => { if (!html.classList.contains('gate-locked')) { o.disconnect(); poBramce(); } })
-        .observe(html, { attributes: true, attributeFilter: ['class'] });
-    };
-    document.readyState === 'complete' ? poLoad() : window.addEventListener('load', poLoad, { once: true });
+    const poLoad = () => (window.requestIdleCallback || (f => setTimeout(f, 1)))(laduj, { timeout: 3000 });
+    /* WYD-06 (audyt 10.11): do 980 px hero ma zdjęcie, a manifest stoi tuż pod oknem — silnik (ok. 400 KB) rusza przy pierwszym
+       przewinięciu (też kotwica, przywrócone przewinięcie); kto nie ruszy strony, nie pobiera go.
+       shortcut: okno poszerzone ponad 980 px przed pierwszym przewinięciem ma w hero zdjęcie do pierwszego ruchu */
+    const poRuchu = () => stackMode() || scrollY > 0 ? poLoad() : addEventListener('scroll', poLoad, { once: true, passive: true });
+    document.readyState === 'complete' ? poRuchu() : window.addEventListener('load', poRuchu, { once: true });
   });
 
   const dlTelefon = document.getElementById('dlTelefon');
@@ -4292,7 +4308,7 @@
       vpFilmy().forEach((v, i) => {
         /* dokładnie jeden film naraz (widoczny slajd); przy „ogranicz ruch" (WCAG 2.3.3) i po „Zatrzymaj" filmy stoją */
         /* odmowa odtwarzania (iPhone w trybie niskiego zużycia energii): telefon staje, zamiast obracać się z czarnym ekranem */
-        if (vpWidac && i === vpIdx && !reduced && !vpPauza) { const pr = v.play(); if (pr && pr.catch) pr.catch(e => { if (e.name === 'NotAllowedError') { vpOdmowa = true; vpRuch(); } }); }
+        if (vpWidac && i === vpIdx && !reduced && !vpPauza) { const pr = v.play(); if (pr && pr.then) pr.then(() => { if (vpOdmowa) { vpOdmowa = false; vpRuch(); ruchNapis(); } }, e => { if (e.name === 'NotAllowedError') { vpOdmowa = true; vpRuch(); ruchNapis(); } }); }
         else v.pause();
       });
       vpRuch();
@@ -4309,17 +4325,22 @@
        na <html> → `animation-play-state:paused` w stylach). Wybór w sessionStorage,
        żeby po powrocie na stronę nie trzeba było klikać drugi raz. */
     const ruchBtn = document.getElementById('ruchBtn');
+    /* napis i ikona: „Odtwórz”, gdy filmy stoją z wyboru (vpPauza) albo przez odmowę przeglądarki (vpOdmowa);
+       klasa ruch-stop (pasek, obrót) tylko z wyboru — odmowa nie zatrzymuje paska (kontrola KOD-08) */
+    const ruchNapis = () => {
+      if (!ruchBtn) return;
+      const stoi = vpPauza || vpOdmowa;
+      ruchBtn.setAttribute('aria-pressed', String(stoi));
+      ruchBtn.querySelector('.ruch-txt').textContent = stoi ? 'Odtwórz' : 'Zatrzymaj';
+      ruchBtn.querySelector('.ruch-ic').innerHTML = stoi ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.33 5.5v13L19.33 12z"/></svg>' : '❚❚';
+    };
     const ruchStosuj = () => {
       document.documentElement.classList.toggle('ruch-stop', vpPauza);
-      if (ruchBtn) {
-        ruchBtn.setAttribute('aria-pressed', String(vpPauza));
-        ruchBtn.querySelector('.ruch-txt').textContent = vpPauza ? 'Odtwórz' : 'Zatrzymaj';
-        ruchBtn.querySelector('.ruch-ic').innerHTML = vpPauza ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.33 5.5v13L19.33 12z"/></svg>' : '❚❚';
-      }
+      ruchNapis();
       vpGraj();
     };
     if (ruchBtn) ruchBtn.addEventListener('click', () => {
-      vpPauza = !vpPauza; vpOdmowa = false;   /* stuknięcie = gest, po nim przeglądarka zwykle pozwala grać */
+      if (vpOdmowa) vpOdmowa = false; else vpPauza = !vpPauza;   /* po odmowie stuknięcie = „Odtwórz” (gest, po nim przeglądarka zwykle pozwala grać) */
       try { sessionStorage.setItem('foc_ruch', vpPauza ? 'stop' : 'graj'); } catch (_) {}
       ruchStosuj();
     });
@@ -5069,7 +5090,7 @@
       weeks: 4, workouts: 12, exercises: 50, minutes: 700,
       desc: 'Cztery tygodnie prostych, konkretnych treningów angażujących całe ciało.',   /* pierwsze zdanie opisu z apki (Tomek 25.10) */
       feats: ['Poradnik wideo do każdego ćwiczenia', 'Wszystko po polsku, krok po kroku', 'Działa w telefonie, tablecie i komputerze'],
-      img: 'assets/plan_poczatek_karta.jpg', alt: 'Tomek w russian twist z piłką lekarską; na podłodze sali logo FitOnlineCoach',
+      img: 'assets/plan_poczatek_karta.jpg', alt: 'Tomek w rotacji tułowia w siadzie z piłką lekarską; na podłodze sali logo FitOnlineCoach',
       /* Przycisk dwuwierszowy jak przy opiece indywidualnej (decyzja Tomka 3.08):
          `cta` = górny wiersz (akcja), `ctaCena` = dolny (cena). Wcześniej próba wciśnięcia
          obu w jedną linię zawijała się na telefonie — dlatego cena ma WŁASNY wiersz.
@@ -5123,7 +5144,9 @@
     planBack.setAttribute('aria-hidden', String(!odwrocona));
     try { planFront.inert = odwrocona; planBack.inert = !odwrocona; } catch (_) {}
   };
-  const obrocKarte = () => { planFlip.classList.toggle('flipped'); oznaczScianki(); };
+  /* napis = obrót z napisu „Kliknij — …” (klawiatura, czytnik): fokus przechodzi na napis odsłoniętej strony, bo zakryta dostaje inert */
+  const obrocKarte = napis => { planFlip.classList.toggle('flipped'); oznaczScianki();
+    if (napis) planFlip.querySelector(planFlip.classList.contains('flipped') ? '.plan-back .plan-hint' : '.plan-front .plan-hint').focus({ preventScroll: true }); };
   oznaczScianki();
 
   /* M1 (telefon): zdjęcie tak wysokie, żeby przód karty RAZEM z notą pod nim mieścił się w oknie pod paskiem (przystanek
@@ -5160,12 +5183,12 @@
      i ekranami z aplikacji. Odnośniki i przyciski (np. „Kup plan") działają normalnie. */
   planSlider.addEventListener('click', e => {
     if (e.target.closest('a, button')) return;
-    obrocKarte();
+    obrocKarte(e.target.closest('.plan-hint'));
   });
-  /* to samo z klawiatury — karta ma role="button" i tabindex="0" w HTML */
+  /* to samo z klawiatury — napisy „Kliknij — …” mają role="button" i tabindex="0" w HTML (KOD-04); Enter na „Kup plan" kupuje */
   planFlip.addEventListener('keydown', e => {
-    if (e.target.closest('a, button')) return;   /* Enter na „Kup plan" ma kupować, nie obracać */
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); obrocKarte(); }
+    if (!e.target.matches('.plan-hint')) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); obrocKarte(true); }
   });
   }
 
@@ -5388,14 +5411,14 @@
    długa strefa to twarde przystanki co ok. ekran − 137 px; tylko krótka (dół bliżej niż pół ekranu) zostaje jednym wysokim znacznikiem.
    Pętla strony (onScroll) czyta tylko scrollY, więc animacje przewijane grają same. Silnik nie czyta układu co klatkę:
    przystanki() liczy się po zdarzeniach (przelicz) i raz na początku gestu.
-   Wyłączone: adres z ?przystanki=0 albo window.FOC_PRZYSTANKI_OFF = true przed tym blokiem, „ogranicz ruch", bramka,
+   Wyłączone: adres z ?przystanki=0 albo window.FOC_PRZYSTANKI_OFF = true przed tym blokiem, „ogranicz ruch",
    powiększenie palcami; kółko i klawisze także przy otwartym menu. */
 (() => {
   if (/[?&]przystanki=0\b/.test(location.search) || window.FOC_PRZYSTANKI_OFF) return;
   const html = document.documentElement, q = s => document.querySelector(s), header = q('#header'), nav = q('#navLinks');
   const mqR = matchMedia('(prefers-reduced-motion: reduce)'), mqDotyk = matchMedia('(hover: none) and (pointer: coarse)');
   const powiekszone = () => !!window.visualViewport && visualViewport.scale > 1.01;
-  const bazowo = () => !mqR.matches && !html.classList.contains('gate-locked') && !powiekszone();
+  const bazowo = () => !mqR.matches && !powiekszone();
   const aktywny = () => bazowo() && !(nav && nav.classList.contains('open'));
   const dotyk = () => mqDotyk.matches;
   const ogr = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -5808,9 +5831,6 @@
   addEventListener('load', przelicz);
   if (document.fonts) document.fonts.ready.then(przelicz);
   new ResizeObserver(przelicz).observe(document.body);   /* FAQ, leniwe obrazki, odkryte sekcje */
-  let bramka = html.classList.contains('gate-locked');
-  new MutationObserver(() => { const b = html.classList.contains('gate-locked'); if (b !== bramka) { bramka = b; przelicz(); } })
-    .observe(html, { attributes: true, attributeFilter: ['class'] });
   mqR.addEventListener('change', przelicz); mqDotyk.addEventListener('change', przelicz);
   przelicz();
 
