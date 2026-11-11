@@ -1,0 +1,46 @@
+# FitOnlineCoach: naglowki dla Cloudflare Pages. Propozycja z 1.11.2026 + dopiski D35 z 10.11.2026; do _deploy przed testem *.pages.dev (11.11).
+# Na GitHub Pages ten plik jest zwyklym plikiem (nic nie robi). Uzasadnienie kazdego wiersza: NAGLOWKI.md.
+
+# 1. Adres techniczny *.pages.dev nie ma trafic do Google (druga kopia strony)
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+# 2. Bezpieczenstwo, dla wszystkich adresow
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://assets.mailerlite.com https://www.facebook.com
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+# 3. Strony HTML: zawsze sprawdzaj, czy jest nowsza wersja
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# 4. Obrazy, filmy i czcionki: 1 godzina (nazwy plikow nie maja skrotow, wiec nie dluzej)
+/assets/*.webp
+  Cache-Control: public, max-age=3600
+/assets/*.png
+  Cache-Control: public, max-age=3600
+/assets/*.jpg
+  Cache-Control: public, max-age=3600
+/assets/*.mp4
+  Cache-Control: public, max-age=3600
+/assets/*.woff2
+  Cache-Control: public, max-age=3600
+/naklejki/*
+  Cache-Control: public, max-age=3600
+/naklejki2/*
+  Cache-Control: public, max-age=3600
+
+# 5. Silnik 3D (skrypty, modele, dane): 1 godzina, nie rok (D35; obrazy 3D maja juz 1 h z punktu 4, wiec bez *.webp/*.jpg, zeby nie dublowac)
+/assets/3d/*.js
+  Cache-Control: public, max-age=3600
+/assets/3d/*.bin
+  Cache-Control: public, max-age=3600
+/assets/3d/*.json
+  Cache-Control: public, max-age=3600
