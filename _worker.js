@@ -1,6 +1,6 @@
 // FitOnlineCoach, Cloudflare Pages (tryb _worker.js): filmy mp4 z odpowiedzia 206 na Range.
 // Pages sam zwraca 200 z calym plikiem (test 11.11.2026), a Safari na iPhonie wtedy nie odtwarza filmu.
-// Wywolywany tylko dla adresow z _routes.json (12 plikow .mp4 po nazwie, bo gwiazdka w srodku wzorca jest nieudokumentowana);
+// Wywolywany tylko dla adresow z _routes.json (pliki .mp4 po nazwie - lista w _routes.json, bo gwiazdka w srodku wzorca jest nieudokumentowana);
 // reszta strony idzie statycznie z regulami _headers (ktore NIE obejmuja odpowiedzi stad, wiec naglowki ustawiamy w kodzie).
 // Nowy film = dopisz jego sciezke do _routes.json (test_worker.mjs i spr_pages.js sekcja 6 to wykryja).
 // Na GitHub Pages to zwykly plik, nic nie robi.
