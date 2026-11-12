@@ -1,25 +1,13 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <!-- ⚠ ŚCIEŻKI MUSZĄ ZACZYNAĆ SIĘ OD UKOŚNIKA. Ta strona pokazuje się pod DOWOLNYM
-       nieistniejącym adresem, także zagnieżdżonym. Przy ścieżkach względnych przeglądarka
-       szukała logo w katalogu z adresu — np. pod /plany/cos w /plany/assets/logo_stacked.png —
-       i dostawała 404, więc strona błędu sama pokazywała złamany obrazek.
-       Zmierzone 2026-08-19: /nieistnieje logo OK, /plany/nieistnieje i /a/b/nieistnieje złamane. -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nie ma takiej strony — FitOnlineCoach</title>
 <meta name="robots" content="noindex, follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon-180.png">
-<!-- Strona błędu 404 dla GitHub Pages — sam plik `404.html` w katalogu głównym wystarczy,
-     Pages podstawia go automatycznie. Celowo SAMODZIELNA i lekka: nie wciąga 177-kilobajtowego
-     `index.html`, bo ktoś, kto trafił tu z literówki, ma zobaczyć drogę powrotną
-     w ułamku sekundy, a nie ładować całą stronę. Kolory marki wpisane wprost. Czcionki marki (D33, 11.11)
-     z font-display:swap — tekst widać od razu, krój podmienia się po wczytaniu. -->
 <style>
-  /* D33 (DES-09, 11.11): czcionki marki jak na stronie głównej — te same pliki (po wizycie na stronie są już w pamięci przeglądarki);
-     swap = tekst widać od razu krojem zastępczym, bez czekania na plik */
   @font-face{font-family:'Montserrat';src:url('/assets/fonts/Montserrat-VF.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
   @font-face{font-family:'Inter';src:url('/assets/fonts/Inter-VF.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
   *{margin:0;padding:0;box-sizing:border-box}
@@ -45,8 +33,6 @@
     <div class="kod">Błąd 404</div>
     <h1>Nie ma takiej strony.</h1>
     <p>Adres jest błędny albo strona została przeniesiona. Wróć na stronę główną — tam znajdziesz plan treningowy i&nbsp;odpowiedzi na najczęstsze pytania.</p>
-    <!-- krótki napis: „Wróć na stronę główną" zawijał się na telefonie na dwie linie,
-         a zasada Tomka mówi — napis na przycisku w jednej linii -->
     <a class="wroc" href="/">Strona główna</a>
   </div>
 </body>

@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- ochrona przed osadzeniem w cudzej ramce: ta sama co w index.html strony -->
 <style id="ochronaRamki">html{display:none}</style>
 <noscript><style>html{display:block}</style></noscript>
 <script>
@@ -13,7 +12,7 @@
       if (s) s.parentNode.removeChild(s);
       return;
     }
-    try { top.location = self.location; } catch (e) { /* zostajemy ukryci */ }
+    try { top.location = self.location; } catch (e) {   }
   })();
 </script>
 <title>Poradniki treningowe po polsku | FitOnlineCoach</title>
@@ -101,7 +100,6 @@
       <h1>Poradniki</h1>
       <p class="wstep">O&nbsp;treningu, krótko i&nbsp;konkretnie. Każdy poradnik podpisuje trener, który go napisał. Źródła znajdziesz na końcu tekstu.</p>
 
-      <!-- NOWY PORADNIK: skopiuj cały <li> z kartą na górę listy i zmień adres, tytuł i opis (wdrozenie.md) -->
       <ul class="lista">
         <li>
           <a class="karta" href="/poradniki/jak-zaczac-cwiczyc-po-40/">
