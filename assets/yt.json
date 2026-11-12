@@ -1,7 +1,9 @@
 {
-  "count": 0,
-  "playlist": "",
-  "url": "https://www.youtube.com/@FitOnlineCoach",
+  "count": 62,
   "channel": "https://www.youtube.com/@FitOnlineCoach",
-  "updated": "2026-11-11"
+  "updated": "2026-11-12",
+  "playlisty": {
+    "PLNaYUUQuWmNg": 62,
+    "PLTRiTAUWaC5U": 62
+  }
 }
