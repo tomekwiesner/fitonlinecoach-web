@@ -2,9 +2,9 @@
   "version": 1,
   "include": [
     "/assets/jak/pompki-apka.mp4",
-    "/assets/dlaczego/cwiczenia.mp4",
     "/assets/dlaczego/plan-v2.mp4",
-    "/assets/dlaczego/kalendarz-12b.mp4"
+    "/assets/dlaczego/kalendarz-12b.mp4",
+    "/assets/dlaczego/biblioteka-a2.mp4"
   ],
   "exclude": []
 }
