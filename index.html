@@ -182,6 +182,12 @@
     background:radial-gradient(900px 500px at 20% 60%,rgba(153,230,109,.10),transparent 60%)}
   .hero-content{position:relative;z-index:2;will-change:transform,opacity}
   .hero-phone{position:absolute;left:0;top:0;z-index:1;pointer-events:none;will-change:transform;transform-origin:0 0}
+  @supports (animation-timeline: scroll()) and (animation-range: 0px 1px) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-phone.hp-css{animation-name:hpRuch;animation-timing-function:linear;animation-fill-mode:both;
+        animation-timeline:scroll(root block);animation-range:0px var(--hp-droga)}
+    }
+  }
   .hero-phone::before{content:"";position:absolute;left:var(--pcx);top:var(--pcy);z-index:-1;
     width:calc(var(--pw) * 2.38);height:calc(var(--ph) * 1.32);transform:translate(-34%,-42%);border-radius:50%;
     pointer-events:none;opacity:var(--cien-tlo,0);
@@ -3198,6 +3204,11 @@
   let hpP = 0;
   const stosujTelefon = () => { if (hpGlHost) hpGl.cel('hero', { ry: ogr(tiltY + ptrX * 13, -28, 13), rx: ogr(tiltX - ptrY * 9, -9, 13), rz: 0 }); };
   const hpLerp = (a, b, t) => a + (b - a) * t;
+  const hpEase = p => p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+  let hpVh = [-1, 0];
+  const hpDroga = () => { if (hpVh[0] !== szerOkna) hpVh = [szerOkna, window.innerHeight]; return hpVh[1] * 0.22; };
+  const HP_CSS = !!(window.CSS && CSS.supports('animation-timeline: scroll()') && CSS.supports('animation-range: 0px 1px'));
+  const hpStyl = document.createElement('style');
   const HP_RUCH = { stoi: 0, ruch: (p, e, A, D, W, Hh, tel) => {
     const s = (tel ? 0.7 : 0.62) * D.s, x = W.x + W.w / 2, y = W.y + W.h / 2 + 0.06 * Hh * s;
     return { x: hpLerp(A.x, x, e), y: hpLerp(A.y, y, e) - (tel ? 0.1 : 0.18) * Hh * A.s * Math.sin(Math.PI * p),
@@ -3207,8 +3218,8 @@
     if (!heroPhone || !heroEl || !slowoRozumiesz) return 0;
     const hr = heroEl.getBoundingClientRect();
     const plynne = stackMode() && heroStack && heroStack.offsetHeight > window.innerHeight * 1.2;
-    const p = reduced || hpTablet.matches ? HP_RUCH.stoi : ogr(force != null ? force : plynne ? dokProgFn() : window.scrollY / (window.innerHeight * 0.22), 0, 1);
-    const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    const p = reduced || hpTablet.matches ? HP_RUCH.stoi : ogr(force != null ? force : plynne ? dokProgFn() : window.scrollY / hpDroga(), 0, 1);
+    const e = hpEase(p);
     const hpH1 = slowoRozumiesz.parentNode, hpPr = hpWHero(slowoRozumiesz)[0] + slowoRozumiesz.offsetWidth + 24;
     const hpPod = hpWHero(hpH1)[1] + hpH1.offsetHeight + 24, hpPa = hpWHero(hpLead)[0] + hpLead.offsetWidth + 24;
     const sPr = Math.min(hr.height * 0.9 / hpB.start.h, (hr.width - 24 - hpPr) / hpB.start.w);
@@ -3241,14 +3252,16 @@
     const W = { x: wp[0] - hr.width / 2, y: wp[1] - hr.height / 2, w: slowoRozumiesz.offsetWidth, h: slowoRozumiesz.offsetHeight };
     const k = HP_RUCH.ruch(p, e, A, D, W, hpB.zero.h, !plynne);
     tiltY = k.ry; tiltX = k.rx;
-    hpUstaw3d(hr, k, plynne ? Math.max(sStart, sDock) : D.s, plynne, plynne ? null : D);
+    const kl = HP_CSS && !stackMode() && !reduced && !hpTablet.matches
+      ? Array.from({ length: 21 }, (_, i) => HP_RUCH.ruch(i / 20, hpEase(i / 20), A, D, W, hpB.zero.h, true)) : null;
+    hpUstaw3d(hr, k, plynne ? Math.max(sStart, sDock) : D.s, plynne, plynne ? null : D, kl);
     stosujTelefon();
     heroPhone.style.setProperty('--cien-tlo', (plynne ? 0.58 + 0.34 * e : 0.92).toFixed(2));
     return p;
   };
   const hpWHero = el => { let x = 0, y = 0; for (let e = el; e && e !== heroEl; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; } return [x, y]; };
   const hpTablet = matchMedia('(min-width:768px) and (max-width:980px) and (min-height:901px)'), hpWaski = matchMedia('(max-width:767px)');
-  const hpUstaw3d = (hr, k, sHost, plynne, om) => {
+  const hpUstaw3d = (hr, k, sHost, plynne, om, kl) => {
     const H = T3H.HERO, chce = !!hpGl && plynne;
     const cs = om && hpOmin && hpLead && getComputedStyle(hpLead);
     const lr = cs ? [...hpWHero(hpLead), hpLead.offsetWidth, parseFloat(cs.lineHeight) / 2 - 0.36 * parseFloat(cs.fontSize)] : null;
@@ -3277,10 +3290,21 @@
       }
     }
     const p0 = plynne ? H.START : H.M, poza = plynne && hpGlHost ? { ry: tiltY, rx: tiltX } : p0, b = FOC_FIZ.ukladTel([poza], H.F);
-    const s = k.s, cx = hr.width / 2 + k.x, cy = hr.height / 2 + k.y;
-    const tx = cx - (b.w / 2 - b.ox + hpU.ox) * s, ty = cy - (b.h / 2 - b.oy + hpU.oy) * s;
-    const d3 = heroPhone.classList.contains('gl-hero') ? '' : ` perspective(${(H.F * s).toFixed(0)}px) rotateY(${ogr(k.ry - p0.ry, -14, 14).toFixed(2)}deg) rotateX(${ogr(k.rx - p0.rx, -10, 40).toFixed(2)}deg)`;
-    heroPhone.style.transform = `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px)${d3} rotate(${(k.rz || 0).toFixed(2)}deg) translate(${(tx - cx).toFixed(2)}px, ${(ty - cy).toFixed(2)}px) scale(${(s / sHost).toFixed(5)})`;
+    const gl = heroPhone.classList.contains('gl-hero');
+    const tr = k => {
+      const s = k.s, cx = hr.width / 2 + k.x, cy = hr.height / 2 + k.y;
+      const tx = cx - (b.w / 2 - b.ox + hpU.ox) * s, ty = cy - (b.h / 2 - b.oy + hpU.oy) * s;
+      const d3 = gl ? '' : ` perspective(${(H.F * s).toFixed(0)}px) rotateY(${ogr(k.ry - p0.ry, -14, 14).toFixed(2)}deg) rotateX(${ogr(k.rx - p0.rx, -10, 40).toFixed(2)}deg)`;
+      return `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px)${d3} rotate(${(k.rz || 0).toFixed(2)}deg) translate(${(tx - cx).toFixed(2)}px, ${(ty - cy).toFixed(2)}px) scale(${(s / sHost).toFixed(5)})`;
+    };
+    heroPhone.style.transform = tr(k);
+    heroPhone.classList.toggle('hp-css', !!kl);
+    if (kl) {
+      const t = `@keyframes hpRuch{${kl.map((x, i) => `${i * 5}%{transform:${tr(x)}}`).join('')}}`;
+      if (hpStyl.textContent !== t) hpStyl.textContent = t;
+      if (!hpStyl.isConnected) document.head.appendChild(hpStyl);
+      heroPhone.style.setProperty('--hp-droga', `${hpDroga().toFixed(1)}px`);
+    }
     if (lr) {
       const ox = hr.width / 2 + om.x, oy = hr.height / 2 + om.y;
       const wOmin = Math.max(0, lr[0] + lr[2] - (ox - b.w / 2 * om.s) + 8), pelny = wOmin > 0.3 * lr[2];
@@ -3632,7 +3656,7 @@
       const k2 = stack2El && stack ? [stack2El.offsetTop, stack2El.offsetHeight] : null;
       if (!reduced) {
         if (omnieTalerz) omnieTalerz.sprawdz();
-        if (stack || (!hpTablet.matches && (hpP < 1 || window.scrollY < window.innerHeight * 0.22))) hpP = dokujTelefon();
+        if (stack || (!hpTablet.matches && !heroPhone.classList.contains('hp-css') && (hpP < 1 || window.scrollY < hpDroga()))) hpP = dokujTelefon();
       }
       if (reduced) return;
 
