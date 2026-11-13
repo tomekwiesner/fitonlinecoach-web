@@ -181,11 +181,7 @@
   .hero::after{content:"";position:absolute;inset:0;z-index:1;
     background:radial-gradient(900px 500px at 20% 60%,rgba(153,230,109,.10),transparent 60%)}
   .hero-content{position:relative;z-index:2;will-change:transform,opacity}
-  .hero-phone{position:absolute;left:0;top:0;z-index:6;pointer-events:none;will-change:transform;transform-origin:0 0}
-  .hero-phone.docked{z-index:1}
-  .hp-cien{position:absolute;left:50%;top:50%;z-index:5;pointer-events:none;opacity:0;border-radius:50%;
-    background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,1) 0%,rgba(0,0,0,.88) 34%,rgba(0,0,0,.52) 62%,rgba(0,0,0,0) 84%);
-    filter:blur(7px);will-change:transform,opacity}
+  .hero-phone{position:absolute;left:0;top:0;z-index:1;pointer-events:none;will-change:transform;transform-origin:0 0}
   .hero-phone::before{content:"";position:absolute;left:var(--pcx);top:var(--pcy);z-index:-1;
     width:calc(var(--pw) * 2.38);height:calc(var(--ph) * 1.32);transform:translate(-34%,-42%);border-radius:50%;
     pointer-events:none;opacity:var(--cien-tlo,0);
@@ -204,9 +200,6 @@
   .hero-phone .gl3d{opacity:0;transition:opacity .2s;filter:drop-shadow(0 0 var(--blask,30px) rgba(153,230,109,.42))}
   .hero-phone.gl-hero .gl3d{opacity:1}
   .hero-phone.gl-hero .fon-still{opacity:0;transition:opacity 0s .2s}
-  .hero-phone .fon-ekran{visibility:hidden;background:none}
-  .hero-phone.gl-hero .fon-ekran{visibility:visible}
-  .fon-ekran video{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
   .hero .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.78rem;font-weight:600;
     letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:28px;
     opacity:0;animation:fadeUp .8s .2s forwards}
@@ -1554,7 +1547,6 @@
 <div class="hero-stack" id="heroStack">
  <div class="hero-pin">
 <div class="hero" id="top">
-  <div class="hp-cien" id="hpCien" aria-hidden="true"></div>
   <div class="hero-phone" id="heroPhone" aria-hidden="true">
     <div class="fon-blask"><i></i></div>
     <picture><source media="(max-width:980px),(max-height:700px),(prefers-reduced-motion:reduce)" srcset="assets/3d/fon_hero_m.webp?v=20261026"><img class="fon-still" alt="" src="assets/3d/fon_hero_start.webp?v=20261026" srcset="assets/3d/fon_hero_start.webp?v=20261026 1x, assets/3d/fon_hero_start_2x.webp?v=20261026 2x"></picture>
@@ -2977,36 +2969,11 @@
   };
   const talerze = [...document.querySelectorAll('.talerz')];
   const heroPhone = document.getElementById('heroPhone');
-  const hpCien = document.getElementById('hpCien');
   const T3H = FOC_FIZ.TELEFON;
   let hpGl = null, hpGlHost = false, hpSHost = 0;
   const hpOmin = document.querySelector('.hero .lead-omin'), hpLead = document.querySelector('.hero p.lead');
   const hpUk = k => FOC_FIZ.ukladTel([k], T3H.HERO.F);
   const hpU = FOC_FIZ.ukladHero(), hpB = { start: hpUk(T3H.HERO.START), zero: hpUk({ ry: 0, rx: 0, rz: 0 }), m: hpUk(T3H.HERO.M) };
-  const HP_FILM = 'assets/ekran/ekran-filmy';
-  let hpEk = null, hpWidac = false;
-  const hpEkran = () => {
-    if (hpEk) return hpEk;
-    const [NW, NH] = T3H.NAKLADKA, kx = NW / T3H.ekran.w, ky = NH / T3H.ekran.h, wy = T3H.wyspa;
-    const v = document.createElement('video'), w = document.createElement('span');
-    Object.assign(v, { muted: true, loop: true, playsInline: true, preload: 'none' });
-    w.className = 'fon-wyspa';
-    Object.assign(w.style, { width: `${(wy.w * kx).toFixed(1)}px`, height: `${(wy.h * ky).toFixed(1)}px`,
-      left: `${((NW - wy.w * kx) / 2).toFixed(1)}px`, top: `${((T3H.ekran.h / 2 - (wy.cy - T3H.ekran.cy) - wy.h / 2) * ky).toFixed(1)}px` });
-    hpEk = document.createElement('div');
-    hpEk.className = 'fon-ekran';
-    hpEk.style.borderRadius = `${(T3H.ekran.r_mm * kx).toFixed(1)}px`;
-    hpEk.append(v, w);
-    heroPhone.append(hpEk);
-    new IntersectionObserver(([e]) => { hpWidac = e.isIntersecting; hpFilm(); }).observe(heroPhone);
-    return hpEk;
-  };
-  const hpNaloz = kat => { if (hpEk) hpEk.style.transform = FOC_FIZ.macierzCSS(FOC_FIZ.homografia(FOC_FIZ.ekranTel(kat, hpU, hpSHost, 0.5, T3H.HERO.F)), ...T3H.NAKLADKA); };
-  const hpFilm = () => {
-    const v = hpEk && hpEk.firstChild, gra = hpWidac && heroPhone.classList.contains('gl-hero');
-    if (!v || gra !== v.paused) return;
-    if (gra) { if (!v.src) { v.poster = HP_FILM + '.jpg'; v.src = HP_FILM + '.mp4'; } v.play().catch(() => {}); } else v.pause();
-  };
 
   const foc3d = !window.FOC_3D || reduced || (navigator.connection && navigator.connection.saveData) ||
     (navigator.deviceMemory ?? 8) <= 2 ? Promise.resolve(null) : new Promise(ok => {
@@ -3221,25 +3188,26 @@
   const heroEl = document.getElementById('top');
   const heroStack = document.getElementById('heroStack');
   const tbWzor = document.querySelector('.tb-wzor');
-  let dockProg = 0;
   const dokProgFn = () => {
     const vh = window.innerHeight;
-    if (heroStack && heroStack.offsetHeight > vh * 1.2) {
-      return (window.scrollY - heroStack.offsetTop) / Math.max(heroStack.offsetHeight - vh, 1);
-    }
-    return window.scrollY / (vh * 0.34);
+    return (window.scrollY - heroStack.offsetTop) / Math.max(heroStack.offsetHeight - vh, 1);
   };
 
   let ptrX = 0, ptrY = 0;
   let tiltY = 0, tiltX = 0;
-  const stosujTelefon = () => { if (hpGlHost) hpGl.cel('hero', { ry: tiltY + ptrX * 13, rx: tiltX - ptrY * 9, rz: 0 }); };
-  const ZA_NAPISEM = 0.72;
+  let hpP = 0;
+  const stosujTelefon = () => { if (hpGlHost) hpGl.cel('hero', { ry: ogr(tiltY + ptrX * 13, -28, 13), rx: ogr(tiltX - ptrY * 9, -9, 13), rz: 0 }); };
+  const hpLerp = (a, b, t) => a + (b - a) * t;
+  const HP_RUCH = { stoi: 0, ruch: (p, e, A, D, W, Hh, tel) => {
+    const s = (tel ? 0.7 : 0.62) * D.s, x = W.x + W.w / 2, y = W.y + W.h / 2 + 0.06 * Hh * s;
+    return { x: hpLerp(A.x, x, e), y: hpLerp(A.y, y, e) - (tel ? 0.1 : 0.18) * Hh * A.s * Math.sin(Math.PI * p),
+      s: hpLerp(A.s, s, e), ry: hpLerp(tel ? -14 : -15, 0, e), rx: hpLerp(tel ? 6 : 4, 10, e), rz: 0 };
+  } };
   const dokujTelefon = (force) => {
     if (!heroPhone || !heroEl || !slowoRozumiesz) return 0;
     const hr = heroEl.getBoundingClientRect();
     const plynne = stackMode() && heroStack && heroStack.offsetHeight > window.innerHeight * 1.2;
-    const p = ogr(force != null ? force : (plynne ? dokProgFn() : 1), 0, 1);
-    dockProg = p;
+    const p = reduced || hpTablet.matches ? HP_RUCH.stoi : ogr(force != null ? force : plynne ? dokProgFn() : window.scrollY / (window.innerHeight * 0.22), 0, 1);
     const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
     const hpH1 = slowoRozumiesz.parentNode, hpPr = hpWHero(slowoRozumiesz)[0] + slowoRozumiesz.offsetWidth + 24;
     const hpPod = hpWHero(hpH1)[1] + hpH1.offsetHeight + 24, hpPa = hpWHero(hpLead)[0] + hpLead.offsetWidth + 24;
@@ -3249,7 +3217,6 @@
     const sStart = Math.max(0.01, hpPd ? sPod : sPr);
     const xStart = ((hpPd ? hpPa : hpPr) + hr.width - 24) / 2 - hr.width / 2;
     const yStart = hpPd ? (hpPod + hr.height - 24) / 2 - hr.height / 2 : 0;
-    const wr = slowoRozumiesz.getBoundingClientRect();
     let sDock = 284 / hpB.zero.h;
     let xDock = hr.width * 0.26;
     let yDock = -hr.height * 0.01;
@@ -3269,43 +3236,29 @@
         yDock = -hr.height * 0.245;
       }
     }
-    const x = xStart + (xDock - xStart) * e;
-    const y = yStart + (yDock - yStart) * e;
-    const s = sStart + (sDock - sStart) * e;
-    tiltY = -15 * (1 - e);
-    tiltX = 4 * (1 - e);
-    if (!plynne) { tiltY = -14; tiltX = 6; }
-    hpUstaw3d(hr, x, y, s, plynne ? Math.max(sStart, sDock) : s, plynne);
+    const D = { x: xDock, y: yDock, s: sDock }, A = plynne ? { x: xStart, y: yStart, s: sStart } : D;
+    const wp = hpWHero(slowoRozumiesz);
+    const W = { x: wp[0] - hr.width / 2, y: wp[1] - hr.height / 2, w: slowoRozumiesz.offsetWidth, h: slowoRozumiesz.offsetHeight };
+    const k = HP_RUCH.ruch(p, e, A, D, W, hpB.zero.h, !plynne);
+    tiltY = k.ry; tiltX = k.rx;
+    hpUstaw3d(hr, k, plynne ? Math.max(sStart, sDock) : D.s, plynne, plynne ? null : D);
     stosujTelefon();
-    if (hpCien) {
-      const przod = ogr((p - 0.08) / 0.40, 0, 1);
-      const chowa = ogr((p - 0.50) / (ZA_NAPISEM - 0.50), 0, 1);
-      const szer = wr.width * (0.55 + przod * 1.00);
-      const wys  = Math.max(hpB.start.h * s * 1.15, wr.height * (1.5 + przod * 0.9));
-      hpCien.style.width = Math.round(Math.min(szer, 2 * Math.min(hr.width / 2 + x, hr.width / 2 - x))) + 'px';
-      hpCien.style.height = Math.round(wys) + 'px';
-      hpCien.style.transform =
-        `translate(-50%,-50%) translate(${Math.round(x)}px, ${Math.round(y + 0.048 * hpB.start.h * s)}px)`;
-      hpCien.style.opacity = (p >= ZA_NAPISEM ? 0 : przod * (1 - chowa)).toFixed(2);
-    }
-    const zaNapisem = p >= ZA_NAPISEM;
-    heroPhone.classList.toggle('docked', zaNapisem);
-    heroPhone.style.setProperty('--cien-tlo', (0.58 + 0.34 * ogr((p - 0.55) / 0.35, 0, 1)).toFixed(2));
+    heroPhone.style.setProperty('--cien-tlo', (plynne ? 0.58 + 0.34 * e : 0.92).toFixed(2));
     return p;
   };
   const hpWHero = el => { let x = 0, y = 0; for (let e = el; e && e !== heroEl; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; } return [x, y]; };
   const hpTablet = matchMedia('(min-width:768px) and (max-width:980px) and (min-height:901px)'), hpWaski = matchMedia('(max-width:767px)');
-  const hpUstaw3d = (hr, x, y, s, sHost, plynne) => {
+  const hpUstaw3d = (hr, k, sHost, plynne, om) => {
     const H = T3H.HERO, chce = !!hpGl && plynne;
-    const cs = !plynne && hpOmin && hpLead && getComputedStyle(hpLead);
+    const cs = om && hpOmin && hpLead && getComputedStyle(hpLead);
     const lr = cs ? [...hpWHero(hpLead), hpLead.offsetWidth, parseFloat(cs.lineHeight) / 2 - 0.36 * parseFloat(cs.fontSize)] : null;
     if (chce !== hpGlHost) {
       hpGlHost = chce;
-      heroPhone.classList.remove('gl-hero'); hpFilm();
-      if (chce) hpGl.host('hero', { el: heroPhone, ekran: hpEkran(), kat: { ry: tiltY, rx: tiltX, rz: 0 }, F: H.F,
-        obraz: 'assets/screen_trening.jpg', uklad: () => ({ U: hpU, s: hpSHost }), poKlatce: hpNaloz,
-        poRysunku: () => { heroPhone.classList.add('gl-hero'); hpFilm(); },
-        utrata: () => { hpGl = null; hpGlHost = false; heroPhone.classList.remove('gl-hero'); hpFilm(); } });
+      heroPhone.classList.remove('gl-hero');
+      if (chce) hpGl.host('hero', { el: heroPhone, ekran: null, kat: { ry: tiltY, rx: tiltX, rz: 0 }, F: H.F,
+        obraz: 'assets/screen_trening.jpg', uklad: () => ({ U: hpU, s: hpSHost }),
+        poRysunku: () => { if (!heroPhone.classList.contains('gl-hero')) { heroPhone.classList.add('gl-hero'); dokujTelefon(); } },
+        utrata: () => { hpGl = null; hpGlHost = false; heroPhone.classList.remove('gl-hero'); dokujTelefon(); } });
       else hpGl.usun('hero');
     }
     if (sHost !== hpSHost) {
@@ -3323,14 +3276,17 @@
           }));
       }
     }
-    const poza = !plynne ? H.M : hpGlHost ? { ry: tiltY, rx: tiltX } : H.START, b = FOC_FIZ.ukladTel([poza], H.F);
-    const cx = hr.width / 2 + x, cy = hr.height / 2 + y;
+    const p0 = plynne ? H.START : H.M, poza = plynne && hpGlHost ? { ry: tiltY, rx: tiltX } : p0, b = FOC_FIZ.ukladTel([poza], H.F);
+    const s = k.s, cx = hr.width / 2 + k.x, cy = hr.height / 2 + k.y;
     const tx = cx - (b.w / 2 - b.ox + hpU.ox) * s, ty = cy - (b.h / 2 - b.oy + hpU.oy) * s;
-    heroPhone.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${(s / sHost).toFixed(5)})`;
+    const d3 = heroPhone.classList.contains('gl-hero') ? '' : ` perspective(${(H.F * s).toFixed(0)}px) rotateY(${ogr(k.ry - p0.ry, -14, 14).toFixed(2)}deg) rotateX(${ogr(k.rx - p0.rx, -10, 40).toFixed(2)}deg)`;
+    heroPhone.style.transform = `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px)${d3} rotate(${(k.rz || 0).toFixed(2)}deg) translate(${(tx - cx).toFixed(2)}px, ${(ty - cy).toFixed(2)}px) scale(${(s / sHost).toFixed(5)})`;
     if (lr) {
-      const wOmin = Math.max(0, lr[0] + lr[2] - (cx - b.w / 2 * s) + 8), pelny = wOmin > 0.3 * lr[2];
-      hpOmin.style.width = pelny ? '100%' : `${wOmin.toFixed(1)}px`;
-      hpOmin.style.height = `${Math.max(0, cy + b.h / 2 * s - lr[1] - lr[3] + (pelny ? 16 : -2)).toFixed(1)}px`;
+      const ox = hr.width / 2 + om.x, oy = hr.height / 2 + om.y;
+      const wOmin = Math.max(0, lr[0] + lr[2] - (ox - b.w / 2 * om.s) + 8), pelny = wOmin > 0.3 * lr[2];
+      const ow = pelny ? '100%' : `${wOmin.toFixed(1)}px`, oh = `${Math.max(0, oy + b.h / 2 * om.s - lr[1] - lr[3] + (pelny ? 16 : -2)).toFixed(1)}px`;
+      if (hpOmin.style.width !== ow) hpOmin.style.width = ow;
+      if (hpOmin.style.height !== oh) hpOmin.style.height = oh;
     }
   };
   foc3d.then(api => { if (api) { hpGl = api; dokujTelefon(); } });
@@ -3676,7 +3632,7 @@
       const k2 = stack2El && stack ? [stack2El.offsetTop, stack2El.offsetHeight] : null;
       if (!reduced) {
         if (omnieTalerz) omnieTalerz.sprawdz();
-        if (stack) dokujTelefon();
+        if (stack || (!hpTablet.matches && (hpP < 1 || window.scrollY < window.innerHeight * 0.22))) hpP = dokujTelefon();
       }
       if (reduced) return;
 
