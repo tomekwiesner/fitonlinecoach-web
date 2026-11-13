@@ -185,7 +185,7 @@
   @supports (animation-timeline: scroll()) and (animation-range: 0px 1px) {
     @media (prefers-reduced-motion: no-preference) {
       .hero-phone.hp-css{animation-name:hpRuch;animation-timing-function:linear;animation-fill-mode:both;
-        animation-timeline:scroll(root block);animation-range:0px var(--hp-droga)}
+        animation-timeline:scroll(root block);animation-range:var(--hp-od,0px) var(--hp-droga)}
     }
   }
   .hero-phone::before{content:"";position:absolute;left:var(--pcx);top:var(--pcy);z-index:-1;
@@ -3202,7 +3202,7 @@
   let ptrX = 0, ptrY = 0;
   let tiltY = 0, tiltX = 0;
   let hpP = 0;
-  const stosujTelefon = () => { if (hpGlHost) hpGl.cel('hero', { ry: ogr(tiltY + ptrX * 13, -28, 13), rx: ogr(tiltX - ptrY * 9, -9, 13), rz: 0 }); };
+  const stosujTelefon = od => { if (hpGlHost) hpGl[od ? 'poza' : 'cel']('hero', { ry: ogr(tiltY + ptrX * 13, -28, 13), rx: ogr(tiltX - ptrY * 9, -9, 13), rz: 0 }); };
   const hpLerp = (a, b, t) => a + (b - a) * t;
   const hpEase = p => p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
   let hpVh = [-1, 0];
@@ -3252,10 +3252,10 @@
     const W = { x: wp[0] - hr.width / 2, y: wp[1] - hr.height / 2, w: slowoRozumiesz.offsetWidth, h: slowoRozumiesz.offsetHeight };
     const k = HP_RUCH.ruch(p, e, A, D, W, hpB.zero.h, !plynne);
     tiltY = k.ry; tiltX = k.rx;
-    const kl = HP_CSS && !stackMode() && !reduced && !hpTablet.matches
-      ? Array.from({ length: 21 }, (_, i) => HP_RUCH.ruch(i / 20, hpEase(i / 20), A, D, W, hpB.zero.h, true)) : null;
+    const kl = HP_CSS && !reduced && !hpTablet.matches
+      ? Array.from({ length: 21 }, (_, i) => HP_RUCH.ruch(i / 20, hpEase(i / 20), A, D, W, hpB.zero.h, !plynne)) : null;
     hpUstaw3d(hr, k, plynne ? Math.max(sStart, sDock) : D.s, plynne, plynne ? null : D, kl);
-    stosujTelefon();
+    stosujTelefon(true);
     heroPhone.style.setProperty('--cien-tlo', (plynne ? 0.58 + 0.34 * e : 0.92).toFixed(2));
     return p;
   };
@@ -3289,11 +3289,12 @@
           }));
       }
     }
-    const p0 = plynne ? H.START : H.M, poza = plynne && hpGlHost ? { ry: tiltY, rx: tiltX } : p0, b = FOC_FIZ.ukladTel([poza], H.F);
+    const p0 = plynne ? H.START : H.M, b = FOC_FIZ.ukladTel([p0], H.F);
     const gl = heroPhone.classList.contains('gl-hero');
     const tr = k => {
       const s = k.s, cx = hr.width / 2 + k.x, cy = hr.height / 2 + k.y;
-      const tx = cx - (b.w / 2 - b.ox + hpU.ox) * s, ty = cy - (b.h / 2 - b.oy + hpU.oy) * s;
+      const bk = plynne && hpGlHost ? FOC_FIZ.ukladTel([{ ry: k.ry, rx: k.rx }], H.F) : b;
+      const tx = cx - (bk.w / 2 - bk.ox + hpU.ox) * s, ty = cy - (bk.h / 2 - bk.oy + hpU.oy) * s;
       const d3 = gl ? '' : ` perspective(${(H.F * s).toFixed(0)}px) rotateY(${ogr(k.ry - p0.ry, -14, 14).toFixed(2)}deg) rotateX(${ogr(k.rx - p0.rx, -10, 40).toFixed(2)}deg)`;
       return `translate(${cx.toFixed(2)}px, ${cy.toFixed(2)}px)${d3} rotate(${(k.rz || 0).toFixed(2)}deg) translate(${(tx - cx).toFixed(2)}px, ${(ty - cy).toFixed(2)}px) scale(${(s / sHost).toFixed(5)})`;
     };
@@ -3303,7 +3304,9 @@
       const t = `@keyframes hpRuch{${kl.map((x, i) => `${i * 5}%{transform:${tr(x)}}`).join('')}}`;
       if (hpStyl.textContent !== t) hpStyl.textContent = t;
       if (!hpStyl.isConnected) document.head.appendChild(hpStyl);
-      heroPhone.style.setProperty('--hp-droga', `${hpDroga().toFixed(1)}px`);
+      const od = plynne ? heroStack.offsetTop : 0, dr = plynne ? Math.max(heroStack.offsetHeight - window.innerHeight, 1) : hpDroga();
+      heroPhone.style.setProperty('--hp-od', `${od}px`);
+      heroPhone.style.setProperty('--hp-droga', `${(od + dr).toFixed(1)}px`);
     }
     if (lr) {
       const ox = hr.width / 2 + om.x, oy = hr.height / 2 + om.y;
