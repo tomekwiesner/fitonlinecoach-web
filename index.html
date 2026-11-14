@@ -2080,7 +2080,7 @@
           <input class="sr-only" type="text" tabindex="-1" autocomplete="off"
                  aria-hidden="true" data-pulapka>
         </form>
-        <p class="zapis-msg" data-msg aria-live="polite"></p>
+        <p class="zapis-msg" id="zapis-msg" data-msg aria-live="polite"></p>
         <p class="zapis-admin">Administrator danych: FitOnlineCoach prosta spółka akcyjna, ul. Żyzna 2, 40-314 Katowice, NIP 9542914095, kontakt@fitonlinecoach.com.</p>
       </div>
     </div>
@@ -2313,18 +2313,21 @@
       if (!msg) return;
       msg.hidden = false; msg.textContent = tekst; msg.classList.toggle('blad', !!blad);
     };
+    const zle = el => { el.setAttribute('aria-invalid', 'true'); if (msg && msg.id) el.setAttribute('aria-describedby', msg.id); };
+    const dobrze = () => [pole, zgoda].forEach(el => { if (el) { el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); } });
     form.addEventListener('submit', e => {
       e.preventDefault();
+      dobrze();
       const pulapka = form.querySelector('[data-pulapka]');
       if (pulapka && pulapka.value) { form.reset(); return; }
       const adres = (pole.value || '').trim();
       const adresOk = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(adres) && /\.[a-z]{2,}$/i.test(adres);
       if (!adresOk) {
-        pokaz('Adres e-mail wygląda na niepoprawny — sprawdź pisownię.', true); pole.focus(); return;
+        pokaz('Adres e-mail wygląda na niepoprawny — sprawdź pisownię.', true); zle(pole); pole.focus(); return;
       }
       if (zgoda && !zgoda.checked) {
         pokaz('Zaznacz zgodę — bez niej wysyłka e-maili nie jest możliwa.', true);
-        zgoda.focus(); return;
+        zle(zgoda); zgoda.focus(); return;
       }
       const akcja = ((window.FOC_NEWSLETTER || {}).action || '').trim();
       if (!akcja) { pokaz('Zapis jest chwilowo niedostępny — spróbuj później.'); return; }
@@ -2339,7 +2342,7 @@
             const opis = JSON.stringify(d.errors || d.error || d).toLowerCase();
             if (opis.indexOf('mail') >= 0) {
               pokaz('Ten adres nie został przyjęty — sprawdź, czy jest poprawny.', true);
-              pole.focus(); return;
+              zle(pole); pole.focus(); return;
             }
           }
           if (!d || d.success !== true) throw new Error('zapis odrzucony');
