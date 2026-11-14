@@ -92,6 +92,7 @@
   img{height:auto}
   a{color:inherit;text-decoration:none}
   :focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+  main:focus{outline:none}
   .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
 
 
@@ -1504,7 +1505,7 @@
 </head>
 <body>
 
-<div class="cc" id="cc" role="dialog" aria-live="polite" aria-label="Zgoda na pliki cookies">
+<div class="cc" id="cc" role="region" aria-label="Zgoda na pliki cookies">
   <div class="cc-in">
     <div class="cc-txt">
       <b>Ciasteczka</b>
@@ -1551,7 +1552,7 @@
 <header id="header">
   <div class="wrap">
     <nav>
-      <a class="logo" href="#top"><img src="assets/logo-320.webp" alt="FitOnlineCoach"></a>
+      <a class="logo" href="#top"><img src="assets/logo-320.webp" alt="FitOnlineCoach" width="320" height="124"></a>
       <ul class="nav-links" id="navLinks">
         <li><a href="#dlaczego">Dlaczego</a></li>
         <li><a href="#plan">Plan</a></li>
@@ -1562,7 +1563,7 @@
         <li><a href="https://app.fitonlinecoach.com" target="_blank" rel="noopener">Zaloguj się</a></li>
         <li><a class="nav-cta" href="#plan">Kup plan</a></li>
       </ul>
-      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <button class="burger" id="burger" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
     </nav>
   </div>
 </header>
@@ -1573,9 +1574,9 @@
   <span class="tb-wzor" aria-hidden="true"></span>
 
   <div class="talerze" aria-hidden="true">
-    <div class="talerz" data-kat="-24"><img class="t3d-cialo" src="assets/talerze3d/talerz_green10_cialo.webp" alt=""><img class="t3d-napis" src="assets/talerze3d/talerz_green10_napis.webp" alt=""></div>
-    <div class="talerz" data-kat="17"><img class="t3d-cialo" src="assets/talerze3d/talerz_blue20_cialo.webp" alt=""><img class="t3d-napis" src="assets/talerze3d/talerz_blue20_napis.webp" alt=""></div>
-    <div class="talerz" data-kat="52"><img class="t3d-cialo" src="assets/talerze3d/talerz_red25_cialo.webp" alt=""><img class="t3d-napis" src="assets/talerze3d/talerz_red25_napis.webp" alt=""></div>
+    <div class="talerz" data-kat="-24"><img class="t3d-cialo" src="assets/talerze3d/talerz_green10_cialo.webp" alt=""><img class="t3d-napis" src="assets/talerze3d/talerz_green10_napis-lekki.webp" alt=""></div>
+    <div class="talerz" data-kat="17"><img class="t3d-cialo" src="assets/talerze3d/talerz_blue20_cialo.webp" alt=""><img class="t3d-napis" src="assets/talerze3d/talerz_blue20_napis-lekki.webp" alt=""></div>
+    <div class="talerz" data-kat="52"><img class="t3d-cialo" src="assets/talerze3d/talerz_red25_cialo.webp" alt=""><img class="t3d-napis" src="assets/talerze3d/talerz_red25_napis-lekki.webp" alt=""></div>
     <div class="talerze-plama"></div><i class="talerz-cien"></i><i class="talerz-cien"></i><i class="talerz-cien"></i>
   </div>
 
@@ -1827,7 +1828,7 @@
 
         <div class="plan-face plan-front">
           <div class="plan-grid" id="planGrid">
-            <div class="plan-visual"><img id="planImg" src="assets/plan_poczatek_karta.jpg" alt="Tomek w rotacji tułowia w siadzie z piłką lekarską; na podłodze sali logo FitOnlineCoach" data-parallax="0.1" loading="lazy" decoding="async"></div>
+            <div class="plan-visual"><img id="planImg" src="assets/plan_poczatek_karta.jpg" srcset="assets/plan_poczatek_karta-800.webp 800w, assets/plan_poczatek_karta-1200.webp 1200w" sizes="(min-width: 981px) 530px, 100vw" alt="Tomek w rotacji tułowia w siadzie z piłką lekarską; na podłodze sali logo FitOnlineCoach" data-parallax="0.1" loading="lazy" decoding="async"></div>
             <div class="plan-body">
               <span class="plan-tag" id="planTag">Dla początkujących · na&nbsp;siłownię</span>
               <h3 id="planTitle">Początek</h3>
@@ -1908,7 +1909,7 @@
     <section class="layer layer-under divider divider-czarny" id="hasloRegularnie">
       <div class="sztangownia" id="sztangownia" aria-hidden="true">
         <div class="talerz-cien" id="talerzCien"></div>
-        <div class="talerz-roll" id="talerzRoll"><div class="talerz-3d"><img class="t3d-cialo" src="assets/talerze3d/talerz_red25_cialo.webp" alt=""><img class="t3d-napis" src="assets/talerze3d/talerz_red25_napis.webp" alt=""></div></div>
+        <div class="talerz-roll" id="talerzRoll"><div class="talerz-3d"><img class="t3d-cialo" src="assets/talerze3d/talerz_red25_cialo.webp" alt=""><img class="t3d-napis" src="assets/talerze3d/talerz_red25_napis-lekki.webp" alt=""></div></div>
       </div>
       <h2 id="hasloTekst">Nie musi być idealnie.<br><span>Ma być regularnie.</span></h2>
     </section>
@@ -1919,7 +1920,7 @@
       <div class="wrap about-content">
         <div class="about-grid">
           <div class="about-visual" id="aboutPhoto">
-            <div class="frame"><img src="assets/tomek_czapka.jpg" alt="Tomek Wiesner, trener personalny FitOnlineCoach, w czapce i koszulce z logo FOC" width="1200" height="1200" loading="lazy" decoding="async"></div>
+            <div class="frame"><img src="assets/tomek_czapka.jpg" srcset="assets/tomek_czapka-800.webp 800w, assets/tomek_czapka-1200.webp 1200w" sizes="(min-width: 981px) 600px, (min-width: 600px) 100vw, 130vw" alt="Tomek Wiesner, trener personalny FitOnlineCoach, w czapce i koszulce z logo FOC" width="1200" height="1200" loading="lazy" decoding="async"></div>
           </div>
           <div id="aboutText">
             <div class="sec-label rv">04 — O&nbsp;mnie</div>
@@ -2085,7 +2086,7 @@
 <footer>
   <div class="wrap">
     <div class="foot-grid">
-      <img class="foot-logo" src="assets/logo_stacked.png" alt="FitOnlineCoach" width="560" height="742" loading="lazy" decoding="async">
+      <img class="foot-logo" src="assets/logo-stopka-163.webp" alt="FitOnlineCoach" width="560" height="742" loading="lazy" decoding="async">
       <ul class="foot-links">
         <li><a href="#dlaczego">Dlaczego</a></li>
         <li><a href="#plan">Plan</a></li>
@@ -2194,6 +2195,7 @@
     }
   };
 
+  let powrot = null;
   const zastosuj = (z, zapisac) => {
     if (zapisac) zapisz(z);
     const reklamyGoogle = z.m && jest.ads ? 'granted' : 'denied';
@@ -2220,6 +2222,12 @@
     document.dispatchEvent(new CustomEvent('foc:zgoda', {detail: z}));
     baner.classList.remove('show');
     el('ccOpts').classList.remove('show');
+    if (zapisac) {
+      const cel = powrot || document.querySelector('main');
+      if (!powrot) { cel.tabIndex = -1; cel.addEventListener('blur', () => cel.removeAttribute('tabindex'), {once: true}); }
+      powrot = null;
+      cel.focus({preventScroll: true});
+    }
   };
 
   const nowa = (a, m) => ({v: WERSJA, a: !!a && jest.ga4, m: !!m, k: ZESTAW, t: new Date().toISOString()});
@@ -2236,7 +2244,7 @@
     baner.classList.add('show');
     doWyboru();
   };
-  el('ccReopen').addEventListener('click', pokaz);
+  el('ccReopen').addEventListener('click', () => { powrot = el('ccReopen'); pokaz(); });
 
   const ZRODLO_WIZYTY = /^(utm_[a-z]+|gclid|gbraid|wbraid|fbclid|ttclid|msclkid)$/;
   const utmStrony = [...new URLSearchParams(location.search)].filter(([k]) => ZRODLO_WIZYTY.test(k));
@@ -3815,7 +3823,7 @@
       if (p.url) { cta.href = p.url; cta.classList.remove('disabled'); }
       else { cta.removeAttribute('href'); cta.classList.add('disabled'); }
       const img = document.getElementById('planImg');
-      img.src = p.img; img.alt = p.alt;
+      img.removeAttribute('srcset'); img.src = p.img; img.alt = p.alt;
       planGrid.classList.remove('swap');
       setPlanStats(p);
     }, 290);
