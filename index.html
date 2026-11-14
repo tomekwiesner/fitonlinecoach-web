@@ -228,10 +228,12 @@
     letter-spacing:.12em;text-transform:uppercase;padding:18px 40px;border-radius:2px;cursor:pointer;transition:.25s;border:0}
   .btn-lime,.zapis button,.nav-cta{background:var(--lime);color:var(--black);-webkit-tap-highlight-color:transparent;
     --cien-w:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -4px 8px rgba(11,15,13,.16);
-    --cien-z:0 8px 18px rgba(0,0,0,.5),0 10px 30px rgba(153,230,109,.14);box-shadow:var(--cien-w),var(--cien-z)}
+    --poswiata:0 0 30px rgba(153,230,109,.26);--poswiata-hover:0 0 52px rgba(153,230,109,.36);
+    --cien-z:0 8px 18px rgba(0,0,0,.5),var(--poswiata);box-shadow:var(--cien-w),var(--cien-z)}
+  .nav-cta{--poswiata:0 0 20px rgba(153,230,109,.26);--poswiata-hover:0 0 34px rgba(153,230,109,.36)}
   @media (hover:hover) and (pointer:fine){
     .btn-lime:hover,.zapis button:hover,.nav-cta:hover{--cien-w:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -4px 8px rgba(11,15,13,.16);
-      --cien-z:0 12px 24px rgba(0,0,0,.55),0 0 56px rgba(153,230,109,.22)}
+      --cien-z:0 12px 24px rgba(0,0,0,.55),var(--poswiata-hover)}
   }
   .btn-lime:active,.zapis button:active,.nav-cta:active{--cien-w:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 3px rgba(11,15,13,.28);
     --cien-z:0 3px 8px rgba(0,0,0,.45)}
@@ -244,24 +246,18 @@
   .btn-lime.rv4{transition-delay:.36s,.36s,0s,0s,0s}
   @supports (animation-timeline:scroll()){html.panele main > :not(:first-child) .btn-lime.rv{transition:translate .25s,box-shadow .25s,background-color .25s}}
 
-  @keyframes obwObrot{to{transform:rotate(1turn)}}
-  .obw{position:relative;overflow:hidden;isolation:isolate;box-shadow:var(--cien-z)}
-  .obw::before,.obw::after{content:"";position:absolute;pointer-events:none}
-  .obw::before{z-index:-2;left:50%;top:50%;width:150%;aspect-ratio:1;margin:-75% 0 0 -75%;opacity:0;transition:opacity .35s;
-    background:conic-gradient(rgba(153,230,109,0) 0deg 190deg,var(--lime) 270deg,#f4ffec 318deg,var(--lime) 345deg,rgba(153,230,109,0) 360deg);
-    animation:obwObrot 2.4s linear infinite paused}
-  .obw::after{z-index:-1;inset:0;border-radius:inherit;background:var(--lime);box-shadow:var(--cien-w);transition:box-shadow .25s}
+  @keyframes obwPrzebieg{0%{opacity:0;transform:translate(-50%,-50%) rotate(0deg)}12%,88%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(360deg)}}
+  @keyframes obwTwarz{0%,100%{opacity:0}12%,88%{opacity:1}}
+  .obw{position:relative;overflow:hidden;isolation:isolate;--obw-pas:1px;--obw-rozmycie:1.5px;
+    --obw-swiatlo:conic-gradient(rgba(153,230,109,0) 0deg 250deg,rgba(214,247,193,.7) 320deg,rgba(255,255,255,.92) 348deg,rgba(153,230,109,0) 360deg)}
+  .obw::before,.obw::after{content:"";position:absolute;pointer-events:none;opacity:0}
+  .obw::before{z-index:-2;left:50%;top:50%;width:200%;aspect-ratio:1;transform:translate(-50%,-50%);
+    background:var(--obw-swiatlo);filter:blur(var(--obw-rozmycie))}
+  .obw::after{z-index:-1;inset:var(--obw-pas);border-radius:1px;background:var(--lime);box-shadow:inset 0 -4px 8px rgba(11,15,13,.16)}
   .obw.disabled::before,.obw.disabled::after{display:none}
-  @media (prefers-reduced-motion:no-preference){
-    @media (hover:hover) and (pointer:fine){
-      html:not(:has(.cc.show)) .obw:hover{background-color:transparent}
-      html:not(:has(.cc.show)) .obw:hover::before{opacity:1;animation-play-state:running}
-      html:not(:has(.cc.show)) .obw:hover::after{inset:2px;border-radius:1px}
-    }
-    html:not(:has(.cc.show)) .obw:focus-visible,.obw.obw-raz{background-color:transparent}
-    html:not(:has(.cc.show)) .obw:focus-visible::before{opacity:1;animation-play-state:running}
-    html:not(:has(.cc.show)) .obw:focus-visible::after,.obw.obw-raz::after{inset:2px;border-radius:1px}
-    .obw.obw-raz::before{opacity:1;animation:obwObrot 2.4s linear 2}
+  @media (prefers-reduced-motion:no-preference) and (hover:hover) and (pointer:fine){
+    html:not(:has(.cc.show)) .obw:hover::before{animation:obwPrzebieg 2.2s cubic-bezier(.4,0,.2,1) 1}
+    html:not(:has(.cc.show)) .obw:hover::after{animation:obwTwarz 2.2s linear 1}
   }
 
   .plan-hint,.om-wiecej,#ccReopen{color:rgba(247,248,249,.82);text-decoration:underline;text-decoration-color:rgba(247,248,249,.4);
@@ -4435,35 +4431,6 @@
 
 <script>
 document.addEventListener('touchstart', () => {}, { passive: true });
-(() => {
-  if (matchMedia('(hover:hover) and (pointer:fine)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches ||
-    !('IntersectionObserver' in window)) return;
-  const cc = document.getElementById('cc'), widac = new Set();
-  const pokazany = b => {
-    const q = b.getBoundingClientRect(), t = document.elementFromPoint(q.x + q.width / 2, q.y + q.height / 2);
-    if (!t || !b.contains(t)) return false;
-    for (let a = b; a; a = a.parentElement) if (+getComputedStyle(a).opacity < .9) return false;
-    return true;
-  };
-  let ponow = 0;
-  const krec = () => {
-    clearTimeout(ponow);
-    if (!widac.size || (cc && cc.classList.contains('show'))) return;
-    widac.forEach(b => { if (b.classList.contains('disabled')) widac.delete(b);
-      else if (pokazany(b)) { b.classList.add('obw-raz'); io.unobserve(b); widac.delete(b); } });
-    if (widac.size) ponow = setTimeout(krec, 250);
-  };
-  const io = new IntersectionObserver(w => {
-    w.forEach(e => e.isIntersecting ? widac.add(e.target) : widac.delete(e.target)); krec();
-  }, { threshold: .6 });
-  setTimeout(() => {
-    document.querySelectorAll('.obw').forEach(b => {
-      io.observe(b);
-      b.addEventListener('animationend', e => { if (e.animationName === 'obwObrot') b.classList.remove('obw-raz'); });
-    });
-    if (cc) new MutationObserver(krec).observe(cc, { attributes: true, attributeFilter: ['class'] });
-  }, 1000);
-})();
 </script>
 
 </body>
