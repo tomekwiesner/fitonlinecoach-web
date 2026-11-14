@@ -170,12 +170,8 @@
     inset:calc(50% - 23px)}
   .faq-item summary::before{z-index:1}
 
-  .hero-stack{position:relative;height:160vh}
-  .hero-pin{position:sticky;top:0;height:100vh;overflow:hidden}
   .hero{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;overflow:hidden}
   @media(min-width:981px) and (max-height:700px){
-    .hero-stack{height:auto}
-    .hero-pin{position:static;height:auto;overflow:visible}
     .hero{height:auto;min-height:100vh;align-items:flex-start;padding-top:88px;padding-bottom:96px}
   }
   .hero::after{content:"";position:absolute;inset:0;z-index:1;
@@ -185,7 +181,7 @@
   @supports (animation-timeline: scroll()) and (animation-range: 0px 1px) {
     @media (prefers-reduced-motion: no-preference) {
       .hero-phone.hp-css{animation-name:hpRuch;animation-timing-function:linear;animation-fill-mode:both;
-        animation-timeline:scroll(root block);animation-range:var(--hp-od,0px) var(--hp-droga)}
+        animation-timeline:scroll(root block);animation-range:0px var(--hp-droga)}
     }
   }
   .hero-phone::before{content:"";position:absolute;left:var(--pcx);top:var(--pcy);z-index:-1;
@@ -3229,10 +3225,6 @@
   const heroEl = document.getElementById('top');
   const heroStack = document.getElementById('heroStack');
   const tbWzor = document.querySelector('.tb-wzor');
-  const dokProgFn = () => {
-    const vh = window.innerHeight;
-    return (window.scrollY - heroStack.offsetTop) / Math.max(heroStack.offsetHeight - vh, 1);
-  };
 
   let ptrX = 0, ptrY = 0;
   let tiltY = 0, tiltX = 0;
@@ -3241,7 +3233,9 @@
   const hpLerp = (a, b, t) => a + (b - a) * t;
   const hpEase = p => p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
   let hpVh = [-1, 0];
-  const hpDroga = () => { if (hpVh[0] !== szerOkna) hpVh = [szerOkna, window.innerHeight]; return hpVh[1] * 0.22; };
+  const hpDroga = () => { if (hpVh[0] !== szerOkna) hpVh = [szerOkna, window.innerHeight]; const d = hpVh[1] * 0.22;
+    return stackMode() && !matchMedia('(max-height:700px)').matches && header
+      ? Math.max(40, Math.min(d, heroEl.getBoundingClientRect().top + window.scrollY + hpWHero(slowoRozumiesz.parentNode)[1] - header.offsetHeight - 16)) : d; };
   const HP_CSS = !!(window.CSS && CSS.supports('animation-timeline: scroll()') && CSS.supports('animation-range: 0px 1px'));
   const hpStyl = document.createElement('style');
   const HP_RUCH = { stoi: 0, ruch: (p, e, A, D, W, Hh, tel) => {
@@ -3252,8 +3246,8 @@
   const dokujTelefon = (force) => {
     if (!heroPhone || !heroEl || !slowoRozumiesz) return 0;
     const hr = heroEl.getBoundingClientRect();
-    const plynne = stackMode() && heroStack && heroStack.offsetHeight > window.innerHeight * 1.2;
-    const p = reduced || hpTablet.matches ? HP_RUCH.stoi : ogr(force != null ? force : plynne ? dokProgFn() : window.scrollY / hpDroga(), 0, 1);
+    const plynne = stackMode() && !matchMedia('(max-height:700px)').matches;
+    const p = reduced || hpTablet.matches ? HP_RUCH.stoi : ogr(force != null ? force : window.scrollY / hpDroga(), 0, 1);
     const e = hpEase(p);
     const hpH1 = slowoRozumiesz.parentNode, hpPr = hpWHero(slowoRozumiesz)[0] + slowoRozumiesz.offsetWidth + 24;
     const hpPod = hpWHero(hpH1)[1] + hpH1.offsetHeight + 24, hpPa = hpWHero(hpLead)[0] + hpLead.offsetWidth + 24;
@@ -3339,9 +3333,7 @@
       const t = `@keyframes hpRuch{${kl.map((x, i) => `${i * 5}%{transform:${tr(x)}}`).join('')}}`;
       if (hpStyl.textContent !== t) hpStyl.textContent = t;
       if (!hpStyl.isConnected) document.head.appendChild(hpStyl);
-      const od = plynne ? heroStack.offsetTop : 0, dr = plynne ? Math.max(heroStack.offsetHeight - window.innerHeight, 1) : hpDroga();
-      heroPhone.style.setProperty('--hp-od', `${od}px`);
-      heroPhone.style.setProperty('--hp-droga', `${(od + dr).toFixed(1)}px`);
+      heroPhone.style.setProperty('--hp-droga', `${hpDroga().toFixed(1)}px`);
     }
     if (lr) {
       const ox = hr.width / 2 + om.x, oy = hr.height / 2 + om.y;
@@ -3643,8 +3635,7 @@
     };
     const przelicz = () => {
       const vh = innerHeight, sy = scrollY, nowaSzer = document.documentElement.clientWidth !== cw;
-      const pinEnd = (stackMode() && heroStack && heroStack.offsetHeight > vh * 1.2)
-        ? heroStack.offsetTop + heroStack.offsetHeight - vh : vh * 0.72;
+      const pinEnd = vh * 0.72;
       cw = document.documentElement.clientWidth;
       const uk = FOC_PANELE.uklad(() => ({ cw, vh, pinEnd, floorBase: (manWrap ? manWrap.getBoundingClientRect().bottom + parseFloat(getComputedStyle(manWrap.parentElement).paddingBottom)
           : dl.getBoundingClientRect().top) + sy - 14,
@@ -4099,7 +4090,7 @@
     const dodaj = (id, y, twardy = true, strefa) => S.push({ id, y: Math.round(y), twardy, strefa: strefa === undefined ? undefined : Math.round(strefa) });
     dodaj('hero', 0);
     const hs = q('#heroStack');
-    if (stack && hs && hs.offsetHeight > vh * 1.2) dodaj('hero_dok', docTop(hs) + hs.offsetHeight - vh);
+    if (stack && !matchMedia('(max-height:700px)').matches) dodaj('hero_dok', Math.max(40, Math.min(.22 * vh, docTop(q('.hero h1')) - nag - 16)));
     const blok = (id, el) => {
       const t = docTop(el), h = el.offsetHeight, cs = getComputedStyle(el);
       if (h <= A) return dodaj(id, t + h / 2 - nag - A / 2, false);
