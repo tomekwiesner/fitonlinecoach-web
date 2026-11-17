@@ -1086,6 +1086,7 @@
   .foot-links{display:flex;column-gap:28px;row-gap:9.6px;list-style:none;flex-wrap:wrap;margin:-8.5px 0 -9.9px}
   .foot-links a{display:block;padding:11.5px 0;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .foot-links a:hover{color:var(--lime)}
+  @media(min-width:1240px){.foot-links{column-gap:22px}}
   .foot-rejestr{margin:0 0 26px;max-width:760px}
   .foot-rejestr summary{font-size:.74rem;line-height:1.75;color:var(--muted);cursor:pointer;
     padding:12px 0;list-style:none;display:flex;align-items:center;gap:10px}
@@ -1425,11 +1426,14 @@
   }
   @media(max-width:767px){html footer .copy{row-gap:26px}}
   @media(max-width:767px) and (max-height:700px){
-    html footer{padding:20px 0 16px}
-    html footer .copy{padding-top:16px}
-    html footer .foot-grid{gap:12px;margin-bottom:14px}
+    html footer{padding:10px 0 10px}
+    html footer .copy{padding-top:8px;row-gap:10px}
+    html footer .copy > :has(#ccReopen){margin-bottom:16px}
+    html footer .foot-links{row-gap:2px}
+    html footer .foot-grid{gap:12px;margin-bottom:10px}
     html footer .foot-logo{height:44px}
-    html footer .foot-rejestr{margin-bottom:8px}
+    html footer .foot-rejestr{margin-bottom:4px}
+    html footer #ruchBtn{position:relative}
   }
   @media(max-width:767px) and (max-height:700px){
     #aboutLayer .role-detail{min-height:30px;padding:4px 12px}
@@ -2094,6 +2098,7 @@
         <li><a href="#wideo">Wideo</a></li>
         <li><a href="https://app.fitonlinecoach.com/polityka-prywatnosci" target="_blank" rel="noopener">Polityka prywatności</a></li>
         <li><a href="https://app.fitonlinecoach.com/regulamin" target="_blank" rel="noopener">Regulamin</a></li>
+        <li><a href="/poradniki/">Poradniki</a></li>
       </ul>
       <div class="socials">
         <a href="https://www.instagram.com/fitonlinecoach.pl/" target="_blank" rel="noopener" aria-label="Instagram">
