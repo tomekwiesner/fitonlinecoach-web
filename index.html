@@ -3286,10 +3286,14 @@
     const D = { x: xDock, y: yDock, s: sDock }, A = plynne ? { x: xStart, y: yStart, s: sStart } : D;
     const wp = hpWHero(slowoRozumiesz);
     const W = { x: wp[0] - hr.width / 2, y: wp[1] - hr.height / 2, w: slowoRozumiesz.offsetWidth, h: slowoRozumiesz.offsetHeight };
-    const k = HP_RUCH.ruch(p, e, A, D, W, hpB.zero.h, !plynne);
+    const hpSr = hr.top + window.scrollY + hr.height / 2, hpDr = hpDroga(), hpPol = Math.max(hpB.start.h, hpB.zero.h) / 2;
+    const ruch = (q, eq) => { const r = HP_RUCH.ruch(q, eq, A, D, W, hpB.zero.h, !plynne);
+      if (plynne && header) r.y += Math.max(0, header.offsetHeight - (hpSr - q * hpDr + r.y - hpPol * r.s));
+      return r; };
+    const k = ruch(p, e);
     tiltY = k.ry; tiltX = k.rx;
     const kl = HP_CSS && !reduced && !hpTablet.matches
-      ? Array.from({ length: 21 }, (_, i) => HP_RUCH.ruch(i / 20, hpEase(i / 20), A, D, W, hpB.zero.h, !plynne)) : null;
+      ? Array.from({ length: 21 }, (_, i) => ruch(i / 20, hpEase(i / 20))) : null;
     hpUstaw3d(hr, k, plynne ? Math.max(sStart, sDock) : D.s, plynne, plynne ? null : D, kl);
     stosujTelefon(true);
     heroPhone.style.setProperty('--cien-tlo', (plynne ? 0.58 + 0.34 * e : 0.92).toFixed(2));
