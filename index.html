@@ -724,6 +724,8 @@
   .plan-flip{perspective:1800px}
   .plan-platnosc{display:block;margin-top:8px;font-size:.7rem;line-height:1.4;color:var(--muted);text-align:center;align-self:stretch}
   .plan-front{cursor:pointer}
+  .plan-linia{display:block;margin-top:8px;font-size:.7rem;line-height:1.4;color:var(--muted);text-align:center;align-self:stretch}
+  #plan .plan-linia + .plan-platnosc{margin-top:2px}
   .plan-hint{display:block;margin-top:10px;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;text-align:center;align-self:stretch}
   .plan-flip-inner{position:relative;display:grid;transform-style:preserve-3d;
     transition:transform .8s cubic-bezier(.45,.05,.2,1)}
@@ -1199,6 +1201,7 @@
     #plan .btn-care{padding-top:10px;padding-bottom:10px}
     #plan .plan-hint{margin-top:2px;line-height:1.4}
     #plan .plan-platnosc{margin-top:6px;line-height:1.35}
+    #plan .plan-linia{margin-top:6px;line-height:1.35}
   }
   :root{--nag:77px;--ekran:calc(100vh - var(--nag))}
   @supports (height:100svh){:root{--ekran:calc(100svh - var(--nag))}}
@@ -1855,6 +1858,7 @@
                   <span class="bj-sub" id="planCtaCena">79 zł — jednorazowo</span>
                 </a>
               </div>
+              <span class="plan-linia">Bez abonamentu. Dostęp bezterminowy.</span>
               <span class="plan-platnosc">Karta, BLIK, Przelewy24, Google Pay, Apple Pay</span>
               <span class="plan-hint" role="button" tabindex="0">Kliknij — szczegóły planu →</span>
             </div>
