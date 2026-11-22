@@ -1,5 +1,6 @@
 # FitOnlineCoach: naglowki dla Cloudflare Pages. Propozycja z 1.11.2026 + dopiski D35 z 10.11.2026; do _deploy przed testem *.pages.dev (11.11).
 # Na GitHub Pages ten plik jest zwyklym plikiem (nic nie robi). Uzasadnienie kazdego wiersza: NAGLOWKI.md.
+# HSTS etap 1 (21.11.2026): 5 minut, bez includeSubDomains i bez preload; kolejne etapy osobno (G:/cloude/strona-www-galeria/2026-11-21-github-pages-hsts).
 
 # 1. Adres techniczny *.pages.dev nie ma trafic do Google (druga kopia strony)
 https://:project.pages.dev/*
@@ -14,6 +15,7 @@ https://:version.:project.pages.dev/*
   X-Frame-Options: SAMEORIGIN
   Content-Security-Policy: frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://assets.mailerlite.com https://www.facebook.com
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Strict-Transport-Security: max-age=300
 
 # 3. Strony HTML: zawsze sprawdzaj, czy jest nowsza wersja
 /
